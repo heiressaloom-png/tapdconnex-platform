@@ -1,0 +1,9 @@
+{
+  "name": "tapdconnex-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "NFC-powered AI networking platform for real-time relationship capture and follow-up.",
+  "dependencies": {
+    "busboy": "^1.6.0"
+  }
+}
