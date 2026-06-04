@@ -29,6 +29,21 @@ html = html.replace(/name:'Keep Warm'/g, "name:'Stay in Touch'");
 html = html.replace(/id:'keep_warm'/g, "id:'stay_in_touch'");
 html = html.replace(/keep_warm/g, 'stay_in_touch');
 
+// ✅ vCard button upgrade — Option B.
+// Old: outlined gold button, generic label "Save contact card to your phone"
+// New: gold filled primary button, personalised name, explainer line underneath.
+// The <span id="tapdVcardName"> is patched at runtime by the showConnected override below.
+html = html.replace(
+  /<button onclick="generateVCard\(\)" style="margin-top:12px[\s\S]*?Save contact card to your phone\s*<\/button>/,
+  '<div style="margin-top:14px;border-top:1px solid rgba(255,255,255,.07);padding-top:14px;">'
+  + '<button id="tapdVcardBtn" onclick="generateVCard()" style="width:100%;height:50px;border-radius:14px;background:linear-gradient(135deg,#EAB308,#ca8a04);border:none;color:#050505;font-family:\'Inter\',sans-serif;font-size:13px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;letter-spacing:-.1px;">'
+  + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>'
+  + '<span>Save <span id="tapdVcardName">contact</span> to your contacts</span>'
+  + '</button>'
+  + '<p style="margin-top:8px;font-size:11px;color:rgba(255,255,255,.4);text-align:center;letter-spacing:.1px;">One tap \xb7 saves number, email &amp; profile</p>'
+  + '</div>'
+);
+
 // ✅ FIX: String.raw preserves all \n \' \\ escape sequences so the injected
 // script block arrives in index.html with correct JS syntax. Without it the
 // template literal ate backslashes, breaking line 17299 with
@@ -86,6 +101,7 @@ const controller = String.raw`
     style.textContent='\n'
       +'#tapdHardOwnerHeader button.tapd-nav-active{background:linear-gradient(135deg,#0ECEC0,#10B981)!important;border-color:#0ECEC0!important;color:#03100f!important;box-shadow:0 0 0 2px rgba(14,206,192,.16),0 14px 30px rgba(14,206,192,.16)!important;}\n'
       +'#tapdHardOwnerHeader button:not(.tapd-nav-active){filter:saturate(.82);opacity:.88;}\n'
+      +'#connectBar,.connect-bar,.btn-connect,.connect-sheet{display:none!important;}\n'
       +'.tapd-template-action-bar{margin:0 0 14px;padding:13px;border-radius:16px;border:1px solid rgba(234,179,8,.24);background:linear-gradient(135deg,rgba(234,179,8,.10),rgba(234,179,8,.035));display:grid;gap:10px;}\n'
       +'.tapd-template-action-title{font-size:13px;font-weight:900;color:#F0F4F8;margin:0;}\n'
       +'.tapd-template-action-sub{font-size:11px;color:#8B9EB0;line-height:1.45;margin:2px 0 0;}\n'
@@ -252,6 +268,82 @@ const controller = String.raw`
       return result;
     };
   }
+  // ── Zero-friction visitor strip ──────────────────────────────────────────
+  // Removes the "Send my TAPD card back" button and manual connectSheet entirely.
+  // The visitor flow is now: tap NFC → see profile → tap a channel → vCard. No typing.
+  // The owner captures the relationship on their side using the voice capture tool.
+  function buildCleanVisitorStrip(){
+    var p=typeof getProfileData==='function'?getProfileData():{};
+    var name=p.name||'';
+    var title=byId('visitorStripTitle');
+    if(title)title.textContent=name?'You tapped '+name+'\u2019s card':'You tapped this TAPD card';
+    var opts=byId('connectOptions');
+    if(!opts)return;
+    opts.innerHTML='';
+    function makeBtn(label,bg,primary,svgHtml,action){
+      var btn=document.createElement('button');
+      btn.className='connect-opt'+(primary?' primary':'');
+      if(bg&&bg!=='transparent')btn.style.background=bg;
+      btn.innerHTML=svgHtml+' '+label;
+      btn.onclick=function(){action();};
+      return btn;
+    }
+    if(p.whatsApp){
+      var waNum=String(p.whatsApp).replace(/\D/g,'');
+      var waMsg='Hi '+( name||'there')+', I just tapped your NFC card!';
+      opts.appendChild(makeBtn('Message on WhatsApp','#22C55E',true,
+        '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>',
+        function(){window.open('https://wa.me/'+waNum+'?text='+encodeURIComponent(waMsg),'_blank');showConnected('Sent via WhatsApp');}
+      ));
+    }
+    if(p.linkedIn){
+      var liUrl=p.linkedIn.startsWith('http')?p.linkedIn:'https://linkedin.com/in/'+p.linkedIn.replace('@','');
+      opts.appendChild(makeBtn('Connect on LinkedIn','transparent',false,
+        '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>',
+        function(){window.open(liUrl,'_blank');showConnected('Opened LinkedIn');}
+      ));
+    }
+    if(p.instagram){
+      var igUrl=p.instagram.startsWith('http')?p.instagram:'https://instagram.com/'+p.instagram.replace('@','');
+      opts.appendChild(makeBtn('Follow on Instagram','transparent',false,
+        '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>',
+        function(){window.open(igUrl,'_blank');showConnected('Opened Instagram');}
+      ));
+    }
+    if(p.email){
+      opts.appendChild(makeBtn('Send an email','transparent',false,
+        '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>',
+        function(){window.open('mailto:'+p.email);showConnected('Email opened');}
+      ));
+    }
+    if(!opts.children.length){
+      opts.innerHTML='<p style="font-size:12px;color:rgba(255,255,255,.4);text-align:center;padding:8px 0;">No contact links set up on this profile yet.</p>';
+    }
+  }
+
+  // Block the manual form from ever opening — form defeats NFC zero-friction purpose.
+  function noopConnectSheet(){
+    window.openConnectSheet=function(){};
+    window.closeConnectSheet=function(){};
+  }
+
+  // Personalise the vCard button: inject owner's first name the moment visitor connects.
+  // Runs after showConnected() hides the options and reveals visitorSent.
+  function upgradeShowConnected(){
+    var _orig=window.showConnected;
+    if(!_orig||window.__tapdShowConnectedUpgraded)return;
+    window.__tapdShowConnectedUpgraded=true;
+    window.showConnected=function(msg){
+      if(typeof _orig==='function')_orig(msg);
+      try{
+        var p=typeof getProfileData==='function'?getProfileData():{};
+        var first=(p.name||'').trim().split(' ')[0]||'contact';
+        var el=document.getElementById('tapdVcardName');
+        if(el)el.textContent=first;
+      }catch(e){}
+    };
+  }
+
   function boot(){
     injectWorkspaceStyles();
     document.addEventListener('pointerup',handleTopNav,true);
@@ -270,7 +362,15 @@ const controller = String.raw`
     setTimeout(wrapTemplateOpen,800);
     setTimeout(wrapTemplateSelection,800);
     setTimeout(cleanRelationshipHubText,400);
-    console.log('[TAPD] Update 69C loaded \u2014 active nav, template capture button and cheat sheet active.');
+    upgradeShowConnected();
+    noopConnectSheet();
+    window.buildVisitorStrip=buildCleanVisitorStrip;
+    // Re-run if strip already rendered before our script loaded
+    if(inVisitorMode()){
+      var vs=byId('visitorStrip');
+      if(vs&&vs.classList.contains('show'))buildCleanVisitorStrip();
+    }
+    console.log('[TAPD] Update 69C loaded \u2014 active nav, template capture, vCard name, zero-friction visitor strip active.');
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
