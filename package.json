@@ -4,7 +4,7 @@
   "private": true,
   "description": "NFC-powered AI networking platform for real-time relationship capture and follow-up.",
   "scripts": {
-    "vercel-build": "echo TAPDconnex static build"
+    "vercel-build": "node build-inject-update-68.js"
   },
   "dependencies": {
     "busboy": "^1.6.0"
