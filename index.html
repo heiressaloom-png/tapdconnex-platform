@@ -17208,6 +17208,9 @@ input::placeholder, textarea::placeholder {
 
 
 <!-- UPDATE 69C: ACTIVE NAV + TEMPLATE CAPTURE WORKFLOW -->
+
+
+<!-- UPDATE 69C: ACTIVE NAV + TEMPLATE CAPTURE WORKFLOW -->
 <script id="tapdTopNavDesignCorrection">
 (function(){
   if(window.__tapdTopNavDesignCorrection)return;
@@ -17229,18 +17232,90 @@ input::placeholder, textarea::placeholder {
     custom:'Custom Template'
   };
   var TEMPLATE_HINTS={
-    direct_opportunity:['Need / pain mentioned','Buying or adoption signal','Specific next step'],
-    connector_referral:['Who they can introduce you to','Why that person matters','Forwarding blurb'],
-    stay_in_touch:['What was discussed','Reason to stay in touch','Suggested light follow-up'],
-    pilot_beta:['What they want to test','Success criteria','Pilot next step'],
-    collaboration:['Shared interest','Possible collaboration','Dependencies'],
-    customer_discovery:['Current problem or pain','Current workaround','Desired outcome'],
-    investor_funding:['Stage fit','Interest signal','Materials requested'],
-    strategic_partnership:['Mutual value','Key decision-makers','Dependencies'],
-    speaking_media:['Topic or angle','Audience fit','Format and logistics'],
-    advisory_mentor:['Their expertise','Your specific ask','Commitment level'],
-    community_access:['Community value','Access path','Mutual asks and offers'],
-    custom:['Your custom fields','Key context','Next step']
+    direct_opportunity:[
+      'What brought this up for you today?',
+      'What are you currently trying to solve or improve?',
+      'What made this feel relevant or interesting?',
+      'What would make this useful enough to explore properly?',
+      'Would it make sense to continue this conversation after today?'
+    ],
+    connector_referral:[
+      'Who came to mind when we were speaking about this?',
+      'Why do you think this would be relevant for them?',
+      'What would be the easiest way for me to explain it to them?',
+      'Would a short intro message make it easier for you?',
+      'Would you be comfortable making a light introduction after today?'
+    ],
+    stay_in_touch:[
+      'What are you focused on at the moment?',
+      'What kind of ideas or people are useful for you right now?',
+      'What part of our conversation feels worth remembering?',
+      'Would it be useful if I shared something relevant later?',
+      'What would be a natural reason for us to stay connected?'
+    ],
+    pilot_beta:[
+      'What would you be curious to test first?',
+      'Where would this fit into how you currently work?',
+      'What would make the test worthwhile for you?',
+      'Who else would need to be involved before trying it?',
+      'What would be a simple next step to explore a pilot?'
+    ],
+    collaboration:[
+      'Where do you see overlap between what we both do?',
+      'What would a small first collaboration look like?',
+      'What would each side need to bring for this to work?',
+      'What would need to be clear before moving forward?',
+      'Would it make sense to explore one practical next step?'
+    ],
+    customer_discovery:[
+      'How are you handling this today?',
+      'What tends to be frustrating about the current way?',
+      'When does this problem become most noticeable?',
+      'What would a better outcome look like for you?',
+      'What would make you consider changing what you use now?'
+    ],
+    investor_funding:[
+      'What part of this space are you most interested in?',
+      'What would you want to understand before taking this seriously?',
+      'Does this feel aligned with the types of opportunities you usually look at?',
+      'What questions or concerns would you expect someone to raise?',
+      'Would it be useful if I sent a short summary, deck, or follow-up note?'
+    ],
+    strategic_partnership:[
+      'Where do you think there could be mutual business value?',
+      'What would make this useful for your side?',
+      'Who normally needs to be involved in a partnership like this?',
+      'Are there any timing issues, dependencies, or blockers I should know about?',
+      'What would be the right next conversation if we wanted to explore this?'
+    ],
+    speaking_media:[
+      'What audience are you trying to serve with this?',
+      'What topic or angle do you think would be most useful for them?',
+      'What made you think I could be a fit?',
+      'What would you need from me to consider it properly?',
+      'What is the timeline or next step for this opportunity?'
+    ],
+    advisory_mentor:[
+      'Where do you think your experience could be most useful here?',
+      'What have you seen others get wrong at this stage?',
+      'What would you suggest I think about next?',
+      'Would it make sense to stay connected around this topic?',
+      'What would make this valuable or easy for you as well?'
+    ],
+    community_access:[
+      'What kind of people are usually in that community?',
+      'What makes someone a good fit?',
+      'Why do you think it could be useful for me?',
+      'What is the best way to be introduced or included?',
+      'Is there anything I should prepare before reaching out?'
+    ],
+    custom:[
+      'What is the main thing you want to understand from this conversation?',
+      'What context would make the follow-up more useful?',
+      'What is the most important thing to capture right now?',
+      'What would a good outcome from this conversation look like?',
+      'What is the clearest next step?'
+    ]
   };
 
   function byId(id){return document.getElementById(id);}
@@ -17257,8 +17332,8 @@ input::placeholder, textarea::placeholder {
     var style=document.createElement('style');
     style.id='tapd69cWorkspaceStyles';
     style.textContent='\n'
-      +'#tapdHardOwnerHeader button.tapd-nav-active{background:linear-gradient(135deg,#0ECEC0,#10B981)!important;border-color:#0ECEC0!important;color:#03100f!important;box-shadow:0 0 0 2px rgba(14,206,192,.16),0 14px 30px rgba(14,206,192,.16)!important;}\n'
-      +'#tapdHardOwnerHeader button:not(.tapd-nav-active){filter:saturate(.82);opacity:.88;}\n'
+      +'#tapdHardOwnerHeader button{background:linear-gradient(135deg,#0ECEC0,#10B981)!important;border-color:#0ECEC0!important;color:#050505!important;font-weight:800!important;opacity:1!important;filter:none!important;}\n'
+      +'#tapdHardOwnerHeader button.tapd-nav-active{background:linear-gradient(135deg,#EAB308,#ca8a04)!important;border-color:#EAB308!important;color:#050505!important;box-shadow:0 0 0 2px rgba(234,179,8,.30),0 8px 24px rgba(234,179,8,.22)!important;}\n'
       +'#connectBar,.connect-bar,.btn-connect,.connect-sheet{display:none!important;}\n'
       +'.tapd-template-action-bar{margin:0 0 14px;padding:13px;border-radius:16px;border:1px solid rgba(234,179,8,.24);background:linear-gradient(135deg,rgba(234,179,8,.10),rgba(234,179,8,.035));display:grid;gap:10px;}\n'
       +'.tapd-template-action-title{font-size:13px;font-weight:900;color:#F0F4F8;margin:0;}\n'
@@ -17387,7 +17462,7 @@ input::placeholder, textarea::placeholder {
     var hints=TEMPLATE_HINTS[id]||TEMPLATE_HINTS.custom;
     var sheet=document.createElement('div');
     sheet.id='tapdTemplateCheatSheet';
-    sheet.innerHTML='<div class="tapd-cheat-card"><button class="tapd-cheat-close" type="button" aria-label="Close">\xd7</button><p class="tapd-cheat-kicker">Template selected</p><p class="tapd-cheat-title">'+titleCaseFromId(id)+'</p><p class="tapd-cheat-sub">Capture with this structure in mind. TAPDconnex will use this template when shaping the follow-up.</p><div class="tapd-cheat-list">'+hints.map(function(h){return '<span>'+h+'</span>';}).join('')+'</div><button class="tapd-cheat-primary" type="button">Got it \u2014 capture now</button></div>';
+    sheet.innerHTML='<div class="tapd-cheat-card"><button class="tapd-cheat-close" type="button" aria-label="Close">\xd7</button><p class="tapd-cheat-kicker">Conversation prompts</p><p class="tapd-cheat-title">'+titleCaseFromId(id)+'</p><p class="tapd-cheat-sub">Use one or two that fit the flow. You don\u2019t need to ask all five. TAPDconnex will structure whatever the conversation gives you.</p><div class="tapd-cheat-list">'+hints.map(function(h,i){return '<span><b style="color:#EAB308;margin-right:6px;">'+(i+1)+'.</b>'+h+'</span>';}).join('')+'</div><button class="tapd-cheat-primary" type="button">Got it \u2014 capture now</button></div>';
     document.body.appendChild(sheet);
     sheet.querySelector('.tapd-cheat-close').onclick=function(){sheet.remove();};
     sheet.querySelector('.tapd-cheat-primary').onclick=function(){sheet.remove();};
