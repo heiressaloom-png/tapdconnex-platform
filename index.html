@@ -2250,7 +2250,7 @@ body.tapd-hard-header-on #profile.active .wrap{padding-top:72px!important;}
               <option value="connector_referral">Connector / Referral</option>
               <option value="pilot_beta">Pilot / Beta Testing</option>
               <option value="collaboration">Collaboration / Partnership</option>
-              <option value="keep_warm">Keep Warm / Unclear</option>
+              <option value="stay_in_touch">Keep Warm / Unclear</option>
             </optgroup>
             <optgroup label="Coming soon">
               <option disabled>Investor / Sponsor</option>
@@ -4452,7 +4452,7 @@ function claimOwnership(){
 
   window.sendModalMarkWarm = function(id){
     if(typeof updateConnectionStatus === 'function'){
-      updateConnectionStatus(id, 'keep_warm', { keep_warm_reason: 'User chose not to push at this time' });
+      updateConnectionStatus(id, 'stay_in_touch', { stay_in_touch_reason: 'User chose not to push at this time' });
     }
     closeSendModal();
     if(typeof renderOwnerInbox === 'function') renderOwnerInbox();
@@ -4576,7 +4576,7 @@ function claimOwnership(){
       connector_referral: 'Connector / referral opportunity',
       pilot_beta:         'Pilot / beta opportunity',
       collaboration:      'Collaboration opportunity',
-      keep_warm:          'Keep warm',
+      stay_in_touch:          'Keep warm',
     };
     const s = (strength||'').toLowerCase();
     const pathLabel = pathLabels[pathway] || '';
@@ -4592,7 +4592,7 @@ function claimOwnership(){
       connector_referral: 'Connector / Referral',
       pilot_beta:         'Pilot / Beta Testing',
       collaboration:      'Collaboration / Partnership',
-      keep_warm:          'Keep Warm / Unclear',
+      stay_in_touch:          'Keep Warm / Unclear',
     };
     return labels[pathway] || 'Keep Warm / Unclear';
   }
@@ -4612,7 +4612,7 @@ function claimOwnership(){
       connector_referral: 'Easy-to-forward connector message',
       pilot_beta:         'Simple pilot outline',
       collaboration:      'Mutual and exploratory',
-      keep_warm:          'Light — one message, then wait',
+      stay_in_touch:          'Light — one message, then wait',
     };
     return styles[pathway] || 'Light and useful';
   }
@@ -4623,7 +4623,7 @@ function claimOwnership(){
       connector_referral: 'Send a short forwarding blurb they can easily pass on. No clear commitment was made to meet — do not force it.',
       pilot_beta:         'Send a short pilot outline. Keep it light and easy to say yes to.',
       collaboration:      'Send a mutual exploration message. Both sides need to see value before committing.',
-      keep_warm:          'No clear commitment was made. Suggested move: keep warm. Send one useful message, then wait.',
+      stay_in_touch:          'No clear commitment was made. Suggested move: keep warm. Send one useful message, then wait.',
     };
     return moves[aiData.relationship_pathway] || 'Capture what was actually agreed and send a light follow-up only if useful.';
   }
@@ -4858,14 +4858,14 @@ function claimOwnership(){
         ['draft_message','Collaboration follow-up draft','The message prepared for the preferred channel.']
       ]
     },
-    keep_warm: {
+    stay_in_touch: {
       label: 'Keep Warm / Unclear',
       chips: ['Low pressure','No over-chasing','Useful reason to reconnect'],
       fields: [
         ['why_may_matter','Why they may matter','Why this person could still be useful later.'],
         ['what_discussed','What was discussed','The useful context worth remembering.'],
         ['clarity_level','Current clarity level','Was there a clear next step, soft interest, or no commitment?'],
-        ['reason_keep_warm','Reason to keep warm','What future reason might justify reconnecting.'],
+        ['reason_stay_in_touch','Reason to keep warm','What future reason might justify reconnecting.'],
         ['light_followup','Suggested light follow-up','A low-pressure message or value note.'],
         ['when_follow_up','When to follow up','Now / later / only if relevant / after a trigger event.'],
         ['do_not_push','Do-not-push note','What not to over-invest in or force.']
@@ -5014,7 +5014,7 @@ function claimOwnership(){
     return 'custom_' + base + '_' + Date.now().toString(36).slice(-4);
   }
   function getTemplateDefinition(key){
-    const base = NEXT_STEP_TEMPLATES[key] || NEXT_STEP_TEMPLATES.keep_warm;
+    const base = NEXT_STEP_TEMPLATES[key] || NEXT_STEP_TEMPLATES.stay_in_touch;
     const cfg = getCustomTemplateConfig(key);
     if(!cfg) return base;
     const hidden = Array.isArray(cfg.hiddenFields) ? cfg.hiddenFields : [];
@@ -5047,7 +5047,7 @@ function claimOwnership(){
   function setTemplateCustomStatus(key){
     const el = document.getElementById('templateCustomStatus');
     if(!el) return;
-    const def = getTemplateDefinition(key || _nextStepTemplateKey || 'keep_warm');
+    const def = getTemplateDefinition(key || _nextStepTemplateKey || 'stay_in_touch');
     if(templateHasCustomVersion(key || _nextStepTemplateKey)){
       el.innerHTML = '<strong>Using your saved version:</strong> ' + escapeHtml(def.label) + '. Edits to field content apply to this capture. Use Customize template to change fields for future captures.';
     }else{
@@ -5058,13 +5058,13 @@ function claimOwnership(){
   window.customizeCurrentTemplate = function customizeCurrentTemplate(){
     // Redirect to the proper template editor instead of using prompts
     const select = document.getElementById('nextStepTemplateSelect');
-    const key = select?.value || _nextStepTemplateKey || detectNextStepTemplate() || 'keep_warm';
+    const key = select?.value || _nextStepTemplateKey || detectNextStepTemplate() || 'stay_in_touch';
     goTemplateEditor();
     // Open the editor for the current template after page renders
     setTimeout(()=>{ if(typeof openInlineEditor==='function') openInlineEditor(key); }, 200);
     return; // original prompt-based code removed
     // (dead code removed to avoid duplicate-declaration errors)
-    const base = NEXT_STEP_TEMPLATES[key] || NEXT_STEP_TEMPLATES.keep_warm;
+    const base = NEXT_STEP_TEMPLATES[key] || NEXT_STEP_TEMPLATES.stay_in_touch;
     const current = getCustomTemplateConfig(key) || {fieldLabels:{},hiddenFields:[],customFields:[]};
 
     const label = prompt('Template name for your saved version:', current.label || base.label);
@@ -5116,7 +5116,7 @@ function claimOwnership(){
   window.saveCurrentTemplateAsMyVersion = function saveCurrentTemplateAsMyVersion(){
     const select = document.getElementById('nextStepTemplateSelect');
     const key = select?.value || _nextStepTemplateKey || detectNextStepTemplate();
-    const base = NEXT_STEP_TEMPLATES[key] || NEXT_STEP_TEMPLATES.keep_warm;
+    const base = NEXT_STEP_TEMPLATES[key] || NEXT_STEP_TEMPLATES.stay_in_touch;
     const store = getCustomTemplateStore();
     const existing = store[key] || {fieldLabels:{},hiddenFields:[],customFields:[]};
     const label = prompt('Save this template structure as:', existing.label || ('My ' + base.label));
@@ -5131,7 +5131,7 @@ function claimOwnership(){
   window.resetCurrentTemplate = function resetCurrentTemplate(){
     const select = document.getElementById('nextStepTemplateSelect');
     const key = select?.value || _nextStepTemplateKey || detectNextStepTemplate();
-    const base = NEXT_STEP_TEMPLATES[key] || NEXT_STEP_TEMPLATES.keep_warm;
+    const base = NEXT_STEP_TEMPLATES[key] || NEXT_STEP_TEMPLATES.stay_in_touch;
     if(!templateHasCustomVersion(key)){
       alert('This template is already using the standard version.');
       return;
@@ -5168,7 +5168,7 @@ function claimOwnership(){
     if(containsAny(text,['pilot','beta','test group','try this','proof of concept','poc','early access','test this','small group'])) return 'pilot_beta';
     if(containsAny(text,['collaborate','collaboration','partnership','partner','joint','co-create','co create','workshop','co-host','co host'])) return 'collaboration';
     if((analysis.relationship_path||'').toLowerCase().includes('direct') || containsAny(text,['pricing','proposal','demo','book a meeting','set up a meeting','send the deck','implementation','customer','client'])) return 'direct_opportunity';
-    return 'keep_warm';
+    return 'stay_in_touch';
   }
   function templateDefaultValue(templateKey, fieldKey){
     const summary = document.getElementById('rawSummary')?.value.trim() || '';
@@ -5222,11 +5222,11 @@ function claimOwnership(){
         collab_next_step: next || 'Suggest a light next step to explore fit.',
         draft_message: genericDraft
       },
-      keep_warm: {
+      stay_in_touch: {
         why_may_matter: role || 'Could be relevant later based on the conversation.',
         what_discussed: snippet,
         clarity_level: analysis.next_step_clarity || 'Unclear',
-        reason_keep_warm: 'Useful relationship to remember, but no need to over-invest until there is a clearer trigger.',
+        reason_stay_in_touch: 'Useful relationship to remember, but no need to over-invest until there is a clearer trigger.',
         light_followup: genericDraft + '\n\nNo pressure — happy to pick it up if it becomes relevant.',
         when_follow_up: 'Only if relevant, or after a useful trigger/event.',
         do_not_push: 'Do not push for a meeting unless they respond with clearer interest.'
@@ -5246,7 +5246,7 @@ function claimOwnership(){
   };
 
   window.selectNextStepTemplate = function selectNextStepTemplate(key, userSelected){
-    if(!NEXT_STEP_TEMPLATES[key]) key='keep_warm';
+    if(!NEXT_STEP_TEMPLATES[key]) key='stay_in_touch';
     _nextStepTemplateKey = key;
     if(userSelected) _nextStepTemplateTouched = false; // change mode and regenerate sensible fields
     renderNextStepTemplate(true);
@@ -5378,7 +5378,7 @@ function claimOwnership(){
     CAPTURED:'captured',
     FOLLOW_UP_READY:'follow_up_ready',
     SENT:'sent',
-    KEEP_WARM:'keep_warm',
+    KEEP_WARM:'stay_in_touch',
     DISMISSED:'dismissed'
   };
 
@@ -5407,7 +5407,7 @@ function claimOwnership(){
       captured:'Captured',
       follow_up_ready:'Follow-up ready',
       sent:'Sent',
-      keep_warm:'Keep warm',
+      stay_in_touch:'Keep warm',
       dismissed:'Dismissed'
     })[status] || 'Pending request';
   }
@@ -5421,7 +5421,7 @@ function claimOwnership(){
       captured:'captured',
       follow_up_ready:'ready',
       sent:'sent',
-      keep_warm:'keep',
+      stay_in_touch:'keep',
       dismissed:'dismissed'
     })[status] || 'pending';
   }
@@ -5440,7 +5440,7 @@ function claimOwnership(){
       c.tapper_notified=true;
     }
     if(status===TAPD_STATUS.SENT) c.sent_at=c.sent_at || nowIso();
-    if(status===TAPD_STATUS.KEEP_WARM) c.keep_warm_at=c.keep_warm_at || nowIso();
+    if(status===TAPD_STATUS.KEEP_WARM) c.stay_in_touch_at=c.stay_in_touch_at || nowIso();
     if(status===TAPD_STATUS.DISMISSED) c.dismissed_at=c.dismissed_at || nowIso();
     saveConnections(list);
     try{ renderOwnerNotifications(); }catch(e){}
@@ -5452,7 +5452,7 @@ function claimOwnership(){
   window.updateConnectionStatus = updateConnectionStatus;
 
   window.keepWarmConnection = function keepWarmConnection(id){
-    updateConnectionStatus(id,TAPD_STATUS.KEEP_WARM,{keep_warm_reason:'User chose not to push yet'});
+    updateConnectionStatus(id,TAPD_STATUS.KEEP_WARM,{stay_in_touch_reason:'User chose not to push yet'});
   };
 
   window.markConnectionSent = function markConnectionSent(id){
@@ -5554,7 +5554,7 @@ function claimOwnership(){
     if(!wrap || !count || !listEl) return;
     const owner=isOwner();
     const all=getConnections().filter(c=>normalizeConnectionStatus(c)!==TAPD_STATUS.DISMISSED);
-    const order={pending:0,auto_connected:1,accepted:2,needs_capture:3,follow_up_ready:4,captured:5,keep_warm:6,sent:7};
+    const order={pending:0,auto_connected:1,accepted:2,needs_capture:3,follow_up_ready:4,captured:5,stay_in_touch:6,sent:7};
     all.sort((a,b)=>(order[normalizeConnectionStatus(a)]??99)-(order[normalizeConnectionStatus(b)]??99) || String(b.created_at||'').localeCompare(String(a.created_at||'')));
     count.textContent=String(all.length);
     wrap.style.display = owner && all.length ? 'block' : 'none';
@@ -5707,7 +5707,7 @@ function claimOwnership(){
     const pending = list.filter(c=>ownerStatusMatches(c,['pending','pending_request']));
     const needs = list.filter(c=>ownerStatusMatches(c,['needs_capture','accepted','auto_connected']));
     const ready = list.filter(c=>ownerStatusMatches(c,['follow_up_ready','captured']));
-    const warmSent = list.filter(c=>ownerStatusMatches(c,['sent','keep_warm']));
+    const warmSent = list.filter(c=>ownerStatusMatches(c,['sent','stay_in_touch']));
     const badge=document.getElementById('ownerSideBadge');
     if(badge){
       const n=pending.length;
@@ -5832,7 +5832,7 @@ function getBaseTemplateFields(key){
     connector_referral:[['who_intro','Who they can introduce you to'],['why_matters','Why that person matters'],['intro_type','Type of introduction'],['what_needed','What they need from you'],['forwarding_blurb','Forwarding blurb'],['intro_status','Introduction status'],['draft_message','Follow-up draft']],
     pilot_beta:[['test_idea','What they want to test'],['test_group','Who the test group is'],['why_test_matters','Why the test matters'],['success_criteria','Success criteria'],['access_needed','What access they need'],['pilot_next_step','Pilot next step'],['draft_message','Follow-up draft']],
     collaboration:[['shared_interest','Shared interest'],['each_side_brings','What each side brings'],['possible_collaboration','Possible collaboration'],['dependencies','Dependencies'],['open_questions','Open questions'],['collab_next_step','Next step'],['draft_message','Follow-up draft']],
-    keep_warm:[['why_may_matter','Why they may matter'],['what_discussed','What was discussed'],['clarity_level','Current clarity level'],['reason_keep_warm','Reason to keep warm'],['light_followup','Suggested light follow-up'],['when_follow_up','When to follow up'],['do_not_push','Do-not-push note']],
+    stay_in_touch:[['why_may_matter','Why they may matter'],['what_discussed','What was discussed'],['clarity_level','Current clarity level'],['reason_stay_in_touch','Reason to keep warm'],['light_followup','Suggested light follow-up'],['when_follow_up','When to follow up'],['do_not_push','Do-not-push note']],
   };
   return defaults[key]||[];
 }
@@ -5847,7 +5847,7 @@ function renderTemplateList(){
     {key:'connector_referral',name:'Connector / Referral',desc:'They can introduce you to someone. Use when the person is a pathway, not the opportunity themselves.'},
     {key:'pilot_beta',name:'Pilot / Beta Testing',desc:'They want to test your product with their team or community.'},
     {key:'collaboration',name:'Collaboration / Partnership',desc:'Mutual interest in building something together. Both sides bring value.'},
-    {key:'keep_warm',name:'Keep Warm / Unclear',desc:'No clear next step yet but worth remembering. The pathway is not clear yet.'},
+    {key:'stay_in_touch',name:'Keep Warm / Unclear',desc:'No clear next step yet but worth remembering. The pathway is not clear yet.'},
   ];
   const futureTemplates=[
     {name:'Investor / Sponsor',desc:'Coming soon — for investor conversations, funding leads, and sponsor discussions.'},
@@ -6206,7 +6206,7 @@ function saveOnboardingFollowUpStyle(){
   const script = repairFollowUpScriptTokens(buildFollowUpStyleFromOnboarding().trim() || getDefaultFollowUpStyleScript());
   const scripts = (typeof getMyScripts === 'function') ? getMyScripts() : {};
   scripts._global = script;
-  ['direct_opportunity','connector_referral','pilot_beta','collaboration','keep_warm'].forEach(function(key){
+  ['direct_opportunity','connector_referral','pilot_beta','collaboration','stay_in_touch'].forEach(function(key){
     if(!scripts[key]) scripts[key] = script;
   });
   if(typeof saveMyScripts === 'function') saveMyScripts(scripts);
@@ -6870,7 +6870,7 @@ function markReply(id, replied, btn){
   captures[idx].reply_checked = true;
   captures[idx].replied = replied;
   captures[idx].reply_checked_at = new Date().toISOString();
-  if(replied) captures[idx].status = 'keep_warm';
+  if(replied) captures[idx].status = 'stay_in_touch';
   try{ localStorage.setItem('tapd_captures_v1', JSON.stringify(captures)); }catch(e){}
   var card = btn && btn.closest('.reply-checkin');
   if(card) card.innerHTML = replied
@@ -6888,7 +6888,7 @@ var _milestonesSeen = (function(){
 
 function checkAndShowMilestone(){
   var captures = getLocalCaptures();
-  var sent  = captures.filter(function(c){ return c.status==='sent'||c.status==='keep_warm'; }).length;
+  var sent  = captures.filter(function(c){ return c.status==='sent'||c.status==='stay_in_touch'; }).length;
   var total = captures.length;
   var milestones = [
     { key:'first_capture', ok: total>=1, icon:'127908', title:'First moment captured!',  sub:'You just started building a smarter network. Every follow-up from here starts with context.' },
@@ -7509,7 +7509,7 @@ window.showUpgradeSheet = function showUpgradeSheet(reason){
 // UPDATE 14 - STARTER AI VALUE + PRO LOCKS
 // =========================================================
 (function(){
-  const STARTER_TEMPLATES = ['direct_opportunity','collaboration','keep_warm'];
+  const STARTER_TEMPLATES = ['direct_opportunity','collaboration','stay_in_touch'];
   const STARTER_CUSTOM_LIMIT = 1;
   const PRO_TEMPLATE_LABELS = {
     connector_referral: 'Connector / Referral',
@@ -7520,7 +7520,7 @@ window.showUpgradeSheet = function showUpgradeSheet(reason){
   window.formatMaxRecording = function formatMaxRecording(){ return isTapdPro() ? '10 minutes' : '5 minutes'; };
 
   function templateName(key){
-    const map={direct_opportunity:'Direct Opportunity',collaboration:'Collaboration / Partnership',keep_warm:'Keep Warm / Unclear',connector_referral:'Connector / Referral',pilot_beta:'Pilot / Beta Testing'};
+    const map={direct_opportunity:'Direct Opportunity',collaboration:'Collaboration / Partnership',stay_in_touch:'Keep Warm / Unclear',connector_referral:'Connector / Referral',pilot_beta:'Pilot / Beta Testing'};
     return map[key] || key;
   }
   function isStarterTemplate(key){ return STARTER_TEMPLATES.includes(key); }
@@ -7812,11 +7812,11 @@ window.showUpgradeSheet = function showUpgradeSheet(reason){
   const PRO_TEMPLATE_KEYS_U15 = [
     'connector_referral','pilot_beta','customer_discovery','investor_funding','hiring_talent','strategic_partnership','speaking_media','advisory_mentor','community_access'
   ];
-  const STARTER_TEMPLATE_KEYS_U15 = ['direct_opportunity','collaboration','keep_warm'];
+  const STARTER_TEMPLATE_KEYS_U15 = ['direct_opportunity','collaboration','stay_in_touch'];
   const TEMPLATE_LABELS_U15 = {
     direct_opportunity:'Direct Opportunity',
     collaboration:'Collaboration / Partnership',
-    keep_warm:'Keep Warm / Unclear',
+    stay_in_touch:'Keep Warm / Unclear',
     connector_referral:'Connector / Referral',
     pilot_beta:'Pilot / Beta Testing',
     customer_discovery:'Customer Discovery',
@@ -7976,7 +7976,7 @@ window.showUpgradeSheet = function showUpgradeSheet(reason){
     if(containsAny(text,['pilot','beta','test group','try this','proof of concept','poc','early access','test this','small group'])) return 'pilot_beta';
     if(containsAny(text,['collaborate','collaboration','partnership','partner','joint','co-create','co create','workshop','co-host','co host'])) return 'collaboration';
     if((analysis.relationship_path||'').toLowerCase().includes('direct') || containsAny(text,['pricing','proposal','demo','book a meeting','set up a meeting','send the deck','implementation','customer','client'])) return 'direct_opportunity';
-    return oldDetectU15 ? oldDetectU15() : 'keep_warm';
+    return oldDetectU15 ? oldDetectU15() : 'stay_in_touch';
   };
 
   const oldTemplateDefaultValueU15 = window.templateDefaultValue || (typeof templateDefaultValue !== 'undefined' ? templateDefaultValue : null);
@@ -8013,7 +8013,7 @@ window.showUpgradeSheet = function showUpgradeSheet(reason){
     const templates=[
       {key:'direct_opportunity',name:'Direct Opportunity',desc:'Starter — clear buyer/client interest, specific ask, or opportunity.'},
       {key:'collaboration',name:'Collaboration / Partnership',desc:'Starter — mutual interest in building, co-creating, or exploring something together.'},
-      {key:'keep_warm',name:'Keep Warm / Unclear',desc:'Starter — useful contact but the next step is soft, unclear, or low pressure.'},
+      {key:'stay_in_touch',name:'Keep Warm / Unclear',desc:'Starter — useful contact but the next step is soft, unclear, or low pressure.'},
       {key:'connector_referral',name:'Connector / Referral',desc:'Pro — introductions, referral pathways, warm intros, and forwardable blurbs.'},
       {key:'pilot_beta',name:'Pilot / Beta Testing',desc:'Pro — pilot groups, beta testing, proof of concept, and success criteria.'},
       {key:'customer_discovery',name:'Customer Discovery',desc:'Pro — pain points, current solution, buying signals, and market insight.'},
@@ -8246,11 +8246,11 @@ window.showUpgradeSheet = function showUpgradeSheet(reason){
 // Switching mode is metadata only: it never stops recording or loses audio.
 // ═══════════════════════════════════════════════════════════════
 (function relationshipModeUpdate17(){
-  const STARTER_MODE_KEYS_U17 = ['direct_opportunity','collaboration','keep_warm'];
+  const STARTER_MODE_KEYS_U17 = ['direct_opportunity','collaboration','stay_in_touch'];
   const ALL_RELATIONSHIP_MODES_U17 = [
     {key:'direct_opportunity', label:'Direct Opportunity', short:'Direct', desc:'Buyer, client, demo, proposal, service or clear opportunity.'},
     {key:'collaboration', label:'Collaboration / Partnership', short:'Collaboration', desc:'Mutual interest, co-creation, joint work or lightweight partnership.'},
-    {key:'keep_warm', label:'Keep Warm / Unclear', short:'Keep Warm', desc:'Useful contact, but the next step is soft or unclear.'},
+    {key:'stay_in_touch', label:'Keep Warm / Unclear', short:'Keep Warm', desc:'Useful contact, but the next step is soft or unclear.'},
     {key:'customer_discovery', label:'Customer Discovery', short:'Customer', desc:'Pain points, current solution, buying signals and user insight.'},
     {key:'investor_funding', label:'Investor / Funding', short:'Investor', desc:'Funding interest, investor fit, deck/materials and next investor step.'},
     {key:'hiring_talent', label:'Hiring / Talent', short:'Hiring', desc:'Candidate, recruiter, role, availability, skills and fit.'},
@@ -8523,9 +8523,9 @@ window.showUpgradeSheet = function showUpgradeSheet(reason){
 // - Pro has all template fields available.
 // ═══════════════════════════════════════════════════════════════
 (function ownerToolsTemplateLockUpdate23(){
-  const STARTER_KEYS = ['direct_opportunity','collaboration','keep_warm'];
+  const STARTER_KEYS = ['direct_opportunity','collaboration','stay_in_touch'];
   const TEMPLATE_ORDER = [
-    'direct_opportunity','collaboration','keep_warm',
+    'direct_opportunity','collaboration','stay_in_touch',
     'connector_referral','pilot_beta','customer_discovery','investor_funding','hiring_talent','strategic_partnership','speaking_media','advisory_mentor','community_access'
   ];
   const TEMPLATE_DEFS = {
@@ -8547,11 +8547,11 @@ window.showUpgradeSheet = function showUpgradeSheet(reason){
       ['collab_next_step','Next step','The next practical step for both sides.'],
       ['draft_message','Collaboration follow-up draft','The message prepared for the preferred channel.']
     ]},
-    keep_warm:{tier:'starter',label:'Keep Warm / Unclear',desc:'Useful contact, but the next step is soft, unclear, or low pressure.',chips:['Low pressure','No over-chasing','Useful reason to reconnect'],fields:[
+    stay_in_touch:{tier:'starter',label:'Keep Warm / Unclear',desc:'Useful contact, but the next step is soft, unclear, or low pressure.',chips:['Low pressure','No over-chasing','Useful reason to reconnect'],fields:[
       ['why_may_matter','Why they may matter','Why this person could still be useful later.'],
       ['what_discussed','What was discussed','The useful context worth remembering.'],
       ['clarity_level','Current clarity level','Was there a clear next step, soft interest, or no commitment?'],
-      ['reason_keep_warm','Reason to keep warm','What future reason might justify reconnecting.'],
+      ['reason_stay_in_touch','Reason to keep warm','What future reason might justify reconnecting.'],
       ['light_followup','Suggested light follow-up','A low-pressure message or value note.'],
       ['when_follow_up','When to follow up','Now / later / only if relevant / after a trigger event.'],
       ['do_not_push','Do-not-push note','What not to over-invest in or force.']
@@ -8672,7 +8672,7 @@ window.showUpgradeSheet = function showUpgradeSheet(reason){
     const defaults={
       need_pain:snippet, interest_signal:'Interest to confirm from the conversation.', buying_signal:'To confirm whether there is buying/adoption intent.', decision_status:'To confirm whether they are the decision-maker, influencer, or connector.', objection_concern:'No clear objection captured yet.', specific_next_step:ns||'Send a concise follow-up and confirm the next step.',
       shared_interest:snippet, each_side_brings:'What each side brings to confirm from the conversation.', possible_collaboration:'Joint event, workshop, content, pilot, partnership, or referral pathway — to confirm.', dependencies:'Clarify audience, timing, roles, and what success would look like.', open_questions:'Open questions to clarify before committing.', collab_next_step:ns||'Suggest a light next step to explore fit.',
-      why_may_matter:'Could be relevant later based on the conversation.', what_discussed:snippet, clarity_level:'Unclear / soft interest / to confirm.', reason_keep_warm:'Useful relationship to remember, but no need to over-invest until there is a clearer trigger.', light_followup:genericDraft+'\n\nNo pressure — happy to pick it up if it becomes relevant.', when_follow_up:'Only if relevant, or after a useful trigger/event.', do_not_push:'Do not push for a meeting unless they respond with clearer interest.',
+      why_may_matter:'Could be relevant later based on the conversation.', what_discussed:snippet, clarity_level:'Unclear / soft interest / to confirm.', reason_stay_in_touch:'Useful relationship to remember, but no need to over-invest until there is a clearer trigger.', light_followup:genericDraft+'\n\nNo pressure — happy to pick it up if it becomes relevant.', when_follow_up:'Only if relevant, or after a useful trigger/event.', do_not_push:'Do not push for a meeting unless they respond with clearer interest.',
       who_intro:'The person/community/team they mentioned in the conversation.', why_matters:'Why this introduction could be useful or high-value.', intro_type:'Warm introduction / referral / community access — to confirm.', what_needed:'A short forwarding blurb, public TAPD link, or concise context they can pass on easily.', forwarding_blurb:'Short forwarding blurb to prepare after the conversation.', intro_status:ns||'Offered / to be confirmed.',
       test_idea:'The product, service, feature, or workflow that could be tested.', test_group:'The team, community, customers, or group mentioned in the conversation.', why_test_matters:'A small pilot could show whether the workflow creates clearer follow-up and better networking outcomes.', success_criteria:'To define: completion, usefulness, follow-up quality, response rate, or willingness to use again.', access_needed:'Demo link, pilot outline, onboarding steps, or sample workflow.', pilot_next_step:ns||'Send a short pilot outline and confirm whether they want to test it.',
       problem_discussed:snippet, current_solution:'Current solution or workaround to confirm.', pain_level:'Pain severity to confirm: low, medium, high, or urgent.', frequency_impact:'Frequency and impact not fully captured yet.', willing_to_test:'Willingness to test, interview, or give feedback to confirm.', discovery_next_step:ns||'Ask one deeper discovery question or propose a short follow-up interview.',
@@ -9169,7 +9169,7 @@ Return relationship_signal_summary and signals as owner-only data. The important
     if(/pilot|beta|test|trial/.test(s)) return 'pilot_beta';
     if(/intro|introduce|referral|connect you/.test(s)) return 'connector_referral';
     if(/partner|partnership|collaborat|together/.test(s)) return 'collaboration';
-    if(/not sure|keep in touch|later|unclear|maybe/.test(s)) return 'keep_warm';
+    if(/not sure|keep in touch|later|unclear|maybe/.test(s)) return 'stay_in_touch';
     return 'direct_opportunity';
   }
   function buildLocalExtraction25(){
@@ -9357,7 +9357,7 @@ Return relationship_signal_summary and signals as owner-only data. The important
         '']
     ]},
 
-    keep_warm: { tier:'starter', label:'Keep Warm / Unclear', desc:'Useful contact, but the next step is soft, unclear, or low pressure.', chips:['Low pressure','No over-chasing','Useful reason to reconnect'], fields:[
+    stay_in_touch: { tier:'starter', label:'Keep Warm / Unclear', desc:'Useful contact, but the next step is soft, unclear, or low pressure.', chips:['Low pressure','No over-chasing','Useful reason to reconnect'], fields:[
       ['why_may_matter','Why they may matter','Why this person could still be useful later.',
         'Explain why this person is worth remembering even without an immediate opportunity: their role, network, expertise, industry, or potential future relevance. Base this only on what was discussed.',
         'How do you see your work evolving — might there be a point where our paths overlap more directly?'],
@@ -9367,7 +9367,7 @@ Return relationship_signal_summary and signals as owner-only data. The important
       ['clarity_level','Current clarity level','Was there a clear next step, soft interest, or no commitment?',
         'Assess the clarity of the conversation outcome: (1) clear next step agreed, (2) soft interest expressed but no commitment, (3) general networking with no specific direction. State which applies and why.',
         'Is there anything specific you had in mind, or is it more of a "stay in touch" for now?'],
-      ['reason_keep_warm','Reason to keep warm','What future reason might justify reconnecting.',
+      ['reason_stay_in_touch','Reason to keep warm','What future reason might justify reconnecting.',
         'Identify the most likely future trigger that would make reconnecting relevant: a product launch, a hire, a funding round, an event, a referral need, or a season.',
         'Is there an upcoming event, project, or milestone where it might make sense to reconnect?'],
       ['light_followup','Suggested light follow-up','A low-pressure message or value note.',
@@ -9763,7 +9763,7 @@ Return relationship_signal_summary and signals as owner-only data. The important
   const TONE = {
     direct_opportunity:  { opener: 'Walking into this conversation — a few things worth listening for:', cta: 'Notice these, the follow-up writes itself.' },
     collaboration:       { opener: 'Before you start — what makes this a real collaboration vs polite chat:', cta: 'Both sides leaving with a next step is the signal.' },
-    keep_warm:           { opener: 'No pressure in this one — but worth noting:', cta: 'Low pressure, high retention.' },
+    stay_in_touch:           { opener: 'No pressure in this one — but worth noting:', cta: 'Low pressure, high retention.' },
     connector_referral:  { opener: 'If there\'s an intro on the table — get specific before you leave:', cta: 'A vague intro never gets sent.' },
     pilot_beta:          { opener: 'If they\'re open to testing something — nail down:', cta: 'A pilot without criteria is just a favour.' },
     customer_discovery:  { opener: 'You\'re listening for signals, not selling — keep an eye on:', cta: 'The pain they describe is your product brief.' },
@@ -11026,12 +11026,12 @@ Return relationship_signal_summary and signals as owner-only data. The important
     return window.TAPD_RELATIONSHIP_MODES || [
       {key:'direct_opportunity', label:'Direct Opportunity', short:'Direct', desc:'Buyer, client, demo, proposal, service or clear opportunity.'},
       {key:'collaboration', label:'Collaboration / Partnership', short:'Collaboration', desc:'Mutual interest, co-creation, joint work or lightweight partnership.'},
-      {key:'keep_warm', label:'Keep Warm / Unclear', short:'Keep Warm', desc:'Useful contact, but the next step is soft or unclear.'},
+      {key:'stay_in_touch', label:'Keep Warm / Unclear', short:'Keep Warm', desc:'Useful contact, but the next step is soft or unclear.'},
       {key:'connector_referral', label:'Connector / Referral', short:'Connector', desc:'Warm introductions, referrals and forwarding blurbs.'},
       {key:'pilot_beta', label:'Pilot / Beta Testing', short:'Pilot / Beta', desc:'Test group, success criteria, proof of concept or beta users.'}
     ];
   }
-  function starterKeys31(){ return window.TAPD_STARTER_MODES || ['direct_opportunity','collaboration','keep_warm']; }
+  function starterKeys31(){ return window.TAPD_STARTER_MODES || ['direct_opportunity','collaboration','stay_in_touch']; }
   function isPro31(){ try{ return typeof isTapdPro === 'function' ? !!isTapdPro() : false; }catch(e){ return false; } }
   function isLocked31(key){ return !isPro31() && !starterKeys31().includes(key); }
   function currentKey31(){ return window._nextStepTemplateKey || window.currentRelationshipMode || 'direct_opportunity'; }
@@ -11357,12 +11357,12 @@ Return relationship_signal_summary and signals as owner-only data. The important
   function toast(msg,type){ try{ if(typeof tapdToast === 'function') tapdToast(msg,type||'success'); else alert(msg); }catch(e){ alert(msg); } }
   function isVisitor(){ try{ var q=new URLSearchParams(location.search||''); return q.get('visitor')==='1'||q.get('mode')==='visitor'||q.get('view')==='visitor'||q.get('nfc')==='1'; }catch(e){ return false; } }
   function isPro(){ try{ return typeof isTapdPro === 'function' && isTapdPro(); }catch(e){ return false; } }
-  var STARTER = ['direct_opportunity','collaboration','keep_warm'];
-  var ORDER = ['direct_opportunity','collaboration','keep_warm','connector_referral','pilot_beta','customer_discovery','investor_funding','hiring_talent','strategic_partnership','speaking_media','advisory_mentor','community_access'];
+  var STARTER = ['direct_opportunity','collaboration','stay_in_touch'];
+  var ORDER = ['direct_opportunity','collaboration','stay_in_touch','connector_referral','pilot_beta','customer_discovery','investor_funding','hiring_talent','strategic_partnership','speaking_media','advisory_mentor','community_access'];
   var FALLBACK_DEFS = {
     direct_opportunity:{tier:'starter',label:'Direct Opportunity',desc:'Use when someone showed clear buyer, client, demo, proposal, service, or opportunity interest.',chips:['Buyer/client signal','Specific ask','Clear follow-up'],fields:[['Need / pain mentioned','What problem or goal did they describe?'],['What they were interested in','What caught their attention?'],['Buying or adoption signal','Pricing, proposal, demo, pilot, or implementation detail.'],['Decision-maker status','Decision-maker, influencer, user, or connector.'],['Specific next step','What should happen next?'],['Follow-up draft','Message prepared for the chosen channel.']]},
     collaboration:{tier:'starter',label:'Collaboration / Partnership',desc:'Use when there is mutual interest in building, co-creating, partnering, or exploring something together.',chips:['Mutual value','Shared interest','Open questions'],fields:[['Shared interest','What both sides seemed interested in.'],['What each side brings','What you bring and what they bring.'],['Possible collaboration','Joint event, content, pilot, partnership, or referral pathway.'],['Dependencies','What must be clarified before moving forward.'],['Next step','The next practical step.']]},
-    keep_warm:{tier:'starter',label:'Keep Warm / Unclear',desc:'Use when the person may be useful later but there is no strong next step yet.',chips:['Low pressure','No over-chasing','Future potential'],fields:[['Why they may matter','Why this person could be useful later.'],['What was discussed','Useful context worth remembering.'],['Current clarity level','Clear next step, soft interest, or no commitment.'],['Reason to keep warm','Future reason to reconnect.'],['Suggested light follow-up','Low-pressure message.']]},
+    stay_in_touch:{tier:'starter',label:'Keep Warm / Unclear',desc:'Use when the person may be useful later but there is no strong next step yet.',chips:['Low pressure','No over-chasing','Future potential'],fields:[['Why they may matter','Why this person could be useful later.'],['What was discussed','Useful context worth remembering.'],['Current clarity level','Clear next step, soft interest, or no commitment.'],['Reason to keep warm','Future reason to reconnect.'],['Suggested light follow-up','Low-pressure message.']]},
     connector_referral:{tier:'pro',label:'Connector / Referral',desc:'For introductions, warm referrals, communities, decision-makers, sponsors, or forwardable blurbs.',chips:['Intro pathway','Forwardable blurb','High leverage'],fields:[['Who they can introduce you to','Person, team, community, investor, sponsor, founder, or decision-maker.'],['Why that person matters','Why the introduction could be useful.'],['Type of introduction','Referral, warm intro, community access, sponsor, investor, or partner intro.'],['What they need from you','Short blurb, link, deck, one-pager, or context.'],['Forwarding blurb','Copy/paste text they can send on your behalf.']]},
     pilot_beta:{tier:'pro',label:'Pilot / Beta Testing',desc:'For pilot groups, beta users, proof of concept, testing, and success criteria.',chips:['Test group','Pilot outline','Success criteria'],fields:[['What they want to test','Product, service, feature, or workflow.'],['Who the test group is','Team, community, customers, members, or users.'],['Why the test matters','Value it could prove.'],['Success criteria','What would make the pilot useful.'],['Pilot next step','Next action to move the test forward.']]},
     customer_discovery:{tier:'pro',label:'Customer Discovery',desc:'For capturing customer pain, current solution, buying signals, and market insight.',chips:['Problem signal','Pain depth','Market insight'],fields:[['Problem discussed','Problem, friction, or unmet need.'],['Current solution','How they solve it today.'],['Pain level','Urgency or severity.'],['Frequency / impact','How often and what it costs.'],['Discovery next step','Interview, test, or follow-up question.']]},
@@ -12514,7 +12514,7 @@ UPDATE 48: INBOX PRIORITY INDICATORS
     if(status==='sent'||status==='dismissed')return {level:'none',rank:4,label:'Logged',emoji:'⚪',reason:'No immediate action is needed.'};
     if(containsAny(text,HIGH)||intent.indexOf('high')>=0||clarity.indexOf('clear next step')>=0){return {level:'high',rank:1,label:'Follow Up First',emoji:'🟢',reason:'Clear interest or a concrete next step was captured. Prioritise this follow-up.'};}
     if(containsAny(text,MED)||intent.indexOf('medium')>=0){return {level:'medium',rank:2,label:'Worth Following Up',emoji:'🟡',reason:'There is useful engagement, but the next step may need clarifying.'};}
-    if(containsAny(text,LOW)||status==='keep_warm'){return {level:'low',rank:3,label:'Stay Connected',emoji:'🔵',reason:'Useful contact, but no urgent next action was captured.'};}
+    if(containsAny(text,LOW)||status==='stay_in_touch'){return {level:'low',rank:3,label:'Stay Connected',emoji:'🔵',reason:'Useful contact, but no urgent next action was captured.'};}
     return {level:'low',rank:3,label:'Stay Connected',emoji:'🔵',reason:'No strong next step is visible yet. Keep the relationship warm.'};
   }
   function pill(p){return '<span class="tapd-priority-pill priority-'+esc(p.level)+'">'+esc(p.emoji)+' '+esc(p.label)+'</span>';}
@@ -12536,7 +12536,7 @@ UPDATE 48: INBOX PRIORITY INDICATORS
     }).join('');
   }
   function requestCards48(){
-    var conns=getConnections().filter(function(c){return c && (c.status==='pending'||c.status==='needs_capture'||c.status==='accepted'||c.status==='follow_up_ready'||c.status==='keep_warm'||!c.status);});
+    var conns=getConnections().filter(function(c){return c && (c.status==='pending'||c.status==='needs_capture'||c.status==='accepted'||c.status==='follow_up_ready'||c.status==='stay_in_touch'||!c.status);});
     conns=sorted(conns).slice(0,12);
     if(!conns.length)return '<div class="tapd-empty-state">No TAPD card requests yet. When someone taps your NFC profile and sends their details, they appear here in Relationship Hub.</div>';
     return conns.map(function(c){
@@ -12686,17 +12686,17 @@ body.tapd-owner-tools-mode #ownerCountSent{display:none!important;}
     if(status==='sent'||status==='dismissed')return {level:'none',rank:4,label:'Logged',emoji:'⚪',reason:'No immediate action is needed.'};
     if(contains(text,high))return {level:'high',rank:1,label:'Follow Up First',emoji:'🟢',reason:'Clear interest or a concrete next step was captured. Prioritise this follow-up.'};
     if(contains(text,med))return {level:'medium',rank:2,label:'Worth Following Up',emoji:'🟡',reason:'There is useful engagement, but the next step may need clarifying.'};
-    if(contains(text,low)||status==='keep_warm')return {level:'low',rank:3,label:'Stay Connected',emoji:'🔵',reason:'Useful contact, but no urgent next action was captured.'};
+    if(contains(text,low)||status==='stay_in_touch')return {level:'low',rank:3,label:'Stay Connected',emoji:'🔵',reason:'Useful contact, but no urgent next action was captured.'};
     return {level:'low',rank:3,label:'Stay Connected',emoji:'🔵',reason:'No strong next step is visible yet. Keep the relationship warm.'};
   }
   function pill(p){return '<span class="tapd-priority-pill priority-'+esc(p.level)+'">'+esc(p.emoji+' '+p.label)+'</span>';}
   function legend(){return '<div class="tapd-priority-legend"><p class="tapd-priority-legend-title">How to read Relationship Hub priority</p><div class="tapd-priority-legend-row"><span class="tapd-priority-dot high"></span><span><strong>Follow Up First</strong> — clear next step or strong mutual interest.</span></div><div class="tapd-priority-legend-row"><span class="tapd-priority-dot medium"></span><span><strong>Worth Following Up</strong> — good engagement, opportunity still needs shaping.</span></div><div class="tapd-priority-legend-row"><span class="tapd-priority-dot low"></span><span><strong>Stay Connected</strong> — useful contact, no urgent move yet.</span></div></div>';}
   function sorted(arr){return arr.slice().sort(function(a,b){return getPriority(a).rank-getPriority(b).rank;});}
   function captureItems(){
-    return getCaptures().filter(function(c){return c&&(c.status==='draft'||c.status==='ready'||c.status==='follow_up_ready'||c.status==='sent'||c.status==='keep_warm'||c.followup_status==='draft'||c.contact_message||c.action_summary);});
+    return getCaptures().filter(function(c){return c&&(c.status==='draft'||c.status==='ready'||c.status==='follow_up_ready'||c.status==='sent'||c.status==='stay_in_touch'||c.followup_status==='draft'||c.contact_message||c.action_summary);});
   }
   function connectionItems(){
-    return getConnections().filter(function(c){return c&&(c.status==='pending'||c.status==='needs_capture'||c.status==='accepted'||c.status==='follow_up_ready'||c.status==='keep_warm'||!c.status);});
+    return getConnections().filter(function(c){return c&&(c.status==='pending'||c.status==='needs_capture'||c.status==='accepted'||c.status==='follow_up_ready'||c.status==='stay_in_touch'||!c.status);});
   }
   function relCard(item,type){
     var p=getPriority(item), id=esc(item.id||''), name=esc(item.person_name||item.name||'Name not captured');
@@ -12767,9 +12767,9 @@ body.tapd-owner-tools-mode #ownerCountSent{display:none!important;}
   window.tapd49MarkWarm=function(id,type){
     try{
       if(type==='capture'){
-        var caps=getCaptures(); caps.forEach(function(c){if(String(c.id)===String(id)){c.status='keep_warm';c.priority_label='Stay Connected';c.priority_level='low';c.priority_reason='Owner chose to keep this relationship warm.';}}); saveCaptures(caps);
+        var caps=getCaptures(); caps.forEach(function(c){if(String(c.id)===String(id)){c.status='stay_in_touch';c.priority_label='Stay Connected';c.priority_level='low';c.priority_reason='Owner chose to keep this relationship warm.';}}); saveCaptures(caps);
       }else{
-        var conns=getConnections(); conns.forEach(function(c){if(String(c.id)===String(id)){c.status='keep_warm';c.priority_label='Stay Connected';c.priority_level='low';c.priority_reason='Owner chose to keep this relationship warm.';}}); localStorage.setItem('tapd_connections',JSON.stringify(conns));
+        var conns=getConnections(); conns.forEach(function(c){if(String(c.id)===String(id)){c.status='stay_in_touch';c.priority_label='Stay Connected';c.priority_level='low';c.priority_reason='Owner chose to keep this relationship warm.';}}); localStorage.setItem('tapd_connections',JSON.stringify(conns));
       }
     }catch(e){}
     renderRelationshipHub();
@@ -14172,7 +14172,7 @@ AI RULE: Nothing sends automatically. Human approves every action.
     if(st==='sent'||st==='archived'||st==='dismissed')return{level:'none',rank:4,label:'Logged',emoji:'⚪'};
     if(high.some(function(x){return t.indexOf(x)>=0;}))return{level:'high',rank:1,label:'Follow Up First',emoji:'🟢'};
     if(med.some(function(x){return t.indexOf(x)>=0;}))return{level:'medium',rank:2,label:'Worth Following Up',emoji:'🟡'};
-    if(low.some(function(x){return t.indexOf(x)>=0;})||st==='keep_warm')return{level:'low',rank:3,label:'Stay Connected',emoji:'🔵'};
+    if(low.some(function(x){return t.indexOf(x)>=0;})||st==='stay_in_touch')return{level:'low',rank:3,label:'Stay Connected',emoji:'🔵'};
     return{level:'low',rank:3,label:'Stay Connected',emoji:'🔵'};
   }
 
@@ -15126,7 +15126,7 @@ body.ot55-active .owner-side-panel{display:none!important;}
           <div class="ot55-url-display" id="ot55NfcUrlDisplay">tapd.app/yourname?nfc=1</div>
           <button class="ot55-url-copy" onclick="ot55CopyNfcUrl()">Copy</button>
         </div>
-        <p class="ot55-hint" style="margin-top:6px;">Program this exact URL onto your NFC card. Every tap opens your live profile.</p>
+        <p class="ot55-hint" style="margin-top:6px;">This is the profile URL to program onto your NFC card. Every tap opens this live TAPD profile.</p>
       </div>
 
       <!-- NFC programming guide -->
@@ -15408,7 +15408,7 @@ body.ot55-active .owner-side-panel{display:none!important;}
     var script=[greeting,opening,convo,nextStep,signoff].join('\n\n');
     var scripts=getScripts();
     scripts._global=script;
-    ['direct_opportunity','connector_referral','pilot_beta','collaboration','keep_warm'].forEach(function(key){
+    ['direct_opportunity','connector_referral','pilot_beta','collaboration','stay_in_touch'].forEach(function(key){
       if(!scripts[key])scripts[key]=script;
     });
     if(typeof saveMyScripts==='function')saveMyScripts(scripts);
@@ -15730,20 +15730,19 @@ a.soc-btn[data-empty="1"]{display:none!important;}
       +'</div>'
       // Tabs
       +'<div class="tapd54-section-tabs" id="rh56Tabs">'
-      +['connections','captured','drafts','followUps','sent','waiting','archived'].map(function(t){
-        var labels={connections:'Connections',captured:'Captured',drafts:'Drafts',
-          followUps:'Follow-Ups',sent:'Sent',waiting:'Waiting',archived:'Archived'};
+      +['connections','captured','followUps','sent'].map(function(t){
+        var labels={connections:'Connections',captured:'Awaiting Review',followUps:'Follow-Ups',sent:'Sent'};
         var count=cats[t]?cats[t].length:0;
         return '<button class="tapd54-tab'+(t==='connections'?' active':'')+'" data-tab="'+t+'" onclick="rh56Tab(\''+t+'\')">'
           +labels[t]+badge(count)+'</button>';
       }).join('')+'</div>'
       // Panels
       +renderPanel('connections',cats.connections,
-        'Connections','People who tapped your NFC card and sent their TAPD card. Accept to start capturing.',
+        'Connections','People you\'ve connected with. Connections from NFC taps and captured conversations appear here.',
         '🤝','No connections yet','When someone taps your NFC profile, they appear here.')
       +renderPanel('captured',cats.captured,
-        'Captured Conversations','Recordings transcribed, not yet drafted.',
-        '🎤','No captures yet','Tap the gold Capture button to record a conversation.')
+        'Awaiting Review','Captured conversations waiting for your review.',
+        '🎤','Nothing awaiting review','Captured conversations will appear here before follow-up approval.')
       +renderPanel('drafts',cats.drafts,
         'Drafts','AI structured these captures. Review before sending — nothing goes out automatically.',
         '✦','No drafts waiting','After you capture and confirm, TAPDconnex places the draft here.')
@@ -15780,7 +15779,7 @@ a.soc-btn[data-empty="1"]{display:none!important;}
     var name=esc(c.person_name||c.name||'Name not captured');
     var meta=esc([c.event_name||c.context,c.date].filter(Boolean).join(' · '));
     var pLevel=getPrio(c).level;
-    var statusLabels={connections:'New',captured:'Captured',drafts:'AI Draft',
+    var statusLabels={connections:'New',captured:'Awaiting Review',drafts:'AI Draft',
       followUps:'Ready',sent:'Sent',waiting:'Waiting',archived:'Archived'};
     var statusCls={connections:'new',captured:'captured',drafts:'draft',
       followUps:'ready',sent:'sent',waiting:'waiting',archived:'archived'};
@@ -15881,8 +15880,8 @@ a.soc-btn[data-empty="1"]{display:none!important;}
      name:'Connector / Referral',
      desc:'The value here is in an introduction. Captures who they can connect you to and what they need to make that intro easy.',
      fields:['Who they can introduce you to','Why that person matters','Type of introduction','What they need from you','Forwarding blurb','Introduction status']},
-    {id:'keep_warm',           tier:'starter',
-     name:'Keep Warm',
+    {id:'stay_in_touch',           tier:'starter',
+     name:'Stay in Touch',
      desc:'Good conversation, no immediate next step. Structures a light, low-pressure follow-up to maintain the connection without over-chasing.',
      fields:['Why they may matter','What was discussed','Current clarity level','Reason to keep warm','Suggested light follow-up','When to follow up']},
     // ── PRO ──────────────────────────────────────────────────────
@@ -17204,5 +17203,285 @@ input::placeholder, textarea::placeholder {
 })();
 </script>
 
+
+<!-- UPDATE 69C: ACTIVE NAV + TEMPLATE CAPTURE WORKFLOW -->
+<script id="tapdTopNavDesignCorrection">
+(function(){
+  if(window.__tapdTopNavDesignCorrection)return;
+  window.__tapdTopNavDesignCorrection=true;
+
+  var lastTap={key:'',at:0};
+  var TEMPLATE_NAMES={
+    direct_opportunity:'Direct Opportunity',
+    connector_referral:'Connector / Referral',
+    stay_in_touch:'Stay in Touch',
+    pilot_beta:'Pilot / Beta Testing',
+    collaboration:'Collaboration / Partnership',
+    customer_discovery:'Customer Discovery',
+    investor_funding:'Investor / Funding',
+    strategic_partnership:'Strategic Partnership',
+    speaking_media:'Speaking / Media',
+    advisory_mentor:'Advisory / Mentor',
+    community_access:'Community Access',
+    custom:'Custom Template'
+  };
+  var TEMPLATE_HINTS={
+    direct_opportunity:['Need / pain mentioned','Buying or adoption signal','Specific next step'],
+    connector_referral:['Who they can introduce you to','Why that person matters','Forwarding blurb'],
+    stay_in_touch:['What was discussed','Reason to stay in touch','Suggested light follow-up'],
+    pilot_beta:['What they want to test','Success criteria','Pilot next step'],
+    collaboration:['Shared interest','Possible collaboration','Dependencies'],
+    customer_discovery:['Current problem or pain','Current workaround','Desired outcome'],
+    investor_funding:['Stage fit','Interest signal','Materials requested'],
+    strategic_partnership:['Mutual value','Key decision-makers','Dependencies'],
+    speaking_media:['Topic or angle','Audience fit','Format and logistics'],
+    advisory_mentor:['Their expertise','Your specific ask','Commitment level'],
+    community_access:['Community value','Access path','Mutual asks and offers'],
+    custom:['Your custom fields','Key context','Next step']
+  };
+
+  function byId(id){return document.getElementById(id);} 
+  function now(){return Date.now?Date.now():(new Date()).getTime();}
+  function txt(el){return (el&&el.textContent?el.textContent:'').replace(/s+/g,' ').trim().toLowerCase();}
+  function titleCaseFromId(id){return TEMPLATE_NAMES[id]||String(id||'Selected template').replace(/_/g,' ').replace(/w/g,function(m){return m.toUpperCase();});}
+  function getActiveTemplate(){try{return localStorage.getItem('tapd_active_template')||'direct_opportunity';}catch(e){return'direct_opportunity';}}
+  function inVisitorMode(){
+    try{var q=new URLSearchParams(location.search||'');return q.get('visitor')==='1'||q.get('mode')==='visitor'||q.get('view')==='visitor'||q.get('nfc')==='1'||document.body.classList.contains('tapd-hard-header-off');}catch(e){return false;}
+  }
+
+  function injectWorkspaceStyles(){
+    if(byId('tapd69cWorkspaceStyles'))return;
+    var style=document.createElement('style');
+    style.id='tapd69cWorkspaceStyles';
+    style.textContent='
+'
+      +'#tapdHardOwnerHeader button.tapd-nav-active{background:linear-gradient(135deg,#0ECEC0,#10B981)!important;border-color:#0ECEC0!important;color:#03100f!important;box-shadow:0 0 0 2px rgba(14,206,192,.16),0 14px 30px rgba(14,206,192,.16)!important;}
+'
+      +'#tapdHardOwnerHeader button:not(.tapd-nav-active){filter:saturate(.82);opacity:.88;}
+'
+      +'.tapd-template-action-bar{margin:0 0 14px;padding:13px;border-radius:16px;border:1px solid rgba(234,179,8,.24);background:linear-gradient(135deg,rgba(234,179,8,.10),rgba(234,179,8,.035));display:grid;gap:10px;}
+'
+      +'.tapd-template-action-title{font-size:13px;font-weight:900;color:#F0F4F8;margin:0;}
+'
+      +'.tapd-template-action-sub{font-size:11px;color:#8B9EB0;line-height:1.45;margin:2px 0 0;}
+'
+      +'.tapd-template-action-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+'
+      +'.tapd-template-capture-btn,.tapd-template-cheat-btn{height:42px;border-radius:13px;font-family:Inter,sans-serif;font-size:12px;font-weight:900;cursor:pointer;}
+'
+      +'.tapd-template-capture-btn{background:linear-gradient(135deg,#EAB308,#ca8a04);border:1px solid #EAB308;color:#050505;}
+'
+      +'.tapd-template-cheat-btn{background:rgba(255,255,255,.03);border:1px solid rgba(234,179,8,.22);color:#EAB308;}
+'
+      +'@media(max-width:360px){.tapd-template-action-row{grid-template-columns:1fr}.tapd-template-capture-btn,.tapd-template-cheat-btn{height:40px}}
+'
+      +'#tapdTemplateCheatSheet{position:fixed;inset:0;z-index:9999;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.38);opacity:0;pointer-events:none;transition:opacity .18s ease;}
+'
+      +'#tapdTemplateCheatSheet.show{opacity:1;pointer-events:auto;}
+'
+      +'.tapd-cheat-card{width:min(430px,calc(100vw - 24px));margin:0 12px 18px;background:#0D1117;border:1px solid rgba(234,179,8,.35);border-radius:22px;padding:18px 16px 16px;box-shadow:0 18px 60px rgba(0,0,0,.55);position:relative;font-family:Inter,sans-serif;}
+'
+      +'.tapd-cheat-close{position:absolute;right:12px;top:10px;width:30px;height:30px;border-radius:999px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.03);color:#8B9EB0;font-size:18px;}
+'
+      +'.tapd-cheat-kicker{font-size:10px;font-weight:900;letter-spacing:1.7px;text-transform:uppercase;color:#EAB308;margin-bottom:4px;}
+'
+      +'.tapd-cheat-title{font-size:18px;font-weight:900;color:#F0F4F8;margin-bottom:6px;}
+'
+      +'.tapd-cheat-sub{font-size:12px;line-height:1.55;color:#8B9EB0;margin-bottom:12px;padding-right:22px;}
+'
+      +'.tapd-cheat-list{display:grid;gap:7px;margin-bottom:14px;}
+'
+      +'.tapd-cheat-list span{font-size:12px;color:#F0F4F8;background:rgba(234,179,8,.07);border:1px solid rgba(234,179,8,.18);border-radius:12px;padding:9px 10px;}
+'
+      +'.tapd-cheat-primary{width:100%;height:44px;border-radius:14px;border:1px solid #EAB308;background:linear-gradient(135deg,#EAB308,#ca8a04);color:#050505;font-size:13px;font-weight:900;font-family:Inter,sans-serif;}';
+    document.head.appendChild(style);
+  }
+
+  function setActiveNav(action){
+    var h=byId('tapdHardOwnerHeader'); if(!h)return;
+    h.querySelectorAll('button').forEach(function(btn){
+      var a=actionForButton(btn);
+      btn.classList.toggle('tapd-nav-active',a===action);
+      btn.setAttribute('aria-current',a===action?'page':'false');
+    });
+  }
+  function closeFullPages(){
+    ['page-relhub-56','page-templates-56','page-template-editor'].forEach(function(id){var el=byId(id);if(el)el.classList.remove('active');});
+  }
+  function closeOwnerPanel(){
+    var panel=byId('ownerSidePanel');
+    var backdrop=byId('ownerSideBackdrop');
+    if(panel){panel.classList.remove('open');panel.setAttribute('aria-hidden','true');}
+    if(backdrop)backdrop.classList.remove('open');
+    document.body.classList.remove('owner-panel-open','tapd-owner-tools-mode','ot55-active');
+  }
+  function showProfile(){
+    if(typeof window.showPage==='function')window.showPage('profile');
+    else{document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});var p=byId('profile');if(p)p.classList.add('active');}
+  }
+  function openOwnerToolsPreserved(){
+    setActiveNav('owner');
+    closeFullPages();
+    document.body.classList.remove('tapd-relhub-mode','tapd-relhub-calm');
+    document.body.classList.add('owner-panel-open','tapd-owner-tools-mode');
+    showProfile();
+    var panel=byId('ownerSidePanel');
+    var backdrop=byId('ownerSideBackdrop');
+    if(panel){panel.classList.add('open');panel.setAttribute('aria-hidden','false');}
+    if(backdrop)backdrop.classList.add('open');
+    try{if(typeof window.tapdSetupOwnerTabs41==='function')window.tapdSetupOwnerTabs41('profile');}catch(e){}
+    try{window.scrollTo(0,0);}catch(e){}
+  }
+  function openTemplatesClean(){
+    setActiveNav('templates');
+    closeOwnerPanel();
+    document.body.classList.remove('tapd-relhub-mode','tapd-relhub-calm');
+    if(typeof window.tpl56Open==='function')window.tpl56Open();
+    else if(typeof window.goTemplateEditor==='function')window.goTemplateEditor();
+    setTimeout(ensureTemplateActionBar,60);
+    setTimeout(ensureTemplateActionBar,220);
+  }
+  function cleanRelationshipHubText(){
+    var root=byId('page-relhub-56')||document;
+    try{
+      root.querySelectorAll('button,.tapd54-tab,[role="tab"]').forEach(function(el){
+        var label=(el.textContent||'').replace(/s+/g,' ').trim();
+        if(label==='Captured')el.textContent='Awaiting Review';
+        if(label==='Drafts'){el.style.display='none';el.setAttribute('aria-hidden','true');}
+      });
+      root.querySelectorAll('.tapd54-section-title,.tapd54-status-badge').forEach(function(el){
+        var label=(el.textContent||'').replace(/s+/g,' ').trim();
+        if(label==='Captured'||label==='Captured Conversations')el.textContent='Awaiting Review';
+      });
+      root.querySelectorAll('.tapd54-section-desc,.tapd54-hub-sub,.tapd54-empty span').forEach(function(el){
+        var v=el.textContent||'';
+        v=v.replace('People who tapped your NFC card and sent their TAPD card. Accept to start capturing.','People you've connected with. Connections from NFC taps and captured conversations appear here.');
+        v=v.replace('Recordings transcribed, not yet drafted.','Captured conversations waiting for your review.');
+        v=v.replace('Tap the gold Capture button to record a conversation.','Captured conversations will appear here before follow-up approval.');
+        if(v!==el.textContent)el.textContent=v;
+      });
+    }catch(e){}
+  }
+  function openRelationshipHubClean(){
+    setActiveNav('relationship');
+    closeOwnerPanel();
+    document.body.classList.remove('tapd-owner-tools-mode','ot55-active');
+    document.body.classList.add('tapd-relhub-mode');
+    if(typeof window.rh56Open==='function')window.rh56Open();
+    else{
+      var page=byId('page-relhub-56');
+      if(page){document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});page.classList.add('active');try{if(typeof window.rh56Render==='function')window.rh56Render();}catch(e){}}
+      else if(typeof window.tapdToast==='function')window.tapdToast('Relationship Hub is not available on this build yet','warn');
+    }
+    setTimeout(cleanRelationshipHubText,30);
+    setTimeout(cleanRelationshipHubText,180);
+  }
+  function route(action){
+    if(action==='owner')return openOwnerToolsPreserved();
+    if(action==='templates')return openTemplatesClean();
+    if(action==='relationship')return openRelationshipHubClean();
+  }
+  function actionForButton(btn){
+    if(!btn)return '';
+    var t=txt(btn);
+    if(btn.id==='hardOwnerToolsBtn'||btn.classList.contains('hard-owner-tools')||btn.classList.contains('hard-primary')||t.indexOf('owner')>=0)return 'owner';
+    if(btn.id==='hardTemplatesBtn'||btn.classList.contains('hard-template')||t.indexOf('template')>=0)return 'templates';
+    if(btn.id==='hardInboxBtn'||btn.id==='hardRelHubBtn'||btn.classList.contains('hard-inbox')||btn.classList.contains('hard-relhub')||t.indexOf('relationship')>=0||t.indexOf('hub')>=0)return 'relationship';
+    return '';
+  }
+  function handleTopNav(ev){
+    if(inVisitorMode())return;
+    var h=byId('tapdHardOwnerHeader');
+    if(!h)return;
+    var btn=ev.target&&ev.target.closest?ev.target.closest('button'):null;
+    if(!btn||!h.contains(btn))return;
+    var action=actionForButton(btn);
+    if(!action)return;
+    if(ev){ev.preventDefault();ev.stopPropagation();if(ev.stopImmediatePropagation)ev.stopImmediatePropagation();}
+    var t=now();
+    if(lastTap.key===action&&(t-lastTap.at)<420)return false;
+    lastTap={key:action,at:t};
+    route(action);
+    return false;
+  }
+  function goCaptureWithTemplate(id){
+    setActiveNav('');
+    closeOwnerPanel();
+    closeFullPages();
+    try{localStorage.setItem('tapd_active_template',id);}catch(e){}
+    if(typeof window.currentRelationshipMode!=='undefined')window.currentRelationshipMode=id;
+    if(typeof window.goCapture==='function')window.goCapture();
+    else if(typeof window.showPage==='function')window.showPage('capture');
+    else{document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});var c=byId('capture');if(c)c.classList.add('active');}
+    try{if(typeof window.showScreen==='function')window.showScreen('sc-idle');}catch(e){}
+    setTimeout(function(){showTemplateCheatSheet(id);},80);
+  }
+  function showTemplateCheatSheet(id){
+    var old=byId('tapdTemplateCheatSheet'); if(old)old.remove();
+    var hints=TEMPLATE_HINTS[id]||TEMPLATE_HINTS.custom;
+    var sheet=document.createElement('div');
+    sheet.id='tapdTemplateCheatSheet';
+    sheet.innerHTML='<div class="tapd-cheat-card"><button class="tapd-cheat-close" type="button" aria-label="Close">×</button><p class="tapd-cheat-kicker">Template selected</p><p class="tapd-cheat-title">'+titleCaseFromId(id)+'</p><p class="tapd-cheat-sub">Capture with this structure in mind. TAPDconnex will use this template when shaping the follow-up.</p><div class="tapd-cheat-list">'+hints.map(function(h){return '<span>'+h+'</span>';}).join('')+'</div><button class="tapd-cheat-primary" type="button">Got it — capture now</button></div>';
+    document.body.appendChild(sheet);
+    sheet.querySelector('.tapd-cheat-close').onclick=function(){sheet.remove();};
+    sheet.querySelector('.tapd-cheat-primary').onclick=function(){sheet.remove();};
+    setTimeout(function(){sheet.classList.add('show');},20);
+  }
+  function ensureTemplateActionBar(){
+    var body=byId('tpl56Body'); if(!body)return;
+    var active=getActiveTemplate();
+    var old=byId('tapdTemplateActionBar'); if(old)old.remove();
+    var bar=document.createElement('div');
+    bar.id='tapdTemplateActionBar';
+    bar.className='tapd-template-action-bar';
+    bar.innerHTML='<div><p class="tapd-template-action-title">Ready to capture with '+titleCaseFromId(active)+'</p><p class="tapd-template-action-sub">Use this when you are about to record the conversation. The cheat sheet reminds you what this template is listening for.</p></div><div class="tapd-template-action-row"><button type="button" class="tapd-template-capture-btn">Capture this moment</button><button type="button" class="tapd-template-cheat-btn">View cheat sheet</button></div>';
+    body.insertBefore(bar,body.firstChild);
+    bar.querySelector('.tapd-template-capture-btn').onclick=function(){goCaptureWithTemplate(getActiveTemplate());};
+    bar.querySelector('.tapd-template-cheat-btn').onclick=function(){showTemplateCheatSheet(getActiveTemplate());};
+  }
+  function wrapTemplateSelection(){
+    if(window.__tapdTemplateSelectionWrapped||typeof window.tpl56SetActive!=='function')return;
+    window.__tapdTemplateSelectionWrapped=true;
+    var original=window.tpl56SetActive;
+    window.tpl56SetActive=function(id){
+      try{original.call(window,id);}catch(e){try{localStorage.setItem('tapd_active_template',id);}catch(x){}}
+      setTimeout(function(){goCaptureWithTemplate(id);},140);
+    };
+  }
+  function wrapTemplateOpen(){
+    if(window.__tapdTemplateOpenWrapped||typeof window.tpl56Open!=='function')return;
+    window.__tapdTemplateOpenWrapped=true;
+    var originalOpen=window.tpl56Open;
+    window.tpl56Open=function(){
+      var result=originalOpen.apply(window,arguments);
+      setActiveNav('templates');
+      setTimeout(ensureTemplateActionBar,40);
+      setTimeout(ensureTemplateActionBar,180);
+      return result;
+    };
+  }
+  function boot(){
+    injectWorkspaceStyles();
+    document.addEventListener('pointerup',handleTopNav,true);
+    document.addEventListener('click',handleTopNav,true);
+    window.openTapdInboxFromSide=openRelationshipHubClean;
+    window.tapd49OpenRelationshipHub=openRelationshipHubClean;
+    window.tapd52OpenRelationshipHub=openRelationshipHubClean;
+    window.tapd54OpenRelationshipHub=openRelationshipHubClean;
+    window.openRelationshipHub=openRelationshipHubClean;
+    window.tapdOpenTemplates=openTemplatesClean;
+    window.openQuickTemplateSwitcher=openTemplatesClean;
+    wrapTemplateOpen();
+    wrapTemplateSelection();
+    setTimeout(wrapTemplateOpen,250);
+    setTimeout(wrapTemplateSelection,250);
+    setTimeout(wrapTemplateOpen,800);
+    setTimeout(wrapTemplateSelection,800);
+    setTimeout(cleanRelationshipHubText,400);
+    console.log('[TAPD] Update 69C loaded — active nav, template capture button and cheat sheet active.');
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+})();
+</script>
 </body>
 </html>
