@@ -5,164 +5,126 @@ const indexPath = path.join(__dirname, 'index.html');
 let html = fs.readFileSync(indexPath, 'utf8');
 const before = html;
 
-function disableScriptBlocks() {
-  const conflictScriptPattern = /<script\s+id=["'](?:tapdUpdate4[3-8][^"']*|tapd49RelationshipHubScript|tapdUpdate50[^"']*|tapdUpdate51[^"']*|tapdUpdate52[^"']*)["'][\s\S]*?<\/script>\s*/g;
-  html = html.replace(conflictScriptPattern, function (block) {
-    const idMatch = block.match(/id=["']([^"']+)["']/);
-    const id = idMatch ? idMatch[1] : 'legacy-nav-script';
-    return `<!-- ${id} disabled at build time: legacy top navigation controller removed. -->\n`;
-  });
-}
+// Keep the original Owner Tools / Templates / Relationship Hub UI structure intact.
+// This build step no longer removes historical inline update blocks. It only removes
+// obsolete external runtime references and adds one final routing guard for the top buttons.
+html = html.replace('<script src="/update-65b-navigation-guardrails.js"></script>', '');
+html = html.replace('<script src="/update-68-owner-toggle-fix.js"></script>', '');
+html = html.replace(/<script id="tapdCanonicalTopNavController">[\s\S]*?<\/script>/g, '');
+html = html.replace(/<script id="tapdTopNavDesignCorrection">[\s\S]*?<\/script>/g, '');
 
-function patchRemainingPointerHandlers() {
-  html = html
-    // Update 55: keep Owner Tools page behaviour, but stop re-binding the header every 400ms.
-    .replace(/setInterval\(watchHeader,400\);/g, '/* top-nav polling disabled by build-stabilise-navigation.js */')
-    .replace(/btn\.onpointerup=function\(ev\)\{if\(ev\)\{ev\.preventDefault\(\);ev\.stopPropagation\(\);\}window\.ot55Open\(\);return false;\};/g, 'btn.onpointerup=null;')
+// Safe label clarification only. Do not globally remove tabs or owner content.
+html = html.replace(/Your NFC Tag URI/g, 'Your NFC Profile URL');
+html = html.replace(/Program this exact URL onto your NFC card\. Every tap opens your live profile\./g, 'This is the profile URL to program onto your NFC card. Every tap opens this live TAPD profile.');
 
-    // Update 56: keep full-page Templates and Relationship Hub, but click-only prevents double fire on mobile.
-    .replace(/rhBtn\.onclick=handler;\s*rhBtn\.onpointerup=handler;/g, 'rhBtn.onclick=handler; rhBtn.onpointerup=null;')
-    .replace(/tplBtn\.onclick=tHandler;\s*tplBtn\.onpointerup=tHandler;/g, 'tplBtn.onclick=tHandler; tplBtn.onpointerup=null;')
-    .replace(/setInterval\(wireNavButtons,600\);/g, '/* top-nav polling disabled by build-stabilise-navigation.js */');
-}
-
-function patchRelationshipHubLanguage() {
-  html = html
-    .replace("['connections','captured','drafts','followUps','sent','waiting','archived']", "['connections','captured','followUps','sent']")
-    .replace("var labels={connections:'Connections',captured:'Captured',drafts:'Drafts',\n          followUps:'Follow-Ups',sent:'Sent',waiting:'Waiting',archived:'Archived'};", "var labels={connections:'Connections',captured:'Pending Review',followUps:'Follow-Ups',sent:'Sent'};")
-    .replace("'Connections','People who tapped your NFC card and sent their TAPD card. Accept to start capturing.'", "'Connections','People you\\'ve connected with. Connections from NFC taps and captured conversations appear here.'")
-    .replace("'Captured Conversations','Recordings transcribed, not yet drafted.'", "'Pending Review','Captured conversations waiting for owner review.'")
-    .replace(/name:'Keep Warm'/g, "name:'Stay in Touch'")
-    .replace(/keep_warm/g, 'stay_in_touch');
-}
-
-function appendCanonicalController() {
-  if (html.includes('tapdCanonicalTopNavController')) return;
-
-  const controller = `
-
-<!-- UPDATE 69: CANONICAL TOP NAVIGATION CONTROLLER — CLICK ONLY, NO POLLING -->
-<script id="tapdCanonicalTopNavController">
+const controller = `
+<!-- UPDATE 69B: TOP NAV DESIGN CORRECTION — PRESERVE OWNER TOOLS, SEPARATE RELATIONSHIP HUB -->
+<script id="tapdTopNavDesignCorrection">
 (function(){
-  if(window.__tapdCanonicalTopNavController)return;
-  window.__tapdCanonicalTopNavController=true;
+  if(window.__tapdTopNavDesignCorrection)return;
+  window.__tapdTopNavDesignCorrection=true;
 
+  var lastTap={key:'',at:0};
   function byId(id){return document.getElementById(id);} 
-  function isVisitor(){
-    try{
-      var q=new URLSearchParams(location.search||'');
-      return q.get('visitor')==='1'||q.get('mode')==='visitor'||q.get('view')==='visitor'||q.get('nfc')==='1'||document.body.classList.contains('tapd-hard-header-off');
-    }catch(e){return false;}
+  function now(){return Date.now?Date.now():(new Date()).getTime();}
+  function txt(el){return (el&&el.textContent?el.textContent:'').replace(/\\s+/g,' ').trim().toLowerCase();}
+  function inVisitorMode(){
+    try{var q=new URLSearchParams(location.search||'');return q.get('visitor')==='1'||q.get('mode')==='visitor'||q.get('view')==='visitor'||q.get('nfc')==='1'||document.body.classList.contains('tapd-hard-header-off');}catch(e){return false;}
   }
-  function closeOwnerDrawer(){
-    try{
-      var panel=byId('ownerSidePanel');
-      if(panel&&panel.classList.contains('open')&&typeof window.toggleOwnerSidePanel==='function')window.toggleOwnerSidePanel(false);
-      var backdrop=byId('ownerSideBackdrop'); if(backdrop)backdrop.classList.remove('open');
-    }catch(e){}
+  function closeFullPages(){
+    ['page-relhub-56','page-templates-56','page-template-editor'].forEach(function(id){var el=byId(id);if(el)el.classList.remove('active');});
   }
-  function closeFullNavPages(){
-    ['page-relhub-56','page-templates-56'].forEach(function(id){var el=byId(id); if(el)el.classList.remove('active');});
+  function closeOwnerPanel(){
+    var panel=byId('ownerSidePanel');
+    var backdrop=byId('ownerSideBackdrop');
+    if(panel){panel.classList.remove('open');panel.setAttribute('aria-hidden','true');}
+    if(backdrop)backdrop.classList.remove('open');
+    document.body.classList.remove('owner-panel-open','tapd-owner-tools-mode','ot55-active');
   }
-  function removeFloatingOverlays(){
-    try{
-      document.querySelectorAll('.quick-template-overlay,.tapd-more-overlay,.fu-modal-overlay,.ai-gate-overlay').forEach(function(el){el.remove();});
-    }catch(e){}
+  function showProfile(){
+    if(typeof window.showPage==='function')window.showPage('profile');
+    else{document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});var p=byId('profile');if(p)p.classList.add('active');}
   }
-
-  function openOwnerTools(){
-    removeFloatingOverlays();
-    closeFullNavPages();
+  function openOwnerToolsPreserved(){
+    closeFullPages();
     document.body.classList.remove('tapd-relhub-mode','tapd-relhub-calm');
-    document.body.classList.add('tapd-owner-tools-mode');
-    if(typeof window.ot55Open==='function')return window.ot55Open();
-    try{if(typeof window.toggleOwnerSidePanel==='function')window.toggleOwnerSidePanel(true);}catch(e){}
+    document.body.classList.add('owner-panel-open','tapd-owner-tools-mode');
+    showProfile();
+    var panel=byId('ownerSidePanel');
+    var backdrop=byId('ownerSideBackdrop');
+    if(panel){panel.classList.add('open');panel.setAttribute('aria-hidden','false');}
+    if(backdrop)backdrop.classList.add('open');
+    try{if(typeof window.tapdSetupOwnerTabs41==='function')window.tapdSetupOwnerTabs41('profile');}catch(e){}
+    try{window.scrollTo(0,0);}catch(e){}
   }
-
-  function openTemplates(){
-    removeFloatingOverlays();
-    closeOwnerDrawer();
-    document.body.classList.remove('tapd-owner-tools-mode','ot55-active','tapd-relhub-mode','tapd-relhub-calm');
+  function openTemplatesClean(){
+    closeOwnerPanel();
+    document.body.classList.remove('tapd-relhub-mode','tapd-relhub-calm');
     if(typeof window.tpl56Open==='function')return window.tpl56Open();
     if(typeof window.goTemplateEditor==='function')return window.goTemplateEditor();
   }
-
-  function openRelationshipHub(){
-    removeFloatingOverlays();
-    closeOwnerDrawer();
+  function openRelationshipHubClean(){
+    closeOwnerPanel();
     document.body.classList.remove('tapd-owner-tools-mode','ot55-active');
     document.body.classList.add('tapd-relhub-mode');
     if(typeof window.rh56Open==='function')return window.rh56Open();
-    try{if(typeof window.toggleOwnerSidePanel==='function')window.toggleOwnerSidePanel(true);}catch(e){}
+    var page=byId('page-relhub-56');
+    if(page){document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});page.classList.add('active');try{if(typeof window.rh56Render==='function')window.rh56Render();}catch(e){}return;}
+    if(typeof window.tapdToast==='function')window.tapdToast('Relationship Hub is not available on this build yet','warn');
   }
-
-  function renderHeader(){
+  function route(action){
+    if(action==='owner')return openOwnerToolsPreserved();
+    if(action==='templates')return openTemplatesClean();
+    if(action==='relationship')return openRelationshipHubClean();
+  }
+  function actionForButton(btn){
+    if(!btn)return '';
+    var t=txt(btn);
+    if(btn.id==='hardOwnerToolsBtn'||btn.classList.contains('hard-owner-tools')||btn.classList.contains('hard-primary')||t.indexOf('owner')>=0)return 'owner';
+    if(btn.id==='hardTemplatesBtn'||btn.classList.contains('hard-template')||t.indexOf('template')>=0)return 'templates';
+    if(btn.id==='hardInboxBtn'||btn.id==='hardRelHubBtn'||btn.classList.contains('hard-inbox')||btn.classList.contains('hard-relhub')||t.indexOf('relationship')>=0||t.indexOf('hub')>=0)return 'relationship';
+    return '';
+  }
+  function handleTopNav(ev){
+    if(inVisitorMode())return;
     var h=byId('tapdHardOwnerHeader');
     if(!h)return;
-    if(isVisitor()){h.style.display='none';return;}
-    h.innerHTML=''
-      +'<button type="button" class="hard-owner-tools" data-tapd-action="owner">Owner Tools</button>'
-      +'<button type="button" class="hard-template" data-tapd-action="templates">Templates</button>'
-      +'<button type="button" class="hard-relhub" data-tapd-action="relationship">Relationship Hub</button>';
-    h.style.display='flex';
-    h.setAttribute('data-tapd-canonical-nav','1');
-    h.style.touchAction='manipulation';
-    h.querySelectorAll('button').forEach(function(btn){btn.style.touchAction='manipulation';});
+    var btn=ev.target&&ev.target.closest?ev.target.closest('button'):null;
+    if(!btn||!h.contains(btn))return;
+    var action=actionForButton(btn);
+    if(!action)return;
+    if(ev){ev.preventDefault();ev.stopPropagation();if(ev.stopImmediatePropagation)ev.stopImmediatePropagation();}
+    var t=now();
+    if(lastTap.key===action&&(t-lastTap.at)<420)return false;
+    lastTap={key:action,at:t};
+    route(action);
+    return false;
   }
-
-  function wireHeader(){
-    var h=byId('tapdHardOwnerHeader');
-    if(!h||h.dataset.tapdCanonicalWired==='1')return;
-    h.dataset.tapdCanonicalWired='1';
-    h.addEventListener('click',function(ev){
-      var btn=ev.target&&ev.target.closest?ev.target.closest('[data-tapd-action]'):null;
-      if(!btn||!h.contains(btn))return;
-      ev.preventDefault();
-      ev.stopImmediatePropagation();
-      var action=btn.getAttribute('data-tapd-action');
-      if(action==='owner')openOwnerTools();
-      if(action==='templates')openTemplates();
-      if(action==='relationship')openRelationshipHub();
-      return false;
-    },true);
-    h.addEventListener('pointerup',function(ev){
-      var btn=ev.target&&ev.target.closest?ev.target.closest('[data-tapd-action]'):null;
-      if(!btn||!h.contains(btn))return;
-      ev.stopImmediatePropagation();
-    },true);
+  function boot(){
+    document.addEventListener('pointerup',handleTopNav,true);
+    document.addEventListener('click',handleTopNav,true);
+    window.openTapdInboxFromSide=openRelationshipHubClean;
+    window.tapd49OpenRelationshipHub=openRelationshipHubClean;
+    window.tapd52OpenRelationshipHub=openRelationshipHubClean;
+    window.tapd54OpenRelationshipHub=openRelationshipHubClean;
+    window.openRelationshipHub=openRelationshipHubClean;
+    window.tapdOpenTemplates=openTemplatesClean;
+    window.openQuickTemplateSwitcher=openTemplatesClean;
+    console.log('[TAPD] Update 69B loaded — Owner Tools preserved; Relationship Hub opens separately.');
   }
-
-  function boot(){renderHeader();wireHeader();}
-
-  window.openOwnerTools=openOwnerTools;
-  window.openTemplates=openTemplates;
-  window.openRelationshipHub=openRelationshipHub;
-  window.openTapdInboxFromSide=openRelationshipHub;
-  window.tapd49OpenRelationshipHub=openRelationshipHub;
-  window.tapd52OpenRelationshipHub=openRelationshipHub;
-  window.tapd54OpenRelationshipHub=openRelationshipHub;
-  window.tapdOpenTemplates=openTemplates;
-  window.openQuickTemplateSwitcher=openTemplates;
-
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
-  setTimeout(boot,80);
-  setTimeout(boot,350);
-  console.log('[TAPD] Update 69 loaded — canonical top navigation active: Owner Tools, Templates, Relationship Hub.');
 })();
-</script>
-`;
+</script>`;
 
-  html += controller;
+if (html.includes('</body>')) {
+  html = html.replace(/<\/body>(?![\s\S]*<\/body>)/i, controller + '\n</body>');
+} else {
+  html += '\n' + controller + '\n';
 }
 
-disableScriptBlocks();
-patchRemainingPointerHandlers();
-patchRelationshipHubLanguage();
-appendCanonicalController();
-
-if (html === before) {
-  console.log('[TAPD build] No navigation changes were needed.');
-} else {
+if (html !== before) {
   fs.writeFileSync(indexPath, html, 'utf8');
-  console.log('[TAPD build] Stabilised top navigation in index.html for deployment.');
+  console.log('[TAPD build] Applied design-correct top navigation guard.');
+} else {
+  console.log('[TAPD build] No design-correction changes required.');
 }
