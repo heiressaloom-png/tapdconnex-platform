@@ -17211,6 +17211,9 @@ input::placeholder, textarea::placeholder {
 
 
 <!-- UPDATE 69C: ACTIVE NAV + TEMPLATE CAPTURE WORKFLOW -->
+
+
+<!-- UPDATE 69C: ACTIVE NAV + TEMPLATE CAPTURE WORKFLOW -->
 <script id="tapdTopNavDesignCorrection">
 (function(){
   if(window.__tapdTopNavDesignCorrection)return;
@@ -17350,8 +17353,12 @@ input::placeholder, textarea::placeholder {
       +'.tapd-cheat-kicker{font-size:10px;font-weight:900;letter-spacing:1.7px;text-transform:uppercase;color:#EAB308;margin-bottom:4px;}\n'
       +'.tapd-cheat-title{font-size:18px;font-weight:900;color:#F0F4F8;margin-bottom:6px;}\n'
       +'.tapd-cheat-sub{font-size:12px;line-height:1.55;color:#8B9EB0;margin-bottom:12px;padding-right:22px;}\n'
-      +'.tapd-cheat-list{display:grid;gap:7px;margin-bottom:14px;}\n'
-      +'.tapd-cheat-list span{font-size:12px;color:#F0F4F8;background:rgba(234,179,8,.07);border:1px solid rgba(234,179,8,.18);border-radius:12px;padding:9px 10px;}\n'
+      +'.tapd-cheat-list{display:grid;gap:7px;margin-bottom:10px;}\n'
+      +'.tapd-cheat-list span{font-size:12px;color:#F0F4F8;background:rgba(234,179,8,.07);border:1px solid rgba(234,179,8,.18);border-radius:12px;padding:9px 10px;line-height:1.45;}\n'
+      +'.tapd-cheat-list .tapd-cheat-extra{display:none;}\n'
+      +'.tapd-cheat-list.tapd-cheat-show-all .tapd-cheat-extra{display:block;}\n'
+      +'.tapd-cheat-expand{width:100%;height:36px;margin-bottom:12px;border-radius:10px;background:transparent;border:1px dashed rgba(234,179,8,.30);color:#EAB308;font-size:11px;font-weight:800;font-family:Inter,sans-serif;cursor:pointer;letter-spacing:.3px;}\n'
+      +'.tapd-cheat-expand:active{background:rgba(234,179,8,.05);}\n'
       +'.tapd-cheat-primary{width:100%;height:44px;border-radius:14px;border:1px solid #EAB308;background:linear-gradient(135deg,#EAB308,#ca8a04);color:#050505;font-size:13px;font-weight:900;font-family:Inter,sans-serif;}';
     document.head.appendChild(style);
   }
@@ -17460,12 +17467,32 @@ input::placeholder, textarea::placeholder {
   function showTemplateCheatSheet(id){
     var old=byId('tapdTemplateCheatSheet'); if(old)old.remove();
     var hints=TEMPLATE_HINTS[id]||TEMPLATE_HINTS.custom;
+    // Show Q1 (opener), Q3 (relevance/fit), Q5 (next step) by default — the 3-beat arc.
+    // Q2 and Q4 stay hidden until the owner taps "Show 2 more".
+    var primaryIdx={0:true,2:true,4:true};
+    var chipsHtml=hints.map(function(h,i){
+      var cls=primaryIdx[i]?'':' class="tapd-cheat-extra"';
+      return '<span'+cls+'><b style="color:#EAB308;margin-right:6px;">'+(i+1)+'.</b>'+h+'</span>';
+    }).join('');
     var sheet=document.createElement('div');
     sheet.id='tapdTemplateCheatSheet';
-    sheet.innerHTML='<div class="tapd-cheat-card"><button class="tapd-cheat-close" type="button" aria-label="Close">\xd7</button><p class="tapd-cheat-kicker">Conversation prompts</p><p class="tapd-cheat-title">'+titleCaseFromId(id)+'</p><p class="tapd-cheat-sub">Use one or two that fit the flow. You don\u2019t need to ask all five. TAPDconnex will structure whatever the conversation gives you.</p><div class="tapd-cheat-list">'+hints.map(function(h,i){return '<span><b style="color:#EAB308;margin-right:6px;">'+(i+1)+'.</b>'+h+'</span>';}).join('')+'</div><button class="tapd-cheat-primary" type="button">Got it \u2014 capture now</button></div>';
+    sheet.innerHTML='<div class="tapd-cheat-card">'
+      +'<button class="tapd-cheat-close" type="button" aria-label="Close">\xd7</button>'
+      +'<p class="tapd-cheat-kicker">Conversation prompts</p>'
+      +'<p class="tapd-cheat-title">'+titleCaseFromId(id)+'</p>'
+      +'<p class="tapd-cheat-sub">Use one or two that fit the flow. You don\u2019t need to ask all five.</p>'
+      +'<div class="tapd-cheat-list" id="tapdCheatList">'+chipsHtml+'</div>'
+      +'<button type="button" class="tapd-cheat-expand" id="tapdCheatExpand">Show 2 more questions \u2193</button>'
+      +'<button class="tapd-cheat-primary" type="button">Got it \u2014 capture now</button>'
+      +'</div>';
     document.body.appendChild(sheet);
     sheet.querySelector('.tapd-cheat-close').onclick=function(){sheet.remove();};
     sheet.querySelector('.tapd-cheat-primary').onclick=function(){sheet.remove();};
+    sheet.querySelector('#tapdCheatExpand').onclick=function(){
+      var list=sheet.querySelector('#tapdCheatList');
+      var expanded=list.classList.toggle('tapd-cheat-show-all');
+      this.textContent=expanded?'Show fewer \u2191':'Show 2 more questions \u2193';
+    };
     setTimeout(function(){sheet.classList.add('show');},20);
   }
   function ensureTemplateActionBar(){
