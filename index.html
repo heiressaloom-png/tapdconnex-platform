@@ -17205,6 +17205,9 @@ input::placeholder, textarea::placeholder {
 
 
 <!-- UPDATE 69C: ACTIVE NAV + TEMPLATE CAPTURE WORKFLOW -->
+
+
+<!-- UPDATE 69C: ACTIVE NAV + TEMPLATE CAPTURE WORKFLOW -->
 <script id="tapdTopNavDesignCorrection">
 (function(){
   if(window.__tapdTopNavDesignCorrection)return;
@@ -17240,10 +17243,10 @@ input::placeholder, textarea::placeholder {
     custom:['Your custom fields','Key context','Next step']
   };
 
-  function byId(id){return document.getElementById(id);} 
+  function byId(id){return document.getElementById(id);}
   function now(){return Date.now?Date.now():(new Date()).getTime();}
-  function txt(el){return (el&&el.textContent?el.textContent:'').replace(/s+/g,' ').trim().toLowerCase();}
-  function titleCaseFromId(id){return TEMPLATE_NAMES[id]||String(id||'Selected template').replace(/_/g,' ').replace(/w/g,function(m){return m.toUpperCase();});}
+  function txt(el){return (el&&el.textContent?el.textContent:'').replace(/\s+/g,' ').trim().toLowerCase();}
+  function titleCaseFromId(id){return TEMPLATE_NAMES[id]||String(id||'Selected template').replace(/_/g,' ').replace(/\b\w/g,function(m){return m.toUpperCase();});}
   function getActiveTemplate(){try{return localStorage.getItem('tapd_active_template')||'direct_opportunity';}catch(e){return'direct_opportunity';}}
   function inVisitorMode(){
     try{var q=new URLSearchParams(location.search||'');return q.get('visitor')==='1'||q.get('mode')==='visitor'||q.get('view')==='visitor'||q.get('nfc')==='1'||document.body.classList.contains('tapd-hard-header-off');}catch(e){return false;}
@@ -17253,46 +17256,26 @@ input::placeholder, textarea::placeholder {
     if(byId('tapd69cWorkspaceStyles'))return;
     var style=document.createElement('style');
     style.id='tapd69cWorkspaceStyles';
-    style.textContent='
-'
-      +'#tapdHardOwnerHeader button.tapd-nav-active{background:linear-gradient(135deg,#0ECEC0,#10B981)!important;border-color:#0ECEC0!important;color:#03100f!important;box-shadow:0 0 0 2px rgba(14,206,192,.16),0 14px 30px rgba(14,206,192,.16)!important;}
-'
-      +'#tapdHardOwnerHeader button:not(.tapd-nav-active){filter:saturate(.82);opacity:.88;}
-'
-      +'.tapd-template-action-bar{margin:0 0 14px;padding:13px;border-radius:16px;border:1px solid rgba(234,179,8,.24);background:linear-gradient(135deg,rgba(234,179,8,.10),rgba(234,179,8,.035));display:grid;gap:10px;}
-'
-      +'.tapd-template-action-title{font-size:13px;font-weight:900;color:#F0F4F8;margin:0;}
-'
-      +'.tapd-template-action-sub{font-size:11px;color:#8B9EB0;line-height:1.45;margin:2px 0 0;}
-'
-      +'.tapd-template-action-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-'
-      +'.tapd-template-capture-btn,.tapd-template-cheat-btn{height:42px;border-radius:13px;font-family:Inter,sans-serif;font-size:12px;font-weight:900;cursor:pointer;}
-'
-      +'.tapd-template-capture-btn{background:linear-gradient(135deg,#EAB308,#ca8a04);border:1px solid #EAB308;color:#050505;}
-'
-      +'.tapd-template-cheat-btn{background:rgba(255,255,255,.03);border:1px solid rgba(234,179,8,.22);color:#EAB308;}
-'
-      +'@media(max-width:360px){.tapd-template-action-row{grid-template-columns:1fr}.tapd-template-capture-btn,.tapd-template-cheat-btn{height:40px}}
-'
-      +'#tapdTemplateCheatSheet{position:fixed;inset:0;z-index:9999;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.38);opacity:0;pointer-events:none;transition:opacity .18s ease;}
-'
-      +'#tapdTemplateCheatSheet.show{opacity:1;pointer-events:auto;}
-'
-      +'.tapd-cheat-card{width:min(430px,calc(100vw - 24px));margin:0 12px 18px;background:#0D1117;border:1px solid rgba(234,179,8,.35);border-radius:22px;padding:18px 16px 16px;box-shadow:0 18px 60px rgba(0,0,0,.55);position:relative;font-family:Inter,sans-serif;}
-'
-      +'.tapd-cheat-close{position:absolute;right:12px;top:10px;width:30px;height:30px;border-radius:999px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.03);color:#8B9EB0;font-size:18px;}
-'
-      +'.tapd-cheat-kicker{font-size:10px;font-weight:900;letter-spacing:1.7px;text-transform:uppercase;color:#EAB308;margin-bottom:4px;}
-'
-      +'.tapd-cheat-title{font-size:18px;font-weight:900;color:#F0F4F8;margin-bottom:6px;}
-'
-      +'.tapd-cheat-sub{font-size:12px;line-height:1.55;color:#8B9EB0;margin-bottom:12px;padding-right:22px;}
-'
-      +'.tapd-cheat-list{display:grid;gap:7px;margin-bottom:14px;}
-'
-      +'.tapd-cheat-list span{font-size:12px;color:#F0F4F8;background:rgba(234,179,8,.07);border:1px solid rgba(234,179,8,.18);border-radius:12px;padding:9px 10px;}
-'
+    style.textContent='\n'
+      +'#tapdHardOwnerHeader button.tapd-nav-active{background:linear-gradient(135deg,#0ECEC0,#10B981)!important;border-color:#0ECEC0!important;color:#03100f!important;box-shadow:0 0 0 2px rgba(14,206,192,.16),0 14px 30px rgba(14,206,192,.16)!important;}\n'
+      +'#tapdHardOwnerHeader button:not(.tapd-nav-active){filter:saturate(.82);opacity:.88;}\n'
+      +'.tapd-template-action-bar{margin:0 0 14px;padding:13px;border-radius:16px;border:1px solid rgba(234,179,8,.24);background:linear-gradient(135deg,rgba(234,179,8,.10),rgba(234,179,8,.035));display:grid;gap:10px;}\n'
+      +'.tapd-template-action-title{font-size:13px;font-weight:900;color:#F0F4F8;margin:0;}\n'
+      +'.tapd-template-action-sub{font-size:11px;color:#8B9EB0;line-height:1.45;margin:2px 0 0;}\n'
+      +'.tapd-template-action-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}\n'
+      +'.tapd-template-capture-btn,.tapd-template-cheat-btn{height:42px;border-radius:13px;font-family:Inter,sans-serif;font-size:12px;font-weight:900;cursor:pointer;}\n'
+      +'.tapd-template-capture-btn{background:linear-gradient(135deg,#EAB308,#ca8a04);border:1px solid #EAB308;color:#050505;}\n'
+      +'.tapd-template-cheat-btn{background:rgba(255,255,255,.03);border:1px solid rgba(234,179,8,.22);color:#EAB308;}\n'
+      +'@media(max-width:360px){.tapd-template-action-row{grid-template-columns:1fr}.tapd-template-capture-btn,.tapd-template-cheat-btn{height:40px}}\n'
+      +'#tapdTemplateCheatSheet{position:fixed;inset:0;z-index:9999;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.38);opacity:0;pointer-events:none;transition:opacity .18s ease;}\n'
+      +'#tapdTemplateCheatSheet.show{opacity:1;pointer-events:auto;}\n'
+      +'.tapd-cheat-card{width:min(430px,calc(100vw - 24px));margin:0 12px 18px;background:#0D1117;border:1px solid rgba(234,179,8,.35);border-radius:22px;padding:18px 16px 16px;box-shadow:0 18px 60px rgba(0,0,0,.55);position:relative;font-family:Inter,sans-serif;}\n'
+      +'.tapd-cheat-close{position:absolute;right:12px;top:10px;width:30px;height:30px;border-radius:999px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.03);color:#8B9EB0;font-size:18px;}\n'
+      +'.tapd-cheat-kicker{font-size:10px;font-weight:900;letter-spacing:1.7px;text-transform:uppercase;color:#EAB308;margin-bottom:4px;}\n'
+      +'.tapd-cheat-title{font-size:18px;font-weight:900;color:#F0F4F8;margin-bottom:6px;}\n'
+      +'.tapd-cheat-sub{font-size:12px;line-height:1.55;color:#8B9EB0;margin-bottom:12px;padding-right:22px;}\n'
+      +'.tapd-cheat-list{display:grid;gap:7px;margin-bottom:14px;}\n'
+      +'.tapd-cheat-list span{font-size:12px;color:#F0F4F8;background:rgba(234,179,8,.07);border:1px solid rgba(234,179,8,.18);border-radius:12px;padding:9px 10px;}\n'
       +'.tapd-cheat-primary{width:100%;height:44px;border-radius:14px;border:1px solid #EAB308;background:linear-gradient(135deg,#EAB308,#ca8a04);color:#050505;font-size:13px;font-weight:900;font-family:Inter,sans-serif;}';
     document.head.appendChild(style);
   }
@@ -17305,57 +17288,39 @@ input::placeholder, textarea::placeholder {
       btn.setAttribute('aria-current',a===action?'page':'false');
     });
   }
-  function closeFullPages(){
-    ['page-relhub-56','page-templates-56','page-template-editor'].forEach(function(id){var el=byId(id);if(el)el.classList.remove('active');});
-  }
   function closeOwnerPanel(){
-    var panel=byId('ownerSidePanel');
-    var backdrop=byId('ownerSideBackdrop');
-    if(panel){panel.classList.remove('open');panel.setAttribute('aria-hidden','true');}
-    if(backdrop)backdrop.classList.remove('open');
-    document.body.classList.remove('owner-panel-open','tapd-owner-tools-mode','ot55-active');
+    document.body.classList.remove('tapd-owner-tools-mode','ot55-active');
+    var side=byId('ownerSidePanel55'); if(side)side.style.display='none';
+    var over=byId('ot55Overlay'); if(over)over.style.display='none';
   }
-  function showProfile(){
-    if(typeof window.showPage==='function')window.showPage('profile');
-    else{document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});var p=byId('profile');if(p)p.classList.add('active');}
+  function closeFullPages(){
+    document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
   }
   function openOwnerToolsPreserved(){
     setActiveNav('owner');
-    closeFullPages();
-    document.body.classList.remove('tapd-relhub-mode','tapd-relhub-calm');
-    document.body.classList.add('owner-panel-open','tapd-owner-tools-mode');
-    showProfile();
-    var panel=byId('ownerSidePanel');
-    var backdrop=byId('ownerSideBackdrop');
-    if(panel){panel.classList.add('open');panel.setAttribute('aria-hidden','false');}
-    if(backdrop)backdrop.classList.add('open');
-    try{if(typeof window.tapdSetupOwnerTabs41==='function')window.tapdSetupOwnerTabs41('profile');}catch(e){}
-    try{window.scrollTo(0,0);}catch(e){}
+    document.body.classList.add('tapd-owner-tools-mode','ot55-active');
+    var side=byId('ownerSidePanel55');
+    if(side){side.style.display='flex';return;}
+    if(typeof window.ot55Open==='function'){window.ot55Open();return;}
+    var page=byId('page-owner-tools-55');
+    if(page){closeFullPages();page.classList.add('active');}
+    else if(typeof window.tapdToast==='function')window.tapdToast('Owner Tools not available on this build','warn');
   }
   function openTemplatesClean(){
     setActiveNav('templates');
     closeOwnerPanel();
-    document.body.classList.remove('tapd-relhub-mode','tapd-relhub-calm');
-    if(typeof window.tpl56Open==='function')window.tpl56Open();
-    else if(typeof window.goTemplateEditor==='function')window.goTemplateEditor();
+    document.body.classList.remove('tapd-relhub-mode');
+    if(typeof window.tpl56Open==='function'){window.tpl56Open();return;}
+    var page=byId('page-template-editor');
+    if(page){closeFullPages();page.classList.add('active');}
+    else if(typeof window.tapdToast==='function')window.tapdToast('Templates not available on this build yet','warn');
     setTimeout(ensureTemplateActionBar,60);
-    setTimeout(ensureTemplateActionBar,220);
   }
   function cleanRelationshipHubText(){
-    var root=byId('page-relhub-56')||document;
     try{
-      root.querySelectorAll('button,.tapd54-tab,[role="tab"]').forEach(function(el){
-        var label=(el.textContent||'').replace(/s+/g,' ').trim();
-        if(label==='Captured')el.textContent='Awaiting Review';
-        if(label==='Drafts'){el.style.display='none';el.setAttribute('aria-hidden','true');}
-      });
-      root.querySelectorAll('.tapd54-section-title,.tapd54-status-badge').forEach(function(el){
-        var label=(el.textContent||'').replace(/s+/g,' ').trim();
-        if(label==='Captured'||label==='Captured Conversations')el.textContent='Awaiting Review';
-      });
-      root.querySelectorAll('.tapd54-section-desc,.tapd54-hub-sub,.tapd54-empty span').forEach(function(el){
-        var v=el.textContent||'';
-        v=v.replace('People who tapped your NFC card and sent their TAPD card. Accept to start capturing.','People you've connected with. Connections from NFC taps and captured conversations appear here.');
+      document.querySelectorAll('.rh56-tab-label,.rh56-empty-msg,.rh56-section-title').forEach(function(el){
+        var v=el.textContent;
+        v=v.replace('People who tapped your NFC card and sent their TAPD card. Accept to start capturing.','People you\'ve connected with. Connections from NFC taps and captured conversations appear here.');
         v=v.replace('Recordings transcribed, not yet drafted.','Captured conversations waiting for your review.');
         v=v.replace('Tap the gold Capture button to record a conversation.','Captured conversations will appear here before follow-up approval.');
         if(v!==el.textContent)el.textContent=v;
@@ -17421,7 +17386,7 @@ input::placeholder, textarea::placeholder {
     var hints=TEMPLATE_HINTS[id]||TEMPLATE_HINTS.custom;
     var sheet=document.createElement('div');
     sheet.id='tapdTemplateCheatSheet';
-    sheet.innerHTML='<div class="tapd-cheat-card"><button class="tapd-cheat-close" type="button" aria-label="Close">×</button><p class="tapd-cheat-kicker">Template selected</p><p class="tapd-cheat-title">'+titleCaseFromId(id)+'</p><p class="tapd-cheat-sub">Capture with this structure in mind. TAPDconnex will use this template when shaping the follow-up.</p><div class="tapd-cheat-list">'+hints.map(function(h){return '<span>'+h+'</span>';}).join('')+'</div><button class="tapd-cheat-primary" type="button">Got it — capture now</button></div>';
+    sheet.innerHTML='<div class="tapd-cheat-card"><button class="tapd-cheat-close" type="button" aria-label="Close">\xd7</button><p class="tapd-cheat-kicker">Template selected</p><p class="tapd-cheat-title">'+titleCaseFromId(id)+'</p><p class="tapd-cheat-sub">Capture with this structure in mind. TAPDconnex will use this template when shaping the follow-up.</p><div class="tapd-cheat-list">'+hints.map(function(h){return '<span>'+h+'</span>';}).join('')+'</div><button class="tapd-cheat-primary" type="button">Got it \u2014 capture now</button></div>';
     document.body.appendChild(sheet);
     sheet.querySelector('.tapd-cheat-close').onclick=function(){sheet.remove();};
     sheet.querySelector('.tapd-cheat-primary').onclick=function(){sheet.remove();};
@@ -17478,7 +17443,7 @@ input::placeholder, textarea::placeholder {
     setTimeout(wrapTemplateOpen,800);
     setTimeout(wrapTemplateSelection,800);
     setTimeout(cleanRelationshipHubText,400);
-    console.log('[TAPD] Update 69C loaded — active nav, template capture button and cheat sheet active.');
+    console.log('[TAPD] Update 69C loaded \u2014 active nav, template capture button and cheat sheet active.');
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
