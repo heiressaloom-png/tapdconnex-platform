@@ -7,11 +7,9 @@ const before = html;
 
 // Remove any previous top nav override so the final build has one clear source of truth.
 html = html.replace(/<style id="tapdTopNavActiveStyle">[\s\S]*?<\/style>/g, '');
+html = html.replace(/<script id="tapdTopNavActiveStyleRuntime">[\s\S]*?<\/script>/g, '');
 
-const style = String.raw`
-<style id="tapdTopNavActiveStyle">
-/* Corporate / conference navigation hierarchy.
-   Dark = navigation option, gold = current section, green = WhatsApp only, turquoise = accent only. */
+const css = String.raw`
 #tapdHardOwnerHeader button{
   background:#101820!important;
   border:1px solid rgba(148,163,184,.22)!important;
@@ -45,15 +43,41 @@ const style = String.raw`
   border-color:#FACC15!important;
   color:#050505!important;
   box-shadow:0 0 0 2px rgba(234,179,8,.34)!important;
-}
-</style>`;
+}`;
+
+// Static fallback plus runtime override. The runtime override is intentionally appended after
+// build-stabilise-navigation.js injects its turquoise styles, so the corporate style wins.
+const style = `<style id="tapdTopNavActiveStyle">\n/* Corporate / conference top navigation. */\n${css}\n</style>`;
+const runtime = String.raw`
+<script id="tapdTopNavActiveStyleRuntime">
+(function(){
+  function applyCorporateTopNavStyle(){
+    try{
+      var old=document.getElementById('tapdTopNavActiveStyleRuntimeCSS');
+      if(old)old.remove();
+      var style=document.createElement('style');
+      style.id='tapdTopNavActiveStyleRuntimeCSS';
+      style.textContent=${JSON.stringify(css)};
+      document.head.appendChild(style);
+    }catch(e){}
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',applyCorporateTopNavStyle);
+  else applyCorporateTopNavStyle();
+  setTimeout(applyCorporateTopNavStyle,80);
+  setTimeout(applyCorporateTopNavStyle,350);
+  setTimeout(applyCorporateTopNavStyle,900);
+})();
+</script>`;
 
 if (html.includes('</head>')) html = html.replace(/<\/head>/i, style + '\n</head>');
 else html = style + '\n' + html;
 
+if (html.includes('</body>')) html = html.replace(/<\/body>(?![\s\S]*<\/body>)/i, runtime + '\n</body>');
+else html += '\n' + runtime + '\n';
+
 if (html !== before) {
   fs.writeFileSync(indexPath, html, 'utf8');
-  console.log('[TAPD build] Applied corporate top navigation styling.');
+  console.log('[TAPD build] Applied corporate top navigation styling after stabiliser.');
 } else {
   console.log('[TAPD build] Corporate top navigation styling already present.');
 }
