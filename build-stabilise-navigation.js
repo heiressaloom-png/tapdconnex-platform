@@ -6,16 +6,28 @@ let html = fs.readFileSync(indexPath, 'utf8');
 const before = html;
 
 // Keep the original Owner Tools / Templates / Relationship Hub UI structure intact.
-// This build step no longer removes historical inline update blocks. It only removes
-// obsolete external runtime references and adds one final routing guard for the top buttons.
+// This build step only removes obsolete external runtime references, cleans the visible copy,
+// and adds one final routing guard for the top buttons.
 html = html.replace('<script src="/update-65b-navigation-guardrails.js"></script>', '');
 html = html.replace('<script src="/update-68-owner-toggle-fix.js"></script>', '');
 html = html.replace(/<script id="tapdCanonicalTopNavController">[\s\S]*?<\/script>/g, '');
 html = html.replace(/<script id="tapdTopNavDesignCorrection">[\s\S]*?<\/script>/g, '');
 
-// Safe label clarification only. Do not globally remove tabs or owner content.
+// NFC URL clarity.
 html = html.replace(/Your NFC Tag URI/g, 'Your NFC Profile URL');
 html = html.replace(/Program this exact URL onto your NFC card\. Every tap opens your live profile\./g, 'This is the profile URL to program onto your NFC card. Every tap opens this live TAPD profile.');
+
+// Relationship Hub copy and tab cleanup.
+html = html.replace("['connections','captured','drafts','followUps','sent','waiting','archived']", "['connections','captured','followUps','sent']");
+html = html.replace("var labels={connections:'Connections',captured:'Captured',drafts:'Drafts',\n          followUps:'Follow-Ups',sent:'Sent',waiting:'Waiting',archived:'Archived'};", "var labels={connections:'Connections',captured:'Awaiting Review',followUps:'Follow-Ups',sent:'Sent'};");
+html = html.replace("'Connections','People who tapped your NFC card and sent their TAPD card. Accept to start capturing.'", "'Connections','People you\\'ve connected with. Connections from NFC taps and captured conversations appear here.'");
+html = html.replace("'Captured Conversations','Recordings transcribed, not yet drafted.'", "'Awaiting Review','Captured conversations waiting for your review.'");
+html = html.replace("'🎤','No captures yet','Tap the gold Capture button to record a conversation.'", "'🎤','Nothing awaiting review','Captured conversations will appear here before follow-up approval.'");
+html = html.replace("onclick=\"rh56Tab('drafts')\"", "onclick=\"rh56Tab('captured')\"");
+html = html.replace(/statusLabels=\{connections:'New',captured:'Captured',drafts:'AI Draft',/g, "statusLabels={connections:'New',captured:'Awaiting Review',drafts:'AI Draft',");
+html = html.replace(/name:'Keep Warm'/g, "name:'Stay in Touch'");
+html = html.replace(/id:'keep_warm'/g, "id:'stay_in_touch'");
+html = html.replace(/keep_warm/g, 'stay_in_touch');
 
 const controller = `
 <!-- UPDATE 69B: TOP NAV DESIGN CORRECTION — PRESERVE OWNER TOOLS, SEPARATE RELATIONSHIP HUB -->
@@ -25,9 +37,39 @@ const controller = `
   window.__tapdTopNavDesignCorrection=true;
 
   var lastTap={key:'',at:0};
+  var TEMPLATE_NAMES={
+    direct_opportunity:'Direct Opportunity',
+    connector_referral:'Connector / Referral',
+    stay_in_touch:'Stay in Touch',
+    pilot_beta:'Pilot / Beta Testing',
+    collaboration:'Collaboration / Partnership',
+    customer_discovery:'Customer Discovery',
+    investor_funding:'Investor / Funding',
+    strategic_partnership:'Strategic Partnership',
+    speaking_media:'Speaking / Media',
+    advisory_mentor:'Advisory / Mentor',
+    community_access:'Community Access',
+    custom:'Custom Template'
+  };
+  var TEMPLATE_HINTS={
+    direct_opportunity:['Need / pain mentioned','Buying or adoption signal','Specific next step'],
+    connector_referral:['Who they can introduce you to','Why that person matters','Forwarding blurb'],
+    stay_in_touch:['What was discussed','Reason to stay in touch','Suggested light follow-up'],
+    pilot_beta:['What they want to test','Success criteria','Pilot next step'],
+    collaboration:['Shared interest','Possible collaboration','Dependencies'],
+    customer_discovery:['Current problem or pain','Current workaround','Desired outcome'],
+    investor_funding:['Stage fit','Interest signal','Materials requested'],
+    strategic_partnership:['Mutual value','Key decision-makers','Dependencies'],
+    speaking_media:['Topic or angle','Audience fit','Format and logistics'],
+    advisory_mentor:['Their expertise','Your specific ask','Commitment level'],
+    community_access:['Community value','Access path','Mutual asks and offers'],
+    custom:['Your custom fields','Key context','Next step']
+  };
+
   function byId(id){return document.getElementById(id);} 
   function now(){return Date.now?Date.now():(new Date()).getTime();}
-  function txt(el){return (el&&el.textContent?el.textContent:'').replace(/\\s+/g,' ').trim().toLowerCase();}
+  function txt(el){return (el&&el.textContent?el.textContent:'').replace(/\s+/g,' ').trim().toLowerCase();}
+  function titleCaseFromId(id){return TEMPLATE_NAMES[id]||String(id||'Selected template').replace(/_/g,' ').replace(/\b\w/g,function(m){return m.toUpperCase();});}
   function inVisitorMode(){
     try{var q=new URLSearchParams(location.search||'');return q.get('visitor')==='1'||q.get('mode')==='visitor'||q.get('view')==='visitor'||q.get('nfc')==='1'||document.body.classList.contains('tapd-hard-header-off');}catch(e){return false;}
   }
@@ -63,14 +105,39 @@ const controller = `
     if(typeof window.tpl56Open==='function')return window.tpl56Open();
     if(typeof window.goTemplateEditor==='function')return window.goTemplateEditor();
   }
+  function cleanRelationshipHubText(){
+    var root=byId('page-relhub-56')||document;
+    try{
+      root.querySelectorAll('button,.tapd54-tab,[role="tab"]').forEach(function(el){
+        var label=(el.textContent||'').replace(/\s+/g,' ').trim();
+        if(label==='Captured')el.textContent='Awaiting Review';
+        if(label==='Drafts'){el.style.display='none';el.setAttribute('aria-hidden','true');}
+      });
+      root.querySelectorAll('.tapd54-section-title,.tapd54-status-badge').forEach(function(el){
+        var label=(el.textContent||'').replace(/\s+/g,' ').trim();
+        if(label==='Captured'||label==='Captured Conversations')el.textContent='Awaiting Review';
+      });
+      root.querySelectorAll('.tapd54-section-desc,.tapd54-hub-sub,.tapd54-empty span').forEach(function(el){
+        var v=el.textContent||'';
+        v=v.replace('People who tapped your NFC card and sent their TAPD card. Accept to start capturing.','People you\'ve connected with. Connections from NFC taps and captured conversations appear here.');
+        v=v.replace('Recordings transcribed, not yet drafted.','Captured conversations waiting for your review.');
+        v=v.replace('Tap the gold Capture button to record a conversation.','Captured conversations will appear here before follow-up approval.');
+        if(v!==el.textContent)el.textContent=v;
+      });
+    }catch(e){}
+  }
   function openRelationshipHubClean(){
     closeOwnerPanel();
     document.body.classList.remove('tapd-owner-tools-mode','ot55-active');
     document.body.classList.add('tapd-relhub-mode');
-    if(typeof window.rh56Open==='function')return window.rh56Open();
-    var page=byId('page-relhub-56');
-    if(page){document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});page.classList.add('active');try{if(typeof window.rh56Render==='function')window.rh56Render();}catch(e){}return;}
-    if(typeof window.tapdToast==='function')window.tapdToast('Relationship Hub is not available on this build yet','warn');
+    if(typeof window.rh56Open==='function')window.rh56Open();
+    else{
+      var page=byId('page-relhub-56');
+      if(page){document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});page.classList.add('active');try{if(typeof window.rh56Render==='function')window.rh56Render();}catch(e){}}
+      else if(typeof window.tapdToast==='function')window.tapdToast('Relationship Hub is not available on this build yet','warn');
+    }
+    setTimeout(cleanRelationshipHubText,30);
+    setTimeout(cleanRelationshipHubText,180);
   }
   function route(action){
     if(action==='owner')return openOwnerToolsPreserved();
@@ -100,7 +167,46 @@ const controller = `
     route(action);
     return false;
   }
+  function goCaptureWithTemplate(id){
+    closeOwnerPanel();
+    closeFullPages();
+    try{localStorage.setItem('tapd_active_template',id);}catch(e){}
+    if(typeof window.currentRelationshipMode!=='undefined')window.currentRelationshipMode=id;
+    if(typeof window.goCapture==='function')window.goCapture();
+    else if(typeof window.showPage==='function')window.showPage('capture');
+    else{document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});var c=byId('capture');if(c)c.classList.add('active');}
+    try{if(typeof window.showScreen==='function')window.showScreen('sc-idle');}catch(e){}
+    setTimeout(function(){showTemplateCheatSheet(id);},80);
+  }
+  function showTemplateCheatSheet(id){
+    var old=byId('tapdTemplateCheatSheet'); if(old)old.remove();
+    var hints=TEMPLATE_HINTS[id]||TEMPLATE_HINTS.custom;
+    var sheet=document.createElement('div');
+    sheet.id='tapdTemplateCheatSheet';
+    sheet.innerHTML='<div class="tapd-cheat-card"><button class="tapd-cheat-close" type="button" aria-label="Close">×</button><p class="tapd-cheat-kicker">Template selected</p><p class="tapd-cheat-title">'+titleCaseFromId(id)+'</p><p class="tapd-cheat-sub">Capture with this structure in mind. TAPDconnex will use this template when shaping the follow-up.</p><div class="tapd-cheat-list">'+hints.map(function(h){return '<span>'+h+'</span>';}).join('')+'</div><button class="tapd-cheat-primary" type="button">Got it — capture now</button></div>';
+    document.body.appendChild(sheet);
+    sheet.querySelector('.tapd-cheat-close').onclick=function(){sheet.remove();};
+    sheet.querySelector('.tapd-cheat-primary').onclick=function(){sheet.remove();};
+    setTimeout(function(){sheet.classList.add('show');},20);
+  }
+  function injectCheatStyles(){
+    if(byId('tapdTemplateCheatSheetStyles'))return;
+    var style=document.createElement('style');
+    style.id='tapdTemplateCheatSheetStyles';
+    style.textContent='\n#tapdTemplateCheatSheet{position:fixed;inset:0;z-index:9999;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.38);opacity:0;pointer-events:none;transition:opacity .18s ease;}\n#tapdTemplateCheatSheet.show{opacity:1;pointer-events:auto;}\n.tapd-cheat-card{width:min(430px,calc(100vw - 24px));margin:0 12px 18px;background:#0D1117;border:1px solid rgba(234,179,8,.35);border-radius:22px;padding:18px 16px 16px;box-shadow:0 18px 60px rgba(0,0,0,.55);position:relative;font-family:Inter,sans-serif;}\n.tapd-cheat-close{position:absolute;right:12px;top:10px;width:30px;height:30px;border-radius:999px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.03);color:#8B9EB0;font-size:18px;}\n.tapd-cheat-kicker{font-size:10px;font-weight:900;letter-spacing:1.7px;text-transform:uppercase;color:#EAB308;margin-bottom:4px;}\n.tapd-cheat-title{font-size:18px;font-weight:900;color:#F0F4F8;margin-bottom:6px;}\n.tapd-cheat-sub{font-size:12px;line-height:1.55;color:#8B9EB0;margin-bottom:12px;padding-right:22px;}\n.tapd-cheat-list{display:grid;gap:7px;margin-bottom:14px;}\n.tapd-cheat-list span{font-size:12px;color:#F0F4F8;background:rgba(234,179,8,.07);border:1px solid rgba(234,179,8,.18);border-radius:12px;padding:9px 10px;}\n.tapd-cheat-primary{width:100%;height:44px;border-radius:14px;border:1px solid #EAB308;background:linear-gradient(135deg,#EAB308,#ca8a04);color:#050505;font-size:13px;font-weight:900;font-family:Inter,sans-serif;}';
+    document.head.appendChild(style);
+  }
+  function wrapTemplateSelection(){
+    if(window.__tapdTemplateSelectionWrapped||typeof window.tpl56SetActive!=='function')return;
+    window.__tapdTemplateSelectionWrapped=true;
+    var original=window.tpl56SetActive;
+    window.tpl56SetActive=function(id){
+      try{original.call(window,id);}catch(e){try{localStorage.setItem('tapd_active_template',id);}catch(x){}}
+      setTimeout(function(){goCaptureWithTemplate(id);},140);
+    };
+  }
   function boot(){
+    injectCheatStyles();
     document.addEventListener('pointerup',handleTopNav,true);
     document.addEventListener('click',handleTopNav,true);
     window.openTapdInboxFromSide=openRelationshipHubClean;
@@ -110,7 +216,11 @@ const controller = `
     window.openRelationshipHub=openRelationshipHubClean;
     window.tapdOpenTemplates=openTemplatesClean;
     window.openQuickTemplateSwitcher=openTemplatesClean;
-    console.log('[TAPD] Update 69B loaded — Owner Tools preserved; Relationship Hub opens separately.');
+    wrapTemplateSelection();
+    setTimeout(wrapTemplateSelection,250);
+    setTimeout(wrapTemplateSelection,800);
+    setTimeout(cleanRelationshipHubText,400);
+    console.log('[TAPD] Update 69B loaded — clean Relationship Hub labels and template capture cheat sheet active.');
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
@@ -124,7 +234,7 @@ if (html.includes('</body>')) {
 
 if (html !== before) {
   fs.writeFileSync(indexPath, html, 'utf8');
-  console.log('[TAPD build] Applied design-correct top navigation guard.');
+  console.log('[TAPD build] Applied clean Relationship Hub labels and template capture flow.');
 } else {
-  console.log('[TAPD build] No design-correction changes required.');
+  console.log('[TAPD build] No clean-index changes required.');
 }
