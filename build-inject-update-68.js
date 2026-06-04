@@ -16,6 +16,12 @@ html = html.replace('id="hardOwnerToolsBtn" onclick="tapdTopNav(\'owner\')">Owne
 html = html.replace('id="hardTemplatesBtn" onclick="tapdTopNav(\'templates\')">⚡ Templates</button>', 'id="hardTemplatesBtn">⚡ Templates</button>');
 html = html.replace('id="hardInboxBtn" onclick="tapdTopNav(\'hub\')">🧭 Relationship Hub</button>', 'id="hardInboxBtn">🧭 Relationship Hub</button>');
 
+html = html.replace(/Captured Conversations/g, 'Pending Review');
+html = html.replace(/>Captured</g, '>Pending Review<');
+html = html.replace(/Recordings transcribed, not yet drafted\./g, 'Conversations captured and waiting for your review.');
+html = html.replace(/No captures yet/g, 'Nothing pending yet');
+html = html.replace(/Tap the gold Capture button to record a conversation\./g, 'Captured conversations will appear here before follow-up approval.');
+
 const script = '<script id="tapd-safe-top-nav-script">\n' +
 '(function(){\n' +
 'var last=0;\n' +
@@ -36,4 +42,4 @@ html = html.replace(/<script id="tapd-safe-top-nav-script">[\s\S]*?<\/script>/, 
 html = html.replace('</body>', script + '\n</body>');
 
 fs.writeFileSync(indexPath, html, 'utf8');
-console.log('safe top nav applied');
+console.log('safe top nav and hub wording applied');
