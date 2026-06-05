@@ -31,12 +31,12 @@ const style = String.raw`
   .tapd-template-inline-save-wrap.is-dirty .tapd-template-changed-note{display:block!important;}
 
   .tapd-template-bottom-capture{
-    width:min(288px,100%)!important;height:54px!important;min-height:0!important;border-radius:16px!important;border:1px solid #EAB308!important;
+    width:100%!important;max-width:none!important;height:88px!important;min-height:0!important;border-radius:24px!important;border:1px solid #EAB308!important;
     background:linear-gradient(135deg,#FACC15 0%,#EAB308 52%,#B87503 100%)!important;color:#050505!important;
-    font-family:Inter,sans-serif!important;font-size:14px!important;font-weight:950!important;letter-spacing:-.12px!important;
-    cursor:pointer!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:9px!important;
-    box-shadow:0 0 0 1px rgba(234,179,8,.24),0 8px 22px rgba(234,179,8,.20)!important;
-    position:relative!important;overflow:hidden!important;margin:16px auto 4px!important;padding:0 20px!important;
+    font-family:Inter,sans-serif!important;font-size:17px!important;font-weight:950!important;text-transform:uppercase!important;letter-spacing:2px!important;
+    cursor:pointer!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:16px!important;
+    box-shadow:0 0 0 1px rgba(234,179,8,.22),0 12px 30px rgba(234,179,8,.22)!important;
+    position:relative!important;overflow:hidden!important;margin:18px 0 4px!important;padding:0 28px!important;
     animation:tapdCaptureLive 2.6s ease-in-out infinite!important;
   }
   .tapd-template-bottom-capture:before{
@@ -44,14 +44,20 @@ const style = String.raw`
     opacity:.0;animation:tapdCaptureShimmer 2.7s ease-in-out infinite;
   }
   .tapd-template-bottom-capture span{position:relative;z-index:1;}
-  .tapd-template-bottom-capture .tapd-capture-star{font-size:15px!important;line-height:1!important;animation:tapdCaptureStar 2.2s ease-in-out infinite!important;}
+  .tapd-template-bottom-capture .tapd-capture-wave{position:relative;z-index:1;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:4px!important;width:38px!important;height:24px!important;}
+  .tapd-template-bottom-capture .tapd-capture-wave i{display:block!important;width:4px!important;border-radius:999px!important;background:#050505!important;opacity:.50!important;animation:tapdWaveLive 1.15s ease-in-out infinite!important;}
+  .tapd-template-bottom-capture .tapd-capture-wave i:nth-child(1){height:10px!important;animation-delay:.00s!important;}
+  .tapd-template-bottom-capture .tapd-capture-wave i:nth-child(2){height:18px!important;animation-delay:.10s!important;}
+  .tapd-template-bottom-capture .tapd-capture-wave i:nth-child(3){height:26px!important;animation-delay:.20s!important;}
+  .tapd-template-bottom-capture .tapd-capture-wave i:nth-child(4){height:18px!important;animation-delay:.30s!important;}
+  .tapd-template-bottom-capture .tapd-capture-wave i:nth-child(5){height:10px!important;animation-delay:.40s!important;}
   .tapd-template-bottom-capture:after{
-    content:"";position:absolute;inset:5px;border-radius:13px;border:1px solid rgba(255,255,255,.20);pointer-events:none;
+    content:"";position:absolute;inset:10px;border-radius:19px;border:1px solid rgba(255,255,255,.22);pointer-events:none;
   }
-  @keyframes tapdCaptureLive{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-1px) scale(1.012)}}
-  @keyframes tapdCaptureShimmer{0%,18%{opacity:0;transform:translateX(-22%)}38%{opacity:.26}58%,100%{opacity:0;transform:translateX(22%)}}
-  @keyframes tapdCaptureStar{0%,100%{transform:scale(1);opacity:.92}50%{transform:scale(1.16);opacity:1}}
-  @media(max-width:420px){.tapd-template-bottom-capture{width:min(286px,100%)!important;height:52px!important;font-size:13px!important}.tapd-template-inline-save{height:36px!important;font-size:11px!important;min-width:64px!important}}
+  @keyframes tapdCaptureLive{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-1px) scale(1.006)}}
+  @keyframes tapdCaptureShimmer{0%,18%{opacity:0;transform:translateX(-22%)}38%{opacity:.24}58%,100%{opacity:0;transform:translateX(22%)}}
+  @keyframes tapdWaveLive{0%,100%{transform:scaleY(.78);opacity:.42}50%{transform:scaleY(1.08);opacity:.68}}
+  @media(max-width:420px){.tapd-template-bottom-capture{width:100%!important;height:78px!important;font-size:14px!important;letter-spacing:1.6px!important;border-radius:22px!important;gap:13px!important}.tapd-template-inline-save{height:36px!important;font-size:11px!important;min-width:64px!important}}
 </style>`;
 
 const script = String.raw`
@@ -180,7 +186,7 @@ const script = String.raw`
     capture.id='tapdTemplateBottomCapture';
     capture.type='button';
     capture.className='tapd-template-bottom-capture';
-    capture.innerHTML='<span class="tapd-capture-star">✦</span><span>Capture this moment</span>';
+    capture.innerHTML='<span class="tapd-capture-wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span>Capture this moment</span>';
     capture.onclick=function(ev){ev.preventDefault();ev.stopPropagation();startCapture();};
     var host=original.parentNode||document.body;
     host.insertBefore(capture,original);
@@ -236,7 +242,7 @@ else html += '\n'+script+'\n';
 
 if (html !== before) {
   fs.writeFileSync(indexPath, html, 'utf8');
-  console.log('[TAPD build] Applied refined template save/capture layout with single bottom CTA.');
+  console.log('[TAPD build] Applied centered template capture CTA matching primary capture styling.');
 } else {
   console.log('[TAPD build] Template save/capture layout already present.');
 }
