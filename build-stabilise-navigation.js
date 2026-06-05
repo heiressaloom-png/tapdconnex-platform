@@ -203,50 +203,71 @@ const controller = String.raw`
       +'.cheat-peek-list.tapd-peek-show-all .tapd-peek-extra{display:block;}\n'
       +'.tapd-peek-expand{width:100%;height:32px;margin-top:8px;border-radius:9px;background:transparent;border:1px dashed rgba(234,179,8,.25);color:#EAB308;font-size:11px;font-weight:800;font-family:Inter,sans-serif;cursor:pointer;letter-spacing:.3px;}\n'
       +'#tapdPainHub{padding:0 16px 24px;font-family:Inter,sans-serif;}\n'
-      +'.pain-hero{margin:6px 0 16px;}\n'
-      +'.pain-kicker{font-size:10px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:#EAB308;opacity:.85;margin-bottom:4px;}\n'
-      +'.pain-title{font-size:20px;font-weight:900;color:#F0F4F8;line-height:1.2;letter-spacing:-.3px;}\n'
-      +'.pain-rows{display:grid;gap:8px;margin-bottom:22px;}\n'
-      +'.pain-row{display:grid;grid-template-columns:38px 1fr 16px;gap:11px;align-items:center;padding:13px 14px;border-radius:14px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);cursor:pointer;transition:background .15s,border-color .15s;}\n'
-      +'.pain-row:active{background:rgba(255,255,255,.04);}\n'
-      +'.pain-row.urgent{border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.05);}\n'
-      +'.pain-row.urgent:active{background:rgba(239,68,68,.10);}\n'
-      +'.pain-row.warn{border-color:rgba(234,179,8,.28);background:rgba(234,179,8,.04);}\n'
-      +'.pain-row.calm{border-color:rgba(14,206,192,.22);background:rgba(14,206,192,.03);}\n'
-      +'.pain-row.none{opacity:.55;cursor:default;}\n'
-      +'.pain-emoji{width:38px;height:38px;border-radius:11px;background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center;font-size:18px;}\n'
-      +'.pain-row.urgent .pain-emoji{background:rgba(239,68,68,.12);}\n'
-      +'.pain-row.warn .pain-emoji{background:rgba(234,179,8,.10);}\n'
-      +'.pain-row.calm .pain-emoji{background:rgba(14,206,192,.10);}\n'
-      +'.pain-headline{font-size:14px;font-weight:800;color:#F0F4F8;line-height:1.3;letter-spacing:-.1px;}\n'
-      +'.pain-headline b{font-weight:900;}\n'
-      +'.pain-row.urgent .pain-headline b{color:#FCA5A5;}\n'
-      +'.pain-row.warn .pain-headline b{color:#EAB308;}\n'
-      +'.pain-row.calm .pain-headline b{color:#0ECEC0;}\n'
-      +'.pain-sub{font-size:11px;color:rgba(255,255,255,.50);margin-top:3px;line-height:1.4;}\n'
-      +'.pain-arrow{color:rgba(255,255,255,.30);font-size:18px;}\n'
-      +'.pain-row.none .pain-arrow{display:none;}\n'
-      +'.pain-tabs{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}\n'
-      +'.pain-tab{min-height:44px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);color:rgba(255,255,255,.72);font-size:13px;font-weight:800;font-family:Inter,sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:space-between;line-height:1.2;padding:0 14px;letter-spacing:-.1px;}\n'
-      +'.pain-tab-label{display:flex;align-items:center;gap:9px;}\n'
-      +'.pain-tab-count{font-size:11px;font-weight:900;opacity:.55;}\n'
+      +'.pain-hero{margin:6px 0 14px;}\n'
+      +'.pain-kicker{font-size:9px;font-weight:900;letter-spacing:2.2px;text-transform:uppercase;color:#EAB308;opacity:.8;margin-bottom:3px;}\n'
+      +'.pain-title{font-size:19px;font-weight:900;color:#F0F4F8;line-height:1.2;letter-spacing:-.3px;}\n'
+      +'.pain-summary-line{display:flex;flex-wrap:wrap;gap:0;font-size:12px;color:rgba(255,255,255,.55);margin:8px 0 16px;letter-spacing:.1px;line-height:1.5;}\n'
+      +'.pain-summary-seg{cursor:pointer;padding:2px 0;}\n'
+      +'.pain-summary-seg b{font-weight:900;color:#F0F4F8;}\n'
+      +'.pain-summary-seg.urgent b{color:#FCA5A5;}\n'
+      +'.pain-summary-seg.warn b{color:#EAB308;}\n'
+      +'.pain-summary-seg.calm b{color:#0ECEC0;}\n'
+      +'.pain-summary-sep{padding:0 8px;color:rgba(255,255,255,.20);}\n'
+      +'.pain-scope-wrap{margin-bottom:14px;}\n'
+      +'.pain-scope-pill{display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 13px;border-radius:999px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.78);font-size:11px;font-weight:800;font-family:Inter,sans-serif;cursor:pointer;letter-spacing:.2px;}\n'
+      +'.pain-scope-pill.active{background:rgba(14,206,192,.10);border-color:rgba(14,206,192,.45);color:#0ECEC0;}\n'
+      +'.pain-scope-sheet{display:none;margin:8px 0 0;padding:10px;border-radius:14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);}\n'
+      +'.pain-scope-sheet.show{display:block;}\n'
+      +'.pain-scope-opt{display:block;width:100%;text-align:left;height:36px;padding:0 12px;margin:2px 0;border-radius:9px;background:transparent;border:none;color:rgba(255,255,255,.72);font-size:12px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;}\n'
+      +'.pain-scope-opt.active{background:rgba(14,206,192,.10);color:#0ECEC0;}\n'
+      +'.pain-custom-range{display:none;gap:8px;margin:8px 0 0;align-items:center;flex-wrap:wrap;}\n'
+      +'.pain-custom-range.show{display:flex;}\n'
+      +'.pain-custom-range label{font-size:10px;color:rgba(255,255,255,.55);font-weight:700;letter-spacing:.5px;text-transform:uppercase;}\n'
+      +'.pain-custom-range input[type="date"]{height:32px;padding:0 10px;border-radius:8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);color:#F0F4F8;font-family:Inter,sans-serif;font-size:12px;}\n'
+      +'.pain-custom-range button{height:32px;padding:0 12px;border-radius:8px;background:rgba(14,206,192,.12);border:1px solid rgba(14,206,192,.40);color:#0ECEC0;font-size:11px;font-weight:800;font-family:Inter,sans-serif;cursor:pointer;}\n'
+      +'.pain-filter-chip{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 10px;padding:8px 12px;border-radius:10px;background:rgba(234,179,8,.08);border:1px solid rgba(234,179,8,.30);}\n'
+      +'.pain-filter-chip-text{font-size:11px;font-weight:700;color:#EAB308;line-height:1.3;}\n'
+      +'.pain-filter-chip-text b{font-weight:900;}\n'
+      +'.pain-filter-chip-clear{width:22px;height:22px;border-radius:50%;background:rgba(234,179,8,.18);border:none;color:#EAB308;font-size:13px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;}\n'
+      +'.pain-tabs{display:flex;gap:6px;margin-bottom:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px;}\n'
+      +'.pain-tabs::-webkit-scrollbar{display:none;}\n'
+      +'.pain-tab{flex-shrink:0;height:36px;padding:0 13px;border-radius:999px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.10);color:rgba(255,255,255,.72);font-size:12px;font-weight:800;font-family:Inter,sans-serif;cursor:pointer;display:flex;align-items:center;gap:6px;letter-spacing:-.1px;}\n'
+      +'.pain-tab-count{font-size:10px;font-weight:900;opacity:.55;padding:1px 6px;border-radius:999px;background:rgba(255,255,255,.06);}\n'
       +'.pain-tab.active{background:linear-gradient(135deg,#EAB308,#ca8a04);border-color:#EAB308;color:#050505;}\n'
-      +'.pain-tab.active .pain-tab-count{opacity:.80;}\n'
-      +'.pain-cards{display:grid;gap:10px;}\n'
-      +'.pain-card{padding:15px 15px 13px;border-radius:14px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.07);}\n'
-      +'.pain-card-name{font-size:15px;font-weight:900;color:#F0F4F8;letter-spacing:-.2px;margin-bottom:7px;}\n'
-      +'.pain-badge{display:inline-block;padding:3px 9px;border-radius:999px;font-size:10px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;}\n'
-      +'.pain-badge.opp{background:rgba(234,179,8,.12);color:#EAB308;border:1px solid rgba(234,179,8,.30);}\n'
-      +'.pain-badge.warm{background:rgba(14,206,192,.10);color:#0ECEC0;border:1px solid rgba(14,206,192,.25);}\n'
-      +'.pain-badge.calm{background:rgba(255,255,255,.04);color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.10);}\n'
-      +'.pain-card-expect{margin-top:12px;font-size:10px;font-weight:800;color:#0ECEC0;letter-spacing:.6px;text-transform:uppercase;margin-bottom:4px;}\n'
-      +'.pain-card-action{font-size:13px;color:#F0F4F8;line-height:1.45;}\n'
-      +'.pain-card-age{margin-top:10px;font-size:11px;color:rgba(255,255,255,.42);letter-spacing:.2px;display:flex;align-items:center;gap:5px;}\n'
-      +'.pain-card-age.overdue{color:#FCA5A5;font-weight:700;}\n'
-      +'.pain-card-age .age-warn{display:none;}\n'
-      +'.pain-card-age.overdue .age-warn{display:inline;}\n'
+      +'.pain-tab.active .pain-tab-count{background:rgba(0,0,0,.15);opacity:.85;}\n'
+      +'.pain-section-heading{display:flex;align-items:baseline;justify-content:space-between;margin:14px 0 8px;font-family:Inter,sans-serif;}\n'
+      +'.pain-section-title{font-size:11px;font-weight:900;letter-spacing:1.8px;text-transform:uppercase;color:#F0F4F8;}\n'
+      +'.pain-section-meta{font-size:10px;letter-spacing:.4px;color:rgba(255,255,255,.40);font-weight:600;}\n'
+      +'.pain-list{display:flex;flex-direction:column;}\n'
+      +'.pain-row-clean{display:grid;grid-template-columns:8px 1fr auto 14px;gap:11px;align-items:center;padding:13px 4px;border-bottom:1px solid rgba(255,255,255,.05);cursor:pointer;background:transparent;border-left:none;border-right:none;border-top:none;width:100%;text-align:left;font-family:Inter,sans-serif;transition:background .12s;}\n'
+      +'.pain-row-clean:active{background:rgba(255,255,255,.02);}\n'
+      +'.pain-row-clean:last-child{border-bottom:none;}\n'
+      +'.pain-dot{width:8px;height:8px;border-radius:50%;}\n'
+      +'.pain-dot.opp{background:#EAB308;box-shadow:0 0 6px rgba(234,179,8,.45);}\n'
+      +'.pain-dot.warm{background:#0ECEC0;}\n'
+      +'.pain-dot.calm{background:rgba(255,255,255,.30);}\n'
+      +'.pain-row-text{min-width:0;}\n'
+      +'.pain-row-name{font-size:14px;font-weight:800;color:#F0F4F8;letter-spacing:-.1px;line-height:1.25;}\n'
+      +'.pain-row-line{font-size:11px;color:rgba(255,255,255,.50);line-height:1.4;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}\n'
+      +'.pain-warn{color:#FCA5A5;font-size:13px;font-weight:900;}\n'
+      +'.pain-row-chev{color:rgba(255,255,255,.25);font-size:14px;}\n'
+      +'.pain-row-clean.open .pain-row-chev{transform:rotate(90deg);}\n'
+      +'.pain-expanded{padding:14px 4px 18px;border-bottom:1px solid rgba(255,255,255,.05);background:rgba(234,179,8,.025);margin:0 -4px;border-radius:0;will-change:transform,opacity;touch-action:pan-y;}\n'
+      +'.pain-exp-badge{display:inline-block;padding:3px 9px;border-radius:999px;font-size:9px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;margin-bottom:10px;margin-left:14px;}\n'
+      +'.pain-exp-badge.opp{background:rgba(234,179,8,.12);color:#EAB308;border:1px solid rgba(234,179,8,.30);}\n'
+      +'.pain-exp-badge.warm{background:rgba(14,206,192,.10);color:#0ECEC0;border:1px solid rgba(14,206,192,.25);}\n'
+      +'.pain-exp-badge.calm{background:rgba(255,255,255,.04);color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.10);}\n'
+      +'.pain-exp-label{font-size:9px;font-weight:900;color:#0ECEC0;letter-spacing:.7px;text-transform:uppercase;margin:6px 14px 4px;}\n'
+      +'.pain-exp-action{font-size:13px;color:#F0F4F8;line-height:1.5;margin:0 14px 12px;}\n'
+      +'.pain-exp-age{font-size:10px;color:rgba(255,255,255,.42);letter-spacing:.3px;margin:0 14px 12px;}\n'
+      +'.pain-exp-age.overdue{color:#FCA5A5;font-weight:700;}\n'
+      +'.pain-exp-actions{display:flex;gap:8px;margin:0 14px;}\n'
+      +'.pain-exp-btn{flex:1;height:36px;border-radius:9px;font-size:11px;font-weight:800;font-family:Inter,sans-serif;cursor:pointer;letter-spacing:.2px;border:1px solid;}\n'
+      +'.pain-exp-btn.primary{background:linear-gradient(135deg,#EAB308,#ca8a04);border-color:#EAB308;color:#050505;}\n'
+      +'.pain-exp-btn.secondary{background:transparent;border-color:rgba(14,206,192,.40);color:#0ECEC0;}\n'
+      +'.pain-exp-swipe-hint{text-align:center;font-size:9px;color:rgba(255,255,255,.30);margin:10px 0 0;letter-spacing:.5px;}\n'
       +'.pain-empty{padding:36px 16px;text-align:center;color:rgba(255,255,255,.45);}\n'
-      +'.pain-empty-emoji{font-size:32px;margin-bottom:8px;opacity:.6;}\n'
+      +'.pain-empty-emoji{font-size:28px;margin-bottom:8px;opacity:.6;}\n'
       +'.pain-empty-title{font-size:13px;font-weight:700;color:rgba(255,255,255,.65);margin-bottom:4px;}\n'
       +'.pain-empty-sub{font-size:11px;line-height:1.5;}\n'
       +'.tapd-cheat-primary{width:100%;height:44px;border-radius:14px;border:1px solid #EAB308;background:linear-gradient(135deg,#EAB308,#ca8a04);color:#050505;font-size:13px;font-weight:900;font-family:Inter,sans-serif;}';
@@ -654,9 +675,9 @@ const controller = String.raw`
     return out;
   }
 
-  // Categorise once, use everywhere.
+  // Categorise once, use everywhere. Respects the active date scope.
   function categorisePeople(){
-    var people=getAllPeople();
+    var people=getAllPeople().filter(inDateScope);
     var opportunities=[],needs=[],done=[],all=people;
     var cold=[],awaiting=[],uncaptured=[];
     people.forEach(function(p){
@@ -674,26 +695,98 @@ const controller = String.raw`
   }
 
   function nameOf(p){return p.person_name||p.name||'Name not captured';}
+  function idOf(p){return String(p.id||p.capture_id||p.connection_id||(p.person_name||p.name||'')+(p.captured_at||p.date||''));}
+
+  // The action one-liner. MUST come from the AI summary, not a status word.
+  // Priority: action_summary → first sentence of contact_message → summary → notes.
+  function summaryOneLiner(item){
+    var sources=[item.action_summary,item.contact_message,item.summary,item.notes,item.priority_reason];
+    for(var i=0;i<sources.length;i++){
+      var s=String(sources[i]==null?'':sources[i]).trim();
+      if(!s)continue;
+      var line=s.split(/[.!?\n]/)[0].trim();
+      if(line.length<6)continue;
+      if(line.length>72)line=line.slice(0,69)+'\u2026';
+      return line;
+    }
+    return nextActionFor(item); // status-based fallback only when nothing's captured yet
+  }
+
+  function sortOldestFirst(arr){
+    return arr.slice().sort(function(a,b){return daysSince(b)-daysSince(a);});
+  }
+
+  // ── Filter state ──────────────────────────────────────────────────────
+  // Active date scope: 'now' (last 72h) | 'week' | 'month' | 'all' | 'custom'
+  // Active drill: null | 'cold' | 'awaiting' | 'uncaptured'
+  var painState={scope:'now',customFrom:null,customTo:null,drill:null,expandedId:null,scopeSheetOpen:false};
+
+  function getTimestamp(item){
+    var t=item.captured_at||item.date||item.created_at||item.timestamp||0;
+    if(!t)return 0;
+    return (typeof t==='string')?Date.parse(t):t;
+  }
+  function inDateScope(item){
+    var ts=getTimestamp(item);
+    var now=Date.now();
+    if(painState.scope==='all')return true;
+    if(!ts)return painState.scope==='all'; // undated items show only in All
+    if(painState.scope==='now')return (now-ts)<=(72*3600*1000);
+    if(painState.scope==='week')return (now-ts)<=(7*86400000);
+    if(painState.scope==='month')return (now-ts)<=(30*86400000);
+    if(painState.scope==='custom'){
+      var from=painState.customFrom||0;
+      var to=painState.customTo||now;
+      return ts>=from && ts<=to;
+    }
+    return true;
+  }
+  function scopeLabel(){
+    if(painState.scope==='now')return 'last 72 hours';
+    if(painState.scope==='week')return 'this week';
+    if(painState.scope==='month')return 'this month';
+    if(painState.scope==='custom')return 'your selected range';
+    return 'all time';
+  }
 
   function renderPersonCard(p){
     var t=templateOf(p);
-    var badgeTxt=badgeForTemplate(t);
     var bClass=badgeClass(t);
-    var action=nextActionFor(p);
     var d=daysSince(p);
-    var age=ageLabel(d);
-    // Overdue rules: opportunities >= 3 days, drafts/awaiting >= 1 day
+    // Overdue: opps 3d+, drafts/awaiting 1d+
     var overdue=false;
     if(isOpportunity(p)&&!isSent(p)&&d>=3)overdue=true;
     else if(isAwaitingFollowup(p)&&d>=1)overdue=true;
-    var firstName=String(nameOf(p)).split(' ')[0]||'they';
-    return '<div class="pain-card">'
-      +'<p class="pain-card-name">'+esc(nameOf(p))+'</p>'
-      +'<span class="pain-badge '+bClass+'">'+esc(badgeTxt)+'</span>'
-      +'<p class="pain-card-expect">What '+esc(firstName)+' is expecting from you</p>'
-      +'<p class="pain-card-action">'+esc(action)+'</p>'
-      +'<p class="pain-card-age'+(overdue?' overdue':'')+'"><span class="age-warn">\u26A0</span><span>Captured '+esc(age)+'</span></p>'
+    var rowId=idOf(p);
+    var oneLine=summaryOneLiner(p);
+    var isOpen=painState.expandedId===rowId;
+    var rowHtml='<button type="button" class="pain-row-clean'+(isOpen?' open':'')+'" data-row-id="'+esc(rowId)+'" onclick="tapdPainToggleRow(this.getAttribute(\'data-row-id\'))">'
+      +'<span class="pain-dot '+bClass+'"></span>'
+      +'<span class="pain-row-text">'
+        +'<span class="pain-row-name">'+esc(nameOf(p))+'</span>'
+        +'<span class="pain-row-line">'+esc(oneLine)+'</span>'
+      +'</span>'
+      +'<span class="pain-warn">'+(overdue?'\u26A0':'')+'</span>'
+      +'<span class="pain-row-chev">\u203A</span>'
+      +'</button>';
+    if(!isOpen)return rowHtml;
+    // Expanded inline detail. Touch-swipe-right to close.
+    var firstName=String(nameOf(p)).split(' ')[0]||'them';
+    var badgeTxt=badgeForTemplate(t);
+    var ageStr='Captured '+ageLabel(d);
+    var actionLine=summaryOneLiner(p);
+    var expHtml='<div class="pain-expanded" data-row-id="'+esc(rowId)+'">'
+      +'<span class="pain-exp-badge '+bClass+'">'+esc(badgeTxt)+'</span>'
+      +'<p class="pain-exp-label">What '+esc(firstName)+' is expecting from you</p>'
+      +'<p class="pain-exp-action">'+esc(actionLine)+'</p>'
+      +'<p class="pain-exp-age'+(overdue?' overdue':'')+'">'+(overdue?'\u26A0 ':'')+esc(ageStr)+'</p>'
+      +'<div class="pain-exp-actions">'
+        +'<button type="button" class="pain-exp-btn primary" onclick="tapdPainOpenItem(\''+esc(rowId)+'\')">Open follow-up</button>'
+        +'<button type="button" class="pain-exp-btn secondary" onclick="tapdPainCloseRow()">Close</button>'
+      +'</div>'
+      +'<p class="pain-exp-swipe-hint">Swipe right to close \u2192</p>'
       +'</div>';
+    return rowHtml+expHtml;
   }
 
   function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];});}
@@ -706,87 +799,178 @@ const controller = String.raw`
 
   function renderTabContent(tab,cats){
     var list,empty;
-    if(tab==='opp'){list=cats.opportunities;empty=renderEmpty('🔥','No opportunities yet','Captured conversations with opportunity templates appear here.');}
-    else if(tab==='need'){list=cats.needs;empty=renderEmpty('🤝','Nothing needs you right now','Anything waiting for your move will appear here.');}
-    else if(tab==='done'){list=cats.done;empty=renderEmpty('✅','Nothing sent yet','Follow-ups you send appear here so you can track replies.');}
-    else {list=cats.all;empty=renderEmpty('👥','No relationships yet','Every captured conversation and NFC tap appears here.');}
+    if(tab==='opp'){list=cats.opportunities;empty=renderEmpty('\uD83D\uDD25','No opportunities in '+scopeLabel(),'Captured conversations with opportunity templates appear here.');}
+    else if(tab==='need'){list=cats.needs;empty=renderEmpty('\uD83E\uDD1D','Nothing awaits you in '+scopeLabel(),'Anything waiting on your next move will appear here.');}
+    else if(tab==='done'){list=cats.done;empty=renderEmpty('\u2705','Nothing followed up in '+scopeLabel(),'Follow-ups you send appear here so you can track replies.');}
+    else {list=cats.all;empty=renderEmpty('\uD83D\uDC65','No people in '+scopeLabel(),'Captured conversations and connections in this window appear here.');}
+    if(painState.drill==='cold')list=list.filter(function(p){return isOpportunity(p)&&!isSent(p)&&daysSince(p)>=3;});
+    else if(painState.drill==='awaiting')list=list.filter(isAwaitingFollowup);
+    else if(painState.drill==='uncaptured')list=list.filter(isUncaptured);
     if(!list.length)return empty;
-    return '<div class="pain-cards">'+list.map(renderPersonCard).join('')+'</div>';
+    list=sortOldestFirst(list); // oldest pain first
+    return '<div class="pain-list">'+list.map(renderPersonCard).join('')+'</div>';
   }
 
-  // Switch tab — re-renders just the cards container.
-  window.tapdPainTab=function(tab){
-    var hub=document.getElementById('tapdPainHub');if(!hub)return;
-    var cats=categorisePeople();
-    hub.querySelectorAll('.pain-tab').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-tab')===tab);});
-    var slot=hub.querySelector('#tapdPainTabContent');
-    if(slot)slot.innerHTML=renderTabContent(tab,cats);
-    try{hub.dataset.activeTab=tab;}catch(e){}
+  // Toggle inline expand on a row.
+  window.tapdPainToggleRow=function(rowId){
+    painState.expandedId=(painState.expandedId===rowId)?null:rowId;
+    rerenderHub();
+  };
+  window.tapdPainCloseRow=function(){
+    painState.expandedId=null;
+    rerenderHub();
+  };
+  // Hook to the existing follow-up open functions if present.
+  window.tapdPainOpenItem=function(rowId){
+    try{
+      if(typeof tapd49OpenFollowup==='function'){tapd49OpenFollowup(rowId);return;}
+      if(typeof tapd49OpenConnection==='function'){tapd49OpenConnection(rowId);return;}
+    }catch(e){}
+  };
+  // Toggle the date scope sheet.
+  window.tapdPainToggleScopeSheet=function(){
+    painState.scopeSheetOpen=!painState.scopeSheetOpen;
+    rerenderHub();
   };
 
-  // Pain row click → jump to the relevant tab.
-  window.tapdPainJump=function(tab){if(window.tapdPainTab)window.tapdPainTab(tab);};
+  // Switch tab — re-renders the whole hub so chips and counts stay in sync.
+  window.tapdPainTab=function(tab){
+    var hub=document.getElementById('tapdPainHub');if(!hub)return;
+    try{hub.dataset.activeTab=tab;}catch(e){}
+    // Tab switch alone does not clear drill-down — user can layer them.
+    rerenderHub();
+  };
+
+  // Pain row click → set drill-down filter AND jump to the relevant tab.
+  window.tapdPainJump=function(tab,drill){
+    var hub=document.getElementById('tapdPainHub');if(!hub)return;
+    try{hub.dataset.activeTab=tab;}catch(e){}
+    painState.drill=drill||null;
+    rerenderHub();
+  };
+
+  // Clear drill-down filter chip.
+  window.tapdPainClearDrill=function(){
+    painState.drill=null;
+    rerenderHub();
+  };
+
+  // Change date scope.
+  window.tapdPainSetScope=function(scope){
+    painState.scope=scope;
+    // Custom scope: do not auto-apply until user hits Apply, but show inputs.
+    if(scope!=='custom'){painState.customFrom=null;painState.customTo=null;}
+    rerenderHub();
+    if(scope==='custom'){
+      var box=document.querySelector('.pain-custom-range');
+      if(box)box.classList.add('show');
+    }
+  };
+
+  // Apply custom date range.
+  window.tapdPainApplyCustom=function(){
+    var f=document.getElementById('painCustomFrom');
+    var t=document.getElementById('painCustomTo');
+    var from=f&&f.value?Date.parse(f.value):null;
+    var to=t&&t.value?(Date.parse(t.value)+86400000-1):null; // include the "to" day
+    if(from)painState.customFrom=from;
+    if(to)painState.customTo=to;
+    painState.scope='custom';
+    rerenderHub();
+  };
+
+  function rerenderHub(){
+    var body=findHubBody();
+    if(body){body.innerHTML=renderPainkillerHub();body.dataset.tapdPainHubRendered='1';}
+  }
 
   function renderPainkillerHub(){
     var cats=categorisePeople();
     var n=function(a){return a.length;};
-    // Pain rows — each row names a consequence, not a metric.
-    var rows=[];
+    var activeTab=(document.getElementById('tapdPainHub')&&document.getElementById('tapdPainHub').dataset.activeTab)||'opp';
+
+    // Pain summary line — one row replacing the old 3 stacked rows.
+    var segs=[];
     var actionCount=0;
     if(n(cats.cold)>0){
       actionCount+=n(cats.cold);
-      var coldLeader=cats.cold[0];
-      rows.push('<div class="pain-row urgent" onclick="tapdPainJump(\'opp\')">'
-        +'<div class="pain-emoji">\uD83D\uDD25</div>'
-        +'<div><div class="pain-headline"><b>'+n(cats.cold)+'</b> '+(n(cats.cold)===1?'opportunity is':'opportunities are')+' going cold</div>'
-        +'<div class="pain-sub">'+esc(nameOf(coldLeader))+' \u00B7 '+esc(badgeForTemplate(templateOf(coldLeader)))+' \u00B7 captured '+esc(ageLabel(daysSince(coldLeader)))+', no follow-up sent</div></div>'
-        +'<div class="pain-arrow">\u203A</div></div>');
+      segs.push('<span class="pain-summary-seg urgent" onclick="tapdPainJump(\'opp\',\'cold\')"><b>'+n(cats.cold)+' cold</b></span>');
     }
     if(n(cats.awaiting)>0){
       actionCount+=n(cats.awaiting);
-      var oldest=cats.awaiting.slice().sort(function(a,b){return daysSince(b)-daysSince(a);})[0];
-      rows.push('<div class="pain-row warn" onclick="tapdPainJump(\'need\')">'
-        +'<div class="pain-emoji">\u23F0</div>'
-        +'<div><div class="pain-headline"><b>'+n(cats.awaiting)+'</b> follow-'+(n(cats.awaiting)===1?'up is':'ups are')+' sitting in draft</div>'
-        +'<div class="pain-sub">Longest one has been waiting '+esc(ageLabel(daysSince(oldest)))+'. They\u2019re starting to wonder.</div></div>'
-        +'<div class="pain-arrow">\u203A</div></div>');
+      segs.push('<span class="pain-summary-seg warn" onclick="tapdPainJump(\'need\',\'awaiting\')"><b>'+n(cats.awaiting)+' in draft</b></span>');
     }
     if(n(cats.uncaptured)>0){
       actionCount+=n(cats.uncaptured);
-      rows.push('<div class="pain-row calm" onclick="tapdPainJump(\'need\')">'
-        +'<div class="pain-emoji">\uD83D\uDCDD</div>'
-        +'<div><div class="pain-headline"><b>'+n(cats.uncaptured)+'</b> '+(n(cats.uncaptured)===1?'conversation you haven\u2019t':'conversations you haven\u2019t')+' captured</div>'
-        +'<div class="pain-sub">Capture them before the details fade. Memory loses 50% in 24 hours.</div></div>'
-        +'<div class="pain-arrow">\u203A</div></div>');
+      segs.push('<span class="pain-summary-seg calm" onclick="tapdPainJump(\'need\',\'uncaptured\')"><b>'+n(cats.uncaptured)+' uncaptured</b></span>');
     }
-    if(!rows.length){
-      rows.push('<div class="pain-row none">'
-        +'<div class="pain-emoji">\u2728</div>'
-        +'<div><div class="pain-headline">You\u2019re all caught up</div>'
-        +'<div class="pain-sub">Every relationship has been acted on. Capture your next conversation when it happens.</div></div>'
-        +'<div class="pain-arrow">\u203A</div></div>');
+    var summaryLine='';
+    if(segs.length){
+      summaryLine='<div class="pain-summary-line">'+segs.join('<span class="pain-summary-sep">\u00B7</span>')+'</div>';
     }
-    var activeTab=(document.getElementById('tapdPainHub')&&document.getElementById('tapdPainHub').dataset.activeTab)||'opp';
-    function tab(id,emoji,label,count){
+
+    var heroTitle=actionCount>0
+      ? actionCount+' waiting on your next move'
+      : 'You\u2019re all caught up';
+
+    // Single scope pill with expandable sheet underneath.
+    var scopeLabels={now:'Right now',week:'This week',month:'This month',all:'All time',custom:'Custom range'};
+    var scopePill='<button class="pain-scope-pill'+(painState.scope!=='now'?' active':'')+'" onclick="tapdPainToggleScopeSheet()">'
+      +'\uD83D\uDCC5 '+esc(scopeLabels[painState.scope]||'Right now')+' '+(painState.scopeSheetOpen?'\u25B4':'\u25BE')+'</button>';
+    function so(id,label){return '<button class="pain-scope-opt'+(painState.scope===id?' active':'')+'" onclick="tapdPainSetScope(\''+id+'\');tapdPainToggleScopeSheet();">'+label+'</button>';}
+    var scopeSheet='<div class="pain-scope-sheet'+(painState.scopeSheetOpen?' show':'')+'">'
+      +so('now','Right now (last 72h)')
+      +so('week','This week')
+      +so('month','This month')
+      +so('all','All time')
+      +so('custom','Custom range\u2026')
+      +'</div>';
+    var customRange='<div class="pain-custom-range'+(painState.scope==='custom'?' show':'')+'">'
+      +'<label>From</label><input type="date" id="painCustomFrom" />'
+      +'<label>To</label><input type="date" id="painCustomTo" />'
+      +'<button onclick="tapdPainApplyCustom()">Apply</button>'
+      +'</div>';
+
+    // Horizontal tab pills — icon + count only. Full label shown as section heading.
+    function tab(id,emoji,count){
       return '<button class="pain-tab'+(id===activeTab?' active':'')+'" data-tab="'+id+'" onclick="tapdPainTab(\''+id+'\')">'
-        +'<span class="pain-tab-label">'+emoji+' '+label+'</span>'
+        +'<span>'+emoji+'</span>'
         +'<span class="pain-tab-count">'+count+'</span></button>';
     }
-    var heroSub=actionCount>0
-      ? actionCount+' thing'+(actionCount===1?'':'s')+' waiting on your next move.'
-      : 'Nothing waiting on your next move.';
+    var fullLabels={opp:'Opportunities',need:'Awaiting your move',done:'Followed up',all:'Everyone you\u2019ve met'};
+
+    // Drill-down filter chip
+    var drillChip='';
+    if(painState.drill){
+      var drillLabels={cold:'opportunities going cold',awaiting:'follow-ups sitting in draft',uncaptured:'conversations you haven\u2019t captured'};
+      var drilledCount=0;
+      if(painState.drill==='cold')drilledCount=cats.cold.length;
+      else if(painState.drill==='awaiting')drilledCount=cats.awaiting.length;
+      else if(painState.drill==='uncaptured')drilledCount=cats.uncaptured.length;
+      drillChip='<div class="pain-filter-chip">'
+        +'<div class="pain-filter-chip-text">Filtered: <b>'+esc(drillLabels[painState.drill]||'')+' ('+drilledCount+')</b></div>'
+        +'<button class="pain-filter-chip-clear" onclick="tapdPainClearDrill()" aria-label="Clear filter">\u00D7</button>'
+        +'</div>';
+    }
+
     return '<div id="tapdPainHub" data-active-tab="'+activeTab+'">'
       +'<div class="pain-hero">'
       +'<p class="pain-kicker">The people who need you now</p>'
-      +'<p class="pain-title">'+esc(heroSub)+'</p>'
+      +'<p class="pain-title">'+esc(heroTitle)+'</p>'
+      +summaryLine
       +'</div>'
-      +'<div class="pain-rows">'+rows.join('')+'</div>'
+      +'<div class="pain-scope-wrap">'+scopePill+scopeSheet+customRange+'</div>'
       +'<div class="pain-tabs">'
-      +tab('opp','\uD83D\uDD25','Opportunities',n(cats.opportunities))
-      +tab('need','\uD83E\uDD1D','Awaiting your move',n(cats.needs))
-      +tab('done','\u2705','Followed up',n(cats.done))
-      +tab('all','\uD83D\uDC65','Everyone you\u2019ve met',n(cats.all))
+      +tab('opp','\uD83D\uDD25',n(cats.opportunities))
+      +tab('need','\uD83E\uDD1D',n(cats.needs))
+      +tab('done','\u2705',n(cats.done))
+      +tab('all','\uD83D\uDC65',n(cats.all))
       +'</div>'
+      +'<div class="pain-section-heading">'
+      +'<span class="pain-section-title">'+esc(fullLabels[activeTab]||'')+'</span>'
+      +'<span class="pain-section-meta">Oldest first</span>'
+      +'</div>'
+      +drillChip
       +'<div id="tapdPainTabContent">'+renderTabContent(activeTab,cats)+'</div>'
       +'</div>';
   }
@@ -831,6 +1015,54 @@ const controller = String.raw`
     setTimeout(patchRelationshipHub,800);
   }
 
+  // Swipe-right to close the expanded card. Single delegated handler on body.
+  function installSwipeToCloseExpanded(){
+    if(window.__tapdPainSwipeInstalled)return;
+    window.__tapdPainSwipeInstalled=true;
+    var startX=0,startY=0,target=null,dragging=false;
+    document.addEventListener('touchstart',function(e){
+      var el=e.target&&e.target.closest?e.target.closest('.pain-expanded'):null;
+      if(!el)return;
+      target=el;
+      startX=e.touches[0].clientX;
+      startY=e.touches[0].clientY;
+      dragging=false;
+    },{passive:true});
+    document.addEventListener('touchmove',function(e){
+      if(!target)return;
+      var dx=e.touches[0].clientX-startX;
+      var dy=e.touches[0].clientY-startY;
+      // Only treat as horizontal swipe when clearly horizontal AND rightward.
+      if(!dragging){
+        if(Math.abs(dx)>10 && Math.abs(dx)>Math.abs(dy)*1.4 && dx>0)dragging=true;
+        else return;
+      }
+      if(dx>0){
+        target.style.transform='translateX('+dx+'px)';
+        target.style.opacity=String(Math.max(0,1-(dx/220)));
+      }
+    },{passive:true});
+    document.addEventListener('touchend',function(){
+      if(!target){return;}
+      var el=target;target=null;
+      if(!dragging){return;}
+      var transform=el.style.transform||'';
+      var m=transform.match(/translateX\(([-\d.]+)px\)/);
+      var dx=m?parseFloat(m[1]):0;
+      el.style.transition='transform .22s ease, opacity .22s ease';
+      if(dx>80){
+        el.style.transform='translateX(100%)';
+        el.style.opacity='0';
+        setTimeout(function(){painState.expandedId=null;rerenderHub();},200);
+      } else {
+        el.style.transform='';
+        el.style.opacity='';
+        setTimeout(function(){el.style.transition='';},220);
+      }
+      dragging=false;
+    });
+  }
+
   // Personalise the vCard button: inject owner's first name the moment visitor connects.
   // Runs after showConnected() hides the options and reveals visitorSent.
   function upgradeShowConnected(){
@@ -870,6 +1102,7 @@ const controller = String.raw`
     noopConnectSheet();
     watchCheatPanels();
     watchRelationshipHub();
+    installSwipeToCloseExpanded();
     window.buildVisitorStrip=buildCleanVisitorStrip;
     // Re-run if strip already rendered before our script loaded
     if(inVisitorMode()){
