@@ -15556,6 +15556,55 @@ FIXES:
 .rh56-title{font-size:16px;font-weight:700;color:var(--text);}
 .rh56-body{max-width:430px;margin:0 auto;padding:14px 16px 0;}
 
+
+
+/* ── RELATIONSHIP HUB — MVP1 RELATIONSHIP INTELLIGENCE ───────────── */
+.rh56-value-strip{
+  background:linear-gradient(135deg,rgba(234,179,8,.10),rgba(255,255,255,.025));
+  border:1px solid var(--gold-b);border-radius:16px;padding:14px 15px;margin-bottom:12px;
+}
+.rh56-value-kicker{font-size:10px;font-weight:900;letter-spacing:1.8px;text-transform:uppercase;color:var(--gold);margin-bottom:5px;}
+.rh56-value-title{font-size:18px;font-weight:850;line-height:1.25;color:var(--text);margin-bottom:5px;}
+.rh56-value-copy{font-size:12px;color:var(--t2);line-height:1.55;}
+.rh56-period-row{display:flex;gap:7px;overflow-x:auto;padding:2px 0 10px;margin-bottom:4px;scrollbar-width:none;}
+.rh56-period-row::-webkit-scrollbar{display:none;}
+.rh56-period-btn{min-height:34px;border-radius:999px;border:1px solid var(--border);background:var(--card);color:var(--t2);font-family:Inter,sans-serif;font-size:11px;font-weight:750;padding:0 11px;white-space:nowrap;}
+.rh56-period-btn.active{border-color:var(--gold-b);background:var(--gold-dim);color:var(--gold);}
+.rh56-signal-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px;}
+.rh56-signal-tile{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:11px 12px;cursor:pointer;min-height:74px;}
+.rh56-signal-tile.active{border-color:var(--gold-b);background:var(--gold-dim);}
+.rh56-signal-tile b{display:block;font-size:20px;line-height:1;color:var(--text);margin-bottom:4px;}
+.rh56-signal-tile span{display:block;font-size:11px;font-weight:850;color:var(--text);line-height:1.2;}
+.rh56-signal-tile small{display:block;font-size:10px;color:var(--t3);line-height:1.35;margin-top:3px;}
+.rh56-signal-tile.active span,.rh56-signal-tile.active b{color:var(--gold);}
+.rh56-tab-row{display:flex;gap:7px;overflow-x:auto;padding:2px 0 12px;margin-bottom:2px;scrollbar-width:none;}
+.rh56-tab-row::-webkit-scrollbar{display:none;}
+.rh56-tab{min-height:38px;border-radius:999px;border:1px solid var(--border);background:var(--card);color:var(--t2);font-family:Inter,sans-serif;font-size:11px;font-weight:800;padding:0 12px;white-space:nowrap;}
+.rh56-tab.active{border-color:var(--gold-b);background:var(--gold);color:#000;}
+.rh56-tab-count{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;margin-left:5px;border-radius:99px;background:rgba(0,0,0,.18);font-size:10px;font-weight:950;}
+.rh56-panel{display:none;}
+.rh56-panel.active{display:block;}
+.rh56-panel-head{margin:2px 0 10px;}
+.rh56-panel-title{font-size:13px;font-weight:850;color:var(--text);margin-bottom:3px;}
+.rh56-panel-copy{font-size:11px;color:var(--t2);line-height:1.45;}
+.rh56-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:13px 14px;margin-bottom:9px;}
+.rh56-card.focus{border-color:var(--gold-b);background:linear-gradient(135deg,rgba(234,179,8,.08),rgba(255,255,255,.018));}
+.rh56-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:6px;}
+.rh56-card-name{font-size:14px;font-weight:850;color:var(--text);line-height:1.25;}
+.rh56-card-meta{font-size:11px;color:var(--t3);line-height:1.35;margin-top:2px;}
+.rh56-signal-pill{border:1px solid var(--gold-b);background:var(--gold-dim);color:var(--gold);border-radius:999px;padding:4px 8px;font-size:9px;font-weight:950;letter-spacing:.6px;text-transform:uppercase;white-space:nowrap;}
+.rh56-human-signal{font-size:12px;color:var(--t2);line-height:1.45;margin:6px 0 8px;}
+.rh56-next{background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.06);border-radius:11px;padding:9px 10px;font-size:12px;color:var(--text);line-height:1.45;margin-bottom:8px;}
+.rh56-next strong{color:var(--gold);font-weight:850;}
+.rh56-card-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:10px;color:var(--t3);margin-bottom:8px;}
+.rh56-energy{color:var(--gold);font-weight:800;}
+.rh56-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.rh56-action{min-height:36px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--t2);font-family:Inter,sans-serif;font-size:11px;font-weight:750;cursor:pointer;}
+.rh56-action.gold{background:var(--gold);border-color:var(--gold);color:#000;font-weight:900;}
+.rh56-action.green{border-color:var(--green-b);background:var(--green-dim);color:var(--green);}
+.rh56-empty{border:1px dashed var(--border);border-radius:14px;padding:18px 14px;text-align:center;color:var(--t3);font-size:12px;line-height:1.5;background:rgba(255,255,255,.02);}
+.rh56-ethics-note{font-size:10px;color:var(--t3);line-height:1.45;margin:14px 0 0;text-align:center;}
+
 /* ── TEMPLATES PAGE ─────────────────────────────────────── */
 #page-templates-56{
   display:none;background:var(--bg);min-height:100vh;padding-bottom:100px;
@@ -15748,117 +15797,185 @@ a.soc-btn[data-empty="1"]{display:none!important;}
 
   function rh56Render(){
     var body=byId('rh56Body'); if(!body)return;
-    // Delegate to Update 54's render if available, otherwise build inline
-    var cats=getCats();
-    var sig=getSig(cats);
-    function badge(n){return n>0?'<span class="tapd54-tab-count">'+n+'</span>':'';}
+    var items=rh56BuildRelationshipItems();
+    var groups=rh56GroupItems(items);
+    function count(k){return (groups[k]||[]).length;}
+    function tab(k,label){return '<button class="rh56-tab'+(k==='opportunities'?' active':'')+'" data-tab="'+k+'" onclick="rh56Tab(\''+k+'\')">'+label+'<span class="rh56-tab-count">'+count(k)+'</span></button>';}
 
     body.innerHTML=
-      '<div class="tapd54-hub-header">'
-      +'<p class="tapd54-hub-kicker">Relationship Hub</p>'
-      +'<p class="tapd54-hub-title">Your relationship memory</p>'
-      +'<p class="tapd54-hub-sub">Everyone you met, captured, drafted for, and followed up with.</p>'
+      '<div class="rh56-value-strip">'
+      +'<p class="rh56-value-kicker">Relationship intelligence</p>'
+      +'<p class="rh56-value-title">What value came from the people you met?</p>'
+      +'<p class="rh56-value-copy">Not a CRM. Not a task board. TAPDconnex helps surface the interactions worth your energy before the moment loses momentum.</p>'
       +'</div>'
-      +'<div class="tapd54-human-lock">🔒 <span><strong>AI drafts — you decide.</strong> Nothing sends automatically.</span></div>'
-      // Signal blocks
-      +'<div class="tapd54-signal-blocks">'
-      +'<div class="tapd54-signal-block high" onclick="rh56Tab(\'followUps\')">'
-      +'<span class="tapd54-signal-emoji">🟢</span><div class="tapd54-signal-count">'+sig.high+'</div>'
-      +'<div class="tapd54-signal-label">Follow Up First</div><div class="tapd54-signal-sub">Clear next step</div></div>'
-      +'<div class="tapd54-signal-block medium" onclick="rh56Tab(\'drafts\')">'
-      +'<span class="tapd54-signal-emoji">🟡</span><div class="tapd54-signal-count">'+sig.medium+'</div>'
-      +'<div class="tapd54-signal-label">Worth Following Up</div><div class="tapd54-signal-sub">Needs shaping</div></div>'
-      +'<div class="tapd54-signal-block low" onclick="rh56Tab(\'connections\')">'
-      +'<span class="tapd54-signal-emoji">🔵</span><div class="tapd54-signal-count">'+sig.low+'</div>'
-      +'<div class="tapd54-signal-label">Stay Connected</div><div class="tapd54-signal-sub">No urgent action</div></div>'
+      +'<div class="rh56-period-row" aria-label="Date range">'
+      +'<button class="rh56-period-btn active" type="button">All</button>'
+      +'<button class="rh56-period-btn" type="button">Today</button>'
+      +'<button class="rh56-period-btn" type="button">Last 7 days</button>'
+      +'<button class="rh56-period-btn" type="button">Last 30 days</button>'
       +'</div>'
-      // Tabs
-      +'<div class="tapd54-section-tabs" id="rh56Tabs">'
-      +['connections','captured','followUps','sent'].map(function(t){
-        var labels={connections:'Connections',captured:'Awaiting Review',followUps:'Follow-Ups',sent:'Sent'};
-        var count=cats[t]?cats[t].length:0;
-        return '<button class="tapd54-tab'+(t==='connections'?' active':'')+'" data-tab="'+t+'" onclick="rh56Tab(\''+t+'\')">'
-          +labels[t]+badge(count)+'</button>';
-      }).join('')+'</div>'
-      // Panels
-      +renderPanel('connections',cats.connections,
-        'Connections','People you\'ve connected with. Connections from NFC taps and captured conversations appear here.',
-        '🤝','No connections yet','When someone taps your NFC profile, they appear here.')
-      +renderPanel('captured',cats.captured,
-        'Awaiting Review','Captured conversations waiting for your review.',
-        '🎤','Nothing awaiting review','Captured conversations will appear here before follow-up approval.')
-      +renderPanel('drafts',cats.drafts,
-        'Drafts','AI structured these captures. Review before sending — nothing goes out automatically.',
-        '✦','No drafts waiting','After you capture and confirm, TAPDconnex places the draft here.')
-      +renderPanel('followUps',cats.followUps,
-        'Follow-Ups','Reviewed and ready. Send manually via your preferred channel.',
-        '📤','Nothing queued','Reviewed drafts appear here ready to send.')
-      +renderPanel('sent',cats.sent,
-        'Sent','Follow-ups sent. Mark as waiting if you expect a reply.',
-        '✅','Nothing sent yet','Sent follow-ups appear here.')
-      +renderPanel('waiting',cats.waiting,
-        'Waiting Response','Sent, no reply yet.',
-        '⏳','Nothing waiting','Move a sent follow-up here when expecting a reply.')
-      +renderPanel('archived',cats.archived,
-        'Archived','Closed interactions with no further action needed.',
-        '📁','Nothing archived','Archived items live here.');
+      +'<div class="rh56-signal-grid">'
+      +'<div class="rh56-signal-tile active" onclick="rh56Tab(\'opportunities\')"><b>'+count('opportunities')+'</b><span>Opportunities</span><small>Possible commercial value</small></div>'
+      +'<div class="rh56-signal-tile" onclick="rh56Tab(\'connectors\')"><b>'+count('connectors')+'</b><span>Connectors</span><small>Possible intro path</small></div>'
+      +'<div class="rh56-signal-tile" onclick="rh56Tab(\'collaborations\')"><b>'+count('collaborations')+'</b><span>Collaborations</span><small>Mutual creation potential</small></div>'
+      +'<div class="rh56-signal-tile" onclick="rh56Tab(\'stay\')"><b>'+count('stay')+'</b><span>Stay in Touch</span><small>Worth keeping warm</small></div>'
+      +'</div>'
+      +'<div class="rh56-tab-row" id="rh56Tabs">'
+      +tab('opportunities','Opportunities')
+      +tab('connectors','Connectors')
+      +tab('collaborations','Collaborations')
+      +tab('stay','Stay in Touch')
+      +tab('all','All People')
+      +'</div>'
+      +rh56RenderPanel('opportunities',groups.opportunities,'Opportunities','People where the conversation suggested possible commercial value, a pilot, funding, sales, or a concrete next step.')
+      +rh56RenderPanel('connectors',groups.connectors,'Connectors','People who may open a door, make an introduction, or connect you into another network.')
+      +rh56RenderPanel('collaborations',groups.collaborations,'Collaborations','People where mutual partnership, co-creation, community, content, or event potential appeared.')
+      +rh56RenderPanel('stay',groups.stay,'Stay in Touch','People worth keeping warm even if there is no urgent action yet.')
+      +rh56RenderPanel('all',groups.all,'All People','Every captured or connected person, sorted by possible value and momentum.')
+      +'<p class="rh56-ethics-note">Signals describe the interaction, not the person. You can edit or correct the relationship signal before acting.</p>';
   }
 
-  function renderPanel(id,items,title,desc,emptyIcon,emptyTitle,emptyHint){
-    var active=id==='connections';
-    var html='<div class="tapd54-panel'+(active?' active':'')+'" data-panel="'+id+'">'
-      +'<div class="tapd54-section-hdr"><p class="tapd54-section-title">'+esc(title)+'</p>'
-      +'<p class="tapd54-section-desc">'+esc(desc)+'</p></div>';
+  function rh56RenderPanel(id,items,title,desc){
+    var html='<div class="rh56-panel'+(id==='opportunities'?' active':'')+'" data-panel="'+id+'">'
+      +'<div class="rh56-panel-head"><p class="rh56-panel-title">'+esc(title)+'</p><p class="rh56-panel-copy">'+esc(desc)+'</p></div>';
     if(!items||!items.length){
-      html+='<div class="tapd54-empty"><span class="tapd54-empty-icon">'+emptyIcon+'</span>'
-        +'<strong style="display:block;font-size:13px;color:var(--t2);margin-bottom:4px;">'+esc(emptyTitle)+'</strong>'
-        +'<span>'+esc(emptyHint)+'</span></div>';
+      html+='<div class="rh56-empty">No '+esc(title.toLowerCase())+' yet. Capture a conversation and TAPDconnex will place it here when the signal appears.</div>';
     }else{
-      items.forEach(function(c){html+=renderCard(c,id);});
+      items.forEach(function(item){html+=rh56RenderRelationshipCard(item);});
     }
     return html+'</div>';
   }
 
-  function renderCard(c,section){
-    var name=esc(c.person_name||c.name||'Name not captured');
-    var meta=esc([c.event_name||c.context,c.date].filter(Boolean).join(' · '));
-    var pLevel=getPrio(c).level;
-    var statusLabels={connections:'New',captured:'Awaiting Review',drafts:'AI Draft',
-      followUps:'Ready',sent:'Sent',waiting:'Waiting',archived:'Archived'};
-    var statusCls={connections:'new',captured:'captured',drafts:'draft',
-      followUps:'ready',sent:'sent',waiting:'waiting',archived:'archived'};
-    var preview=c.contact_message||c.action_summary||c.interaction_summary||'';
-    var html='<div class="tapd54-card priority-'+esc(pLevel)+'">'
-      +'<div class="tapd54-card-top"><p class="tapd54-card-name">'+name+'</p>'
-      +'<span class="tapd54-status-badge '+(statusCls[section]||'')+'">'+(statusLabels[section]||'')+'</span></div>'
-      +'<p class="tapd54-card-meta">'+meta+'</p>';
-    if(preview&&(section==='drafts'||section==='followUps')){
-      html+='<div class="tapd54-ai-label">✦ AI drafted · You review &amp; send</div>'
-        +'<div class="tapd54-preview">'+esc(preview.slice(0,160))+'</div>';
-    }
-    // Actions
-    var id=esc(c.id||'');
-    html+='<div class="tapd54-card-actions">';
-    if(section==='connections'){
-      html+='<button class="tapd54-btn-primary" onclick="rh56Accept(\''+id+'\')">Accept &amp; Capture</button>'
-        +'<button class="tapd54-btn-secondary" onclick="rh56Archive(\'conn\',\''+id+'\')">Archive</button>';
-    }else if(section==='drafts'||section==='followUps'){
-      html+='<button class="tapd54-btn-primary" onclick="rh56ReviewDraft(\''+id+'\')">Review &amp; Send</button>'
-        +'<button class="tapd54-btn-secondary" onclick="rh56Archive(\'cap\',\''+id+'\')">Dismiss</button>';
-    }else if(section==='sent'){
-      html+='<button class="tapd54-btn-green" onclick="rh56MarkWaiting(\''+id+'\')">Mark waiting</button>'
-        +'<button class="tapd54-btn-secondary" onclick="rh56Archive(\'cap\',\''+id+'\')">Archive</button>';
-    }else if(section==='waiting'){
-      html+='<button class="tapd54-btn-primary" onclick="rh56MarkReplied(\''+id+'\')">Replied ✓</button>'
-        +'<button class="tapd54-btn-secondary" onclick="rh56Archive(\'cap\',\''+id+'\')">Archive</button>';
-    }
-    html+='</div></div>';
+  function rh56RenderRelationshipCard(item){
+    var id=esc(item.id||'');
+    var type=esc(item.sourceType||'cap');
+    var name=esc(item.name||'Name not captured');
+    var meta=esc([item.companyRole,item.context].filter(Boolean).join(' · '));
+    var signal=esc(item.signalLabel||'Worth Keeping Warm');
+    var human=esc(item.humanSignal||'Worth exploring');
+    var next=esc(item.nextStep||'Next step not clear yet. Open the draft to refine it.');
+    var age=esc(item.ageLabel||'Captured recently');
+    var energy=esc(item.energyLabel||'Worth Exploring');
+    var focus=(item.energyKey==='actSoon'||item.energyKey==='focusNow')?' focus':'';
+    var html='<div class="rh56-card'+focus+'" data-id="'+id+'" data-source="'+type+'">'
+      +'<div class="rh56-card-top"><div><p class="rh56-card-name">'+name+'</p><p class="rh56-card-meta">'+meta+'</p></div><span class="rh56-signal-pill">'+signal+'</span></div>'
+      +'<p class="rh56-human-signal">'+human+'</p>'
+      +'<div class="rh56-next"><strong>Next step:</strong> '+next+'</div>'
+      +'<div class="rh56-card-foot"><span>'+age+'</span><span class="rh56-energy">'+energy+'</span></div>'
+      +'<div class="rh56-actions">'
+      +'<button class="rh56-action gold" onclick="rh56ReviewDraft(\''+id+'\')">Open draft</button>'
+      +'<button class="rh56-action green" onclick="rh56Materialised(\''+type+'\',\''+id+'\')">Materialised</button>'
+      +'<button class="rh56-action" onclick="rh56NotMaterialised(\''+type+'\',\''+id+'\')">Not materialised</button>'
+      +'<button class="rh56-action" onclick="rh56Archive(\''+(type==='conn'?'conn':'cap')+'\',\''+id+'\')">Remove from active</button>'
+      +'</div></div>';
     return html;
   }
 
+  function rh56BuildRelationshipItems(){
+    var caps=getCaptures().map(function(c){return rh56NormaliseItem(c,'cap');});
+    var conns=getConns().map(function(c){return rh56NormaliseItem(c,'conn');});
+    return caps.concat(conns).filter(function(x){return x && !x.hidden;}).sort(rh56SortItems);
+  }
+
+  function rh56NormaliseItem(o,sourceType){
+    o=o||{};
+    var status=String(o.status||'').toLowerCase();
+    if(status==='archived'||status==='dismissed'||status==='not_materialised')return null;
+    var text=rh56Text(o);
+    var signal=rh56Signal(text,o);
+    var next=rh56NextStep(o,text);
+    var created=o.captured_at||o.created_at||o.date||o.timestamp||o.updated_at||'';
+    var energy=rh56Energy(o,signal,created,next,text);
+    return{
+      id:o.id||'', sourceType:sourceType,
+      name:o.person_name||o.name||o.contact_name||'Name not captured',
+      companyRole:o.company_name||o.role_title||o.role||o.company||'',
+      context:o.event_name||o.context||o.where_met||o.date||'',
+      signalKey:signal.key, signalLabel:signal.label,
+      humanSignal:signal.human,
+      nextStep:next,
+      createdAt:created,
+      ageLabel:rh56AgeLabel(created),
+      energyKey:energy.key,
+      energyLabel:energy.label,
+      score:energy.score
+    };
+  }
+
+  function rh56GroupItems(items){
+    var g={opportunities:[],connectors:[],collaborations:[],stay:[],all:items.slice()};
+    items.forEach(function(x){
+      if(x.signalKey==='opportunity')g.opportunities.push(x);
+      else if(x.signalKey==='connector')g.connectors.push(x);
+      else if(x.signalKey==='collaboration')g.collaborations.push(x);
+      else g.stay.push(x);
+    });
+    Object.keys(g).forEach(function(k){g[k].sort(rh56SortItems);});
+    return g;
+  }
+
+  function rh56Text(o){
+    return ['intent_strength','relationship_pathway','engagement_type','action_summary','interaction_summary','summary','next_step','contact_message','notes','note','context','event_name','role','company','status']
+      .map(function(k){return String((o&&o[k])||'');}).join(' ').toLowerCase();
+  }
+
+  function rh56Signal(text,o){
+    if(/pricing|proposal|pilot|demo|buy|sales|customer|client|investor|funding|sponsor|opportunity|deal|procurement|commercial|budget/.test(text))return{key:'opportunity',label:'Likely Opportunity',human:'Possible commercial value surfaced in this interaction.'};
+    if(/intro|introduce|connect you|referral|refer|meet .*with|someone you should|door|network|procurement lead|founder/.test(text))return{key:'connector',label:'Possible Connector',human:'This person may be able to open a door or make an introduction.'};
+    if(/collaborat|partnership|partner|joint|together|co-create|event|community|content|work together|strategic/.test(text))return{key:'collaboration',label:'Potential Collaboration',human:'There may be mutual value or a shared initiative to explore.'};
+    return{key:'stay',label:'Worth Keeping Warm',human:'No urgent signal yet, but the connection may be useful to maintain.'};
+  }
+
+  function rh56NextStep(o,text){
+    var direct=o.next_step||o.action_summary||o.shared_next_step||'';
+    if(direct)return String(direct).replace(/\s+/g,' ').slice(0,140);
+    if(/pricing/.test(text))return 'Send pricing or a short proposal while the conversation is still fresh.';
+    if(/deck/.test(text))return 'Send the short deck and suggest a clear next step.';
+    if(/intro|introduce|referral/.test(text))return 'Ask for the introduction and give them an easy forwarding line.';
+    if(/pilot|beta/.test(text))return 'Share the pilot or beta invite and confirm what feedback is needed.';
+    if(/collaborat|partnership|together/.test(text))return 'Suggest a short follow-up to explore the possible collaboration.';
+    return 'Send a light follow-up while they still remember the conversation.';
+  }
+
+  function rh56Energy(o,signal,created,next,text){
+    var age=rh56AgeDays(created);
+    var value=signal.key==='opportunity'?4:signal.key==='connector'?3:signal.key==='collaboration'?3:1;
+    var clarity=(next&&next.indexOf('not clear')<0)?2:0;
+    var urgency=/today|tomorrow|next week|urgent|asap|call|meeting|send|intro|proposal/.test(text)?2:0;
+    var score=value+clarity+urgency+(age>=1?1:0)+(age>=3?1:0);
+    if(score>=8)return{key:'focusNow',label:'Focus Now',score:score};
+    if(score>=6)return{key:'actSoon',label:'Act Soon',score:score};
+    if(score>=4)return{key:'worthExploring',label:'Worth Exploring',score:score};
+    return{key:'keepWarm',label:'Keep Warm',score:score};
+  }
+
+  function rh56AgeDays(v){
+    if(!v)return 0; var d=new Date(v); if(isNaN(d.getTime()))return 0;
+    return Math.max(0,Math.floor((Date.now()-d.getTime())/86400000));
+  }
+  function rh56AgeLabel(v){
+    var d=rh56AgeDays(v);
+    if(d<=0)return 'Captured today';
+    if(d===1)return 'Captured yesterday';
+    return 'Captured '+d+' days ago';
+  }
+  function rh56SortItems(a,b){
+    return (b.score||0)-(a.score||0) || rh56AgeDays(b.createdAt)-rh56AgeDays(a.createdAt);
+  }
+
   window.rh56Tab=function(tab){
-    document.querySelectorAll('.tapd54-tab').forEach(function(t){t.classList.toggle('active',t.dataset.tab===tab);});
-    document.querySelectorAll('.tapd54-panel').forEach(function(p){p.classList.toggle('active',p.dataset.panel===tab);});
+    document.querySelectorAll('.rh56-tab').forEach(function(t){t.classList.toggle('active',t.dataset.tab===tab);});
+    document.querySelectorAll('.rh56-panel').forEach(function(p){p.classList.toggle('active',p.dataset.panel===tab);});
+    var idx={opportunities:0,connectors:1,collaborations:2,stay:3};
+    document.querySelectorAll('.rh56-signal-tile').forEach(function(t,i){t.classList.toggle('active',idx[tab]===i);});
+  };
+  window.rh56Materialised=function(type,id){
+    updateItem(type==='conn'?'conn':'cap',id,{status:'materialised',materialised:true,materialised_at:new Date().toISOString()});
+    rh56Render();
+  };
+  window.rh56NotMaterialised=function(type,id){
+    updateItem(type==='conn'?'conn':'cap',id,{status:'not_materialised',materialised:false,not_materialised_at:new Date().toISOString()});
+    rh56Render();
   };
   window.rh56Accept=function(id){
     updateItem('conn',id,{status:'accepted'});
