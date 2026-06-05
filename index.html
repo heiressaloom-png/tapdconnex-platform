@@ -17235,6 +17235,12 @@ input::placeholder, textarea::placeholder {
 
 
 <!-- UPDATE 69C: ACTIVE NAV + TEMPLATE CAPTURE WORKFLOW -->
+
+
+<!-- SCENARIO A: ONE-SIDED TAPD — TAP-TO-NUDGE -->
+
+
+<!-- UPDATE 69C: ACTIVE NAV + TEMPLATE CAPTURE WORKFLOW -->
 <script id="tapdTopNavDesignCorrection">
 (function(){
   if(window.__tapdTopNavDesignCorrection)return;
@@ -17455,6 +17461,33 @@ input::placeholder, textarea::placeholder {
       +'.pain-empty-emoji{font-size:28px;margin-bottom:8px;opacity:.6;}\n'
       +'.pain-empty-title{font-size:13px;font-weight:700;color:rgba(255,255,255,.65);margin-bottom:4px;}\n'
       +'.pain-empty-sub{font-size:11px;line-height:1.5;}\n'
+      +'.tapd-scenario-save-primary{width:100%;min-height:62px;border-radius:16px;background:linear-gradient(135deg,#EAB308,#ca8a04);border:none;color:#050505;font-family:Inter,sans-serif;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:10px 16px;margin-bottom:16px;letter-spacing:-.1px;box-shadow:0 6px 20px rgba(234,179,8,.20);}\n'
+      +'.tapd-scenario-save-primary-line1{display:flex;align-items:center;gap:9px;font-size:14px;font-weight:900;}\n'
+      +'.tapd-scenario-save-primary-line2{font-size:10px;font-weight:700;opacity:.70;letter-spacing:.3px;}\n'
+      +'.tapd-scenario-or{font-size:9px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.32);text-align:center;margin:6px 0 12px;display:flex;align-items:center;gap:10px;}\n'
+      +'.tapd-scenario-or:before,.tapd-scenario-or:after{content:"";flex:1;height:1px;background:rgba(255,255,255,.08);}\n'
+      +'.tapd-mutual-section{margin-top:18px;padding-top:18px;border-top:1px solid rgba(255,255,255,.07);}\n'
+      +'.tapd-mutual-title{font-size:13px;font-weight:900;color:#F0F4F8;margin-bottom:4px;letter-spacing:-.1px;}\n'
+      +'.tapd-mutual-sub{font-size:11px;color:rgba(255,255,255,.50);line-height:1.5;margin-bottom:12px;}\n'
+      +'.tapd-mutual-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;}\n'
+      +'.tapd-mutual-btn{height:42px;border-radius:11px;font-family:Inter,sans-serif;font-size:11px;font-weight:800;cursor:pointer;letter-spacing:-.1px;line-height:1.2;padding:0 8px;}\n'
+      +'.tapd-mutual-btn.primary{background:rgba(14,206,192,.10);border:1px solid rgba(14,206,192,.45);color:#0ECEC0;}\n'
+      +'.tapd-mutual-btn.primary:active{background:rgba(14,206,192,.16);}\n'
+      +'.tapd-mutual-btn.secondary{background:transparent;border:1px solid rgba(255,255,255,.14);color:rgba(255,255,255,.78);}\n'
+      +'.tapd-mutual-btn.secondary:active{background:rgba(255,255,255,.04);}\n'
+      +'@media(max-width:360px){.tapd-mutual-actions{grid-template-columns:1fr;}}\n'
+      +'.tapd-nudge-overlay{position:fixed;inset:0;z-index:9998;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.50);opacity:0;pointer-events:none;transition:opacity .22s ease;}\n'
+      +'.tapd-nudge-overlay.show{opacity:1;pointer-events:auto;}\n'
+      +'.tapd-nudge-card{width:min(440px,calc(100vw - 24px));margin:0 12px 18px;padding:24px 20px 18px;border-radius:22px;background:#0D1117;border:1px solid rgba(34,197,94,.30);box-shadow:0 18px 60px rgba(0,0,0,.55);font-family:Inter,sans-serif;text-align:center;transform:translateY(20px);transition:transform .22s ease;}\n'
+      +'.tapd-nudge-overlay.show .tapd-nudge-card{transform:translateY(0);}\n'
+      +'.tapd-nudge-icon{width:50px;height:50px;border-radius:50%;background:rgba(34,197,94,.14);color:#22C55E;font-size:24px;font-weight:900;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;}\n'
+      +'.tapd-nudge-title{font-size:18px;font-weight:900;color:#F0F4F8;margin-bottom:6px;letter-spacing:-.2px;}\n'
+      +'.tapd-nudge-sub{font-size:13px;color:#F0F4F8;line-height:1.45;margin-bottom:10px;}\n'
+      +'.tapd-nudge-detail{font-size:11px;color:rgba(255,255,255,.55);line-height:1.55;margin-bottom:18px;padding:0 4px;}\n'
+      +'.tapd-nudge-primary{width:100%;height:48px;border-radius:14px;background:linear-gradient(135deg,#22C55E,#16A34A);border:none;color:#FFFFFF;font-size:14px;font-weight:900;font-family:Inter,sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;letter-spacing:-.1px;margin-bottom:8px;box-shadow:0 6px 18px rgba(34,197,94,.30);}\n'
+      +'.tapd-nudge-secondary{width:100%;height:40px;background:transparent;border:none;color:rgba(255,255,255,.50);font-size:12px;font-weight:700;font-family:Inter,sans-serif;cursor:pointer;letter-spacing:.2px;}\n'
+      +'.tapd-mini-toast{position:fixed;left:50%;bottom:32px;transform:translate(-50%,12px);z-index:9999;padding:11px 18px;border-radius:999px;background:rgba(14,206,192,.16);border:1px solid rgba(14,206,192,.40);color:#0ECEC0;font-family:Inter,sans-serif;font-size:12px;font-weight:800;letter-spacing:.1px;opacity:0;transition:opacity .22s ease,transform .22s ease;box-shadow:0 12px 30px rgba(0,0,0,.40);max-width:calc(100vw - 32px);text-align:center;}\n'
+      +'.tapd-mini-toast.show{opacity:1;transform:translate(-50%,0);}\n'
       +'.tapd-cheat-primary{width:100%;height:44px;border-radius:14px;border:1px solid #EAB308;background:linear-gradient(135deg,#EAB308,#ca8a04);color:#050505;font-size:13px;font-weight:900;font-family:Inter,sans-serif;}';
     document.head.appendChild(style);
   }
@@ -17631,11 +17664,37 @@ input::placeholder, textarea::placeholder {
   function buildCleanVisitorStrip(){
     var p=typeof getProfileData==='function'?getProfileData():{};
     var name=p.name||'';
+    var firstName=(name||'').split(' ')[0]||'them';
     var title=byId('visitorStripTitle');
     if(title)title.textContent=name?'You tapped '+name+'\u2019s card':'You tapped this TAPD card';
     var opts=byId('connectOptions');
     if(!opts)return;
     opts.innerHTML='';
+
+    // ── SCENARIO A: Primary "Save to your contacts" CTA ──
+    // This is the lead action. Saves vCard, then nudges to WhatsApp so the
+    // owner gets the visitor's thread back.
+    var saveBtn=document.createElement('button');
+    saveBtn.className='tapd-scenario-save-primary';
+    saveBtn.innerHTML='<span class="tapd-scenario-save-primary-line1">'
+      +'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>'
+      +'Save '+esc(firstName)+' to your contacts'
+      +'</span>'
+      +'<span class="tapd-scenario-save-primary-line2">One tap \u00B7 number, email &amp; profile</span>';
+    saveBtn.onclick=function(){
+      // Trigger the existing vCard generator
+      try{if(typeof generateVCard==='function')generateVCard();}catch(e){}
+      // Then nudge to WhatsApp so the owner gets the thread back
+      setTimeout(function(){tapdShowWhatsAppNudge();},420);
+    };
+    opts.appendChild(saveBtn);
+
+    // OR divider
+    var orDiv=document.createElement('p');
+    orDiv.className='tapd-scenario-or';
+    orDiv.textContent='Or reach out directly';
+    opts.appendChild(orDiv);
+
     function makeBtn(label,bg,primary,svgHtml,action){
       var btn=document.createElement('button');
       btn.className='connect-opt'+(primary?' primary':'');
@@ -17646,7 +17705,7 @@ input::placeholder, textarea::placeholder {
     }
     if(p.whatsApp){
       var waNum=String(p.whatsApp).replace(/\D/g,'');
-      var waMsg='Hi '+( name||'there')+', I just tapped your NFC card!';
+      var waMsg='Hi '+( name||'there')+', I just tapped your TAPD card. Please send me the next step here.';
       opts.appendChild(makeBtn('Message on WhatsApp','#22C55E',true,
         '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>',
         function(){window.open('https://wa.me/'+waNum+'?text='+encodeURIComponent(waMsg),'_blank');showConnected('Sent via WhatsApp');}
@@ -17672,9 +17731,19 @@ input::placeholder, textarea::placeholder {
         function(){window.open('mailto:'+p.email);showConnected('Email opened');}
       ));
     }
-    if(!opts.children.length){
-      opts.innerHTML='<p style="font-size:12px;color:rgba(255,255,255,.4);text-align:center;padding:8px 0;">No contact links set up on this profile yet.</p>';
-    }
+
+    // ── SCENARIO B: Mutual TAPD Exchange ──
+    // For the case both people have TAPD. Save the owner into the visitor's
+    // local TAPD connections + send the visitor's TAPD profile back via WhatsApp.
+    var mutual=document.createElement('div');
+    mutual.className='tapd-mutual-section';
+    mutual.innerHTML='<p class="tapd-mutual-title">Both have TAPD?</p>'
+      +'<p class="tapd-mutual-sub">Save each other into TAPD so both sides remember the conversation, not just the contact.</p>'
+      +'<div class="tapd-mutual-actions">'
+      +  '<button type="button" class="tapd-mutual-btn primary" onclick="tapdSaveOwnerToMyTAPD()">Save to my TAPD</button>'
+      +  '<button type="button" class="tapd-mutual-btn secondary" onclick="tapdSendMyTAPDBack()">Send my TAPD back</button>'
+      +'</div>';
+    opts.appendChild(mutual);
   }
 
   // Block the manual form from ever opening — form defeats NFC zero-friction purpose.
@@ -17682,6 +17751,136 @@ input::placeholder, textarea::placeholder {
     window.openConnectSheet=function(){};
     window.closeConnectSheet=function(){};
   }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // SCENARIO A — TAP-TO-NUDGE
+  // After the visitor saves the vCard, prompt them to tap WhatsApp once.
+  // Why: vCard gives the OWNER's details to the VISITOR. WhatsApp gives the
+  // VISITOR's thread back to the OWNER. The exchange is only balanced if
+  // both happen — and the only way to get the WhatsApp thread back without
+  // typing is for the visitor to send the first message themselves.
+  // ═══════════════════════════════════════════════════════════════════════
+  function tapdShowWhatsAppNudge(){
+    try{
+      var p=typeof getProfileData==='function'?getProfileData():{};
+      if(!p.whatsApp)return; // No WA on profile — nudge would 404
+      var old=document.getElementById('tapdWhatsAppNudge');
+      if(old)old.remove();
+      var first=String(p.name||'').split(' ')[0]||'them';
+      var sheet=document.createElement('div');
+      sheet.id='tapdWhatsAppNudge';
+      sheet.className='tapd-nudge-overlay';
+      sheet.innerHTML='<div class="tapd-nudge-card">'
+        +'<div class="tapd-nudge-icon">\u2713</div>'
+        +'<p class="tapd-nudge-title">Details saved.</p>'
+        +'<p class="tapd-nudge-sub">Want '+esc(first)+' to know where to send the next step?</p>'
+        +'<p class="tapd-nudge-detail">Tap WhatsApp once \u2014 '+esc(first)+' will have your thread, and you\u2019ll have the follow-up plan.</p>'
+        +'<button type="button" class="tapd-nudge-primary" onclick="tapdSendNudgedWhatsApp()">'
+        +  '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>'
+        +  'Tap WhatsApp'
+        +'</button>'
+        +'<button type="button" class="tapd-nudge-secondary" onclick="tapdDismissNudge()">Not now</button>'
+        +'</div>';
+      document.body.appendChild(sheet);
+      setTimeout(function(){sheet.classList.add('show');},20);
+    }catch(e){}
+  }
+  window.tapdShowWhatsAppNudge=tapdShowWhatsAppNudge;
+
+  window.tapdSendNudgedWhatsApp=function(){
+    try{
+      var p=typeof getProfileData==='function'?getProfileData():{};
+      if(!p.whatsApp){tapdDismissNudge();return;}
+      var waNum=String(p.whatsApp).replace(/\D/g,'');
+      var name=p.name||'there';
+      var msg='Hi '+name+', I just tapped your TAPD card. Please send me the next step here.';
+      window.open('https://wa.me/'+waNum+'?text='+encodeURIComponent(msg),'_blank');
+      // Mark event in localStorage for later analytics / capture matching
+      try{localStorage.setItem('tapd_last_nudge',JSON.stringify({owner:name,at:Date.now()}));}catch(e){}
+      // Reflect connection state in the existing visitorSent area
+      if(typeof showConnected==='function')showConnected('Sent via WhatsApp');
+      tapdDismissNudge();
+    }catch(e){tapdDismissNudge();}
+  };
+  window.tapdDismissNudge=function(){
+    var s=document.getElementById('tapdWhatsAppNudge');
+    if(!s)return;
+    s.classList.remove('show');
+    setTimeout(function(){if(s.parentNode)s.parentNode.removeChild(s);},220);
+  };
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // SCENARIO B — MUTUAL TAPD EXCHANGE
+  // Save the owner profile into the visitor's local TAPD connections,
+  // and send the visitor's TAPD profile back via WhatsApp. MVP version
+  // uses localStorage. Future backend can sync this between accounts.
+  // ═══════════════════════════════════════════════════════════════════════
+  window.tapdSaveOwnerToMyTAPD=function(){
+    try{
+      var p=typeof getProfileData==='function'?getProfileData():{};
+      var entry={
+        id:'tapd_conn_'+Date.now(),
+        name:p.name||'Unknown',
+        role:p.role||'',
+        company:p.company||p.brand||'',
+        profileUrl:window.location.href.split('?')[0],
+        whatsApp:p.whatsApp||'',
+        linkedIn:p.linkedIn||'',
+        instagram:p.instagram||'',
+        email:p.email||'',
+        source:'tapd_mutual_exchange',
+        status:'saved_to_tapd',
+        savedAt:new Date().toISOString()
+      };
+      var key='tapd_visitor_saved_profiles';
+      var arr=[];
+      try{arr=JSON.parse(localStorage.getItem(key)||'[]');}catch(e){arr=[];}
+      // De-dupe by profileUrl
+      arr=arr.filter(function(x){return x&&x.profileUrl!==entry.profileUrl;});
+      arr.push(entry);
+      localStorage.setItem(key,JSON.stringify(arr));
+      tapdMiniToast('\u2713 Saved '+(p.name||'profile')+' to your TAPD');
+    }catch(e){
+      tapdMiniToast('Could not save \u2014 storage unavailable');
+    }
+  };
+
+  window.tapdSendMyTAPDBack=function(){
+    try{
+      var p=typeof getProfileData==='function'?getProfileData():{};
+      if(!p.whatsApp){tapdMiniToast('No WhatsApp on this profile');return;}
+      var myUrl='';
+      try{myUrl=localStorage.getItem('tapd_my_profile_url')||'';}catch(e){}
+      if(!myUrl){
+        myUrl=window.prompt('Your TAPD profile URL (we\u2019ll remember it for next time):','')||'';
+        myUrl=myUrl.trim();
+        if(!myUrl)return;
+        try{localStorage.setItem('tapd_my_profile_url',myUrl);}catch(e){}
+      }
+      var name=p.name||'there';
+      var waNum=String(p.whatsApp).replace(/\D/g,'');
+      var msg='Hi '+name+', I have TAPD too. Here\u2019s my TAPD profile: '+myUrl;
+      window.open('https://wa.me/'+waNum+'?text='+encodeURIComponent(msg),'_blank');
+      tapdMiniToast('Opening WhatsApp with your TAPD profile\u2026');
+    }catch(e){tapdMiniToast('Could not open WhatsApp');}
+  };
+
+  function tapdMiniToast(text){
+    try{
+      var old=document.querySelector('.tapd-mini-toast');
+      if(old)old.remove();
+      var t=document.createElement('div');
+      t.className='tapd-mini-toast';
+      t.textContent=text;
+      document.body.appendChild(t);
+      setTimeout(function(){t.classList.add('show');},20);
+      setTimeout(function(){
+        t.classList.remove('show');
+        setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},220);
+      },2400);
+    }catch(e){}
+  }
+  window.tapdMiniToast=tapdMiniToast;
 
   // ── Sync prep panel + peek card to new TEMPLATE_HINTS ─────────────────────
   // Update 27 renders #cheatPrepPanel27 (idle/pre-capture) and #cheatPeekCard27
@@ -18289,6 +18488,19 @@ input::placeholder, textarea::placeholder {
     watchRelationshipHub();
     installSwipeToCloseExpanded();
     window.buildVisitorStrip=buildCleanVisitorStrip;
+    // Re-assert ownership of the visitor strip render. If a later script
+    // overrides window.buildVisitorStrip, this guarantees the Scenario A+B
+    // version wins. Cheap defensive interval — Date.now check avoids running
+    // when nothing has changed.
+    setInterval(function(){
+      if(window.buildVisitorStrip!==buildCleanVisitorStrip){
+        window.buildVisitorStrip=buildCleanVisitorStrip;
+        if(inVisitorMode()){
+          var vs=byId('visitorStrip');
+          if(vs&&vs.classList.contains('show'))buildCleanVisitorStrip();
+        }
+      }
+    },1500);
     // Re-run if strip already rendered before our script loaded
     if(inVisitorMode()){
       var vs=byId('visitorStrip');
