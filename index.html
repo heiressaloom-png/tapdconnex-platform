@@ -6287,38 +6287,26 @@ function onbComplete(skipped){
 
   localStorage.setItem(ONB_DONE_KEY, '1');
   localStorage.setItem(OWNER_KEY, '1');
+  localStorage.setItem('tapd_onboarding_complete', 'true');
+  localStorage.setItem('tapd_profile_complete', 'true');
+  localStorage.setItem('tapd_profile_preview_mode', 'true');
+  localStorage.setItem('tapd_onboarding_completed_at', new Date().toISOString());
 
-  // Hide all onboarding form steps and nav
-  for(let i=0;i<ONB_STEPS;i++){
-    const s=document.getElementById('onbStep'+i);
-    if(s) s.style.display='none';
-  }
-  ['onbSteps','onbBackBtn','onbNextBtn'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el) el.style.display='none';
-  });
-
-  // Update header
-  const titleEl = document.getElementById('onbTitle');
-  const subEl   = document.getElementById('onbSub');
-  if(titleEl) titleEl.textContent = '';
-  if(subEl)   subEl.textContent   = '';
-
-  // Show the rich success screen
+  // After onboarding is completed, go straight to the live landing/profile page.
+  // This keeps one clean save path and avoids leaving the user on the onboarding success screen.
   const successEl = document.getElementById('onbSuccess');
-  if(successEl){
-    successEl.style.display = 'block';
-    // Populate the profile URL display
-    const urlDisplay = document.getElementById('onbProfileUrlDisplay');
-    if(urlDisplay){
-      const p = (typeof getProfileData==='function') ? getProfileData() : {};
-      const base = window.location.origin + '/';
-      const uname = p.username || (p.name||'').toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'') || 'yourname';
-      urlDisplay.textContent = base + uname;
-      urlDisplay.dataset.url = base + uname;
-    }
+  if(successEl) successEl.style.display = 'none';
+  if(typeof showPage === 'function'){
+    showPage('profile');
+  } else {
+    document.querySelectorAll('.page').forEach(function(pg){ pg.classList.remove('active'); });
+    const profilePage = document.getElementById('profile');
+    if(profilePage) profilePage.classList.add('active');
     window.scrollTo(0,0);
   }
+  if(typeof loadHistory === 'function') loadHistory();
+  if(typeof tapdToast === 'function') tapdToast('Profile saved — landing page updated', 'success');
+  return;
 }
 
 
