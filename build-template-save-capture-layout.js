@@ -10,7 +10,7 @@ html = html.replace(/<script id="tapdTemplateSaveCaptureLayoutScript">[\s\S]*?<\
 
 const style = String.raw`
 <style id="tapdTemplateSaveCaptureLayoutStyle">
-  .tapd-template-original-save-hidden{display:none!important;}
+  .tapd-template-original-save-hidden{display:none!important;visibility:hidden!important;pointer-events:none!important;height:0!important;min-height:0!important;margin:0!important;padding:0!important;overflow:hidden!important;}
   .tapd-template-inline-save{
     min-width:96px!important;height:46px!important;border-radius:14px!important;
     border:1px solid #EAB308!important;background:linear-gradient(135deg,#EAB308,#ca8a04)!important;
@@ -48,31 +48,28 @@ const script = String.raw`
   if(window.__tapdTemplateSaveCaptureLayout)return;
   window.__tapdTemplateSaveCaptureLayout=true;
   var dirty=false;
+  var applying=false;
 
   function txt(el){return (el&&el.textContent?el.textContent:'').replace(/\s+/g,' ').trim().toLowerCase();}
-  function visible(el){return !!(el&&el.offsetParent!==null);}
-  function isTemplateArea(el){
-    if(!el)return false;
-    var t=txt(el);
-    var id=(el.id||'').toLowerCase();
-    var cls=(el.className||'').toString().toLowerCase();
-    return id.indexOf('template')>=0||id.indexOf('tpl')>=0||cls.indexOf('template')>=0||cls.indexOf('tpl')>=0||t.indexOf('direct opportunity')>=0||t.indexOf('starter')>=0;
-  }
-  function getTemplateRoot(){
-    return document.getElementById('tpl56Body')||document.getElementById('page-template-editor')||document.querySelector('[id*="template" i]')||document.body;
+  function looksLikeTemplateScreen(){
+    var bodyText=txt(document.body).slice(0,5000);
+    return bodyText.indexOf('ready to capture with')>=0||bodyText.indexOf('direct opportunity')>=0||bodyText.indexOf('starter')>=0||bodyText.indexOf('pro unlocks all')>=0||bodyText.indexOf('save template changes')>=0;
   }
   function findOriginalSave(){
-    var root=getTemplateRoot();
-    var buttons=[].slice.call(root.querySelectorAll('button'));
+    var buttons=[].slice.call(document.querySelectorAll('button'));
     return buttons.find(function(b){
+      if(b.id==='tapdTemplateBottomCapture'||b.classList.contains('tapd-template-inline-save'))return false;
       var t=txt(b);
-      return t==='save template changes'||t.indexOf('save template changes')>=0||t==='save template'||t.indexOf('save template')>=0;
+      return t==='save template changes'||t.indexOf('save template changes')>=0;
     })||null;
   }
   function findEditButton(){
-    var root=getTemplateRoot();
-    var buttons=[].slice.call(root.querySelectorAll('button'));
-    return buttons.find(function(b){return txt(b)==='edit'||txt(b).indexOf('edit')===0;})||null;
+    var buttons=[].slice.call(document.querySelectorAll('button'));
+    return buttons.find(function(b){
+      if(b.closest&&b.closest('.tapd-template-inline-save-wrap'))return false;
+      var t=txt(b);
+      return t==='edit'||t.indexOf('edit')===0;
+    })||null;
   }
   function setDirty(on){
     dirty=!!on;
@@ -81,7 +78,16 @@ const script = String.raw`
   }
   function runOriginalSave(){
     var original=findOriginalSave();
-    if(original){original.click();setDirty(false);return;}
+    if(original){
+      original.classList.remove('tapd-template-original-save-hidden');
+      original.style.display='';
+      original.click();
+      original.classList.add('tapd-template-original-save-hidden');
+      original.style.setProperty('display','none','important');
+      setDirty(false);
+      if(typeof window.tapdToast==='function')window.tapdToast('Template changes saved','success');
+      return;
+    }
     if(typeof window.tapdToast==='function')window.tapdToast('Template changes saved','success');
     setDirty(false);
   }
@@ -119,6 +125,12 @@ const script = String.raw`
     var original=findOriginalSave();
     if(!original)return;
     original.classList.add('tapd-template-original-save-hidden');
+    original.style.setProperty('display','none','important');
+    original.style.setProperty('visibility','hidden','important');
+    original.style.setProperty('height','0','important');
+    original.style.setProperty('min-height','0','important');
+    original.style.setProperty('margin','0','important');
+    original.style.setProperty('padding','0','important');
     if(document.getElementById('tapdTemplateBottomCapture'))return;
     var capture=document.createElement('button');
     capture.id='tapdTemplateBottomCapture';
@@ -126,36 +138,45 @@ const script = String.raw`
     capture.className='tapd-template-bottom-capture';
     capture.innerHTML='<span>✦</span><span>Capture this moment</span>';
     capture.onclick=function(ev){ev.preventDefault();ev.stopPropagation();startCapture();};
-    original.parentNode.insertBefore(capture,original.nextSibling);
+    var host=original.parentNode||document.body;
+    host.insertBefore(capture,original);
   }
   function bindDirtyWatch(){
-    var root=getTemplateRoot();
-    if(root.dataset.tapdDirtyWatch==='1')return;
-    root.dataset.tapdDirtyWatch='1';
+    if(document.body.dataset.tapdDirtyWatch==='1')return;
+    document.body.dataset.tapdDirtyWatch='1';
     ['input','change','keyup','paste'].forEach(function(evt){
-      root.addEventListener(evt,function(e){
+      document.addEventListener(evt,function(e){
         var target=e.target;
         if(target&&(/input|textarea|select/i.test(target.tagName)||target.isContentEditable))setDirty(true);
       },true);
     });
   }
   function apply(){
-    var root=getTemplateRoot();
-    if(!isTemplateArea(root))return;
-    addInlineSave();
-    replaceBottomSave();
-    bindDirtyWatch();
-    setDirty(dirty);
+    if(applying)return;
+    applying=true;
+    try{
+      if(looksLikeTemplateScreen()){
+        addInlineSave();
+        replaceBottomSave();
+        bindDirtyWatch();
+        setDirty(dirty);
+      }
+    }finally{applying=false;}
   }
   function boot(){
     apply();
     setTimeout(apply,100);
     setTimeout(apply,400);
     setTimeout(apply,1000);
+    setTimeout(apply,2000);
+    if(typeof MutationObserver!=='undefined'){
+      var mo=new MutationObserver(function(){setTimeout(apply,40);});
+      mo.observe(document.body,{childList:true,subtree:true});
+    }
     if(typeof window.tpl56Open==='function'&&!window.__tapdTemplateSaveLayoutWrapped){
       window.__tapdTemplateSaveLayoutWrapped=true;
       var originalOpen=window.tpl56Open;
-      window.tpl56Open=function(){var result=originalOpen.apply(window,arguments);setTimeout(apply,80);setTimeout(apply,300);return result;};
+      window.tpl56Open=function(){var result=originalOpen.apply(window,arguments);setTimeout(apply,80);setTimeout(apply,300);setTimeout(apply,900);return result;};
     }
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
@@ -169,7 +190,7 @@ else html += '\n'+script+'\n';
 
 if (html !== before) {
   fs.writeFileSync(indexPath, html, 'utf8');
-  console.log('[TAPD build] Applied template save/capture layout refinement.');
+  console.log('[TAPD build] Applied robust template save/capture layout refinement.');
 } else {
   console.log('[TAPD build] Template save/capture layout already present.');
 }
