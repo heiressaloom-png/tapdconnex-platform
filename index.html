@@ -17217,6 +17217,12 @@ input::placeholder, textarea::placeholder {
 
 
 <!-- UPDATE 69C: ACTIVE NAV + TEMPLATE CAPTURE WORKFLOW -->
+
+
+<!-- SCENARIO A: ONE-SIDED TAPD — TAP-TO-NUDGE -->
+
+
+<!-- UPDATE 69C: ACTIVE NAV + TEMPLATE CAPTURE WORKFLOW -->
 <script id="tapdTopNavDesignCorrection">
 (function(){
   if(window.__tapdTopNavDesignCorrection)return;
@@ -17362,6 +17368,56 @@ input::placeholder, textarea::placeholder {
       +'.tapd-cheat-list.tapd-cheat-show-all .tapd-cheat-extra{display:block;}\n'
       +'.tapd-cheat-expand{width:100%;height:36px;margin-bottom:12px;border-radius:10px;background:transparent;border:1px dashed rgba(234,179,8,.30);color:#EAB308;font-size:11px;font-weight:800;font-family:Inter,sans-serif;cursor:pointer;letter-spacing:.3px;}\n'
       +'.tapd-cheat-expand:active{background:rgba(234,179,8,.05);}\n'
+      +'.cheat-prep-angle.tapd-prep-extra{display:none;}\n'
+      +'.cheat-prep-angles.tapd-prep-show-all .tapd-prep-extra{display:flex;}\n'
+      +'.tapd-prep-expand{width:100%;height:32px;margin:6px 0 8px;border-radius:9px;background:transparent;border:1px dashed rgba(234,179,8,.25);color:#EAB308;font-size:11px;font-weight:800;font-family:Inter,sans-serif;cursor:pointer;letter-spacing:.3px;}\n'
+      +'.tapd-prep-expand:active{background:rgba(234,179,8,.05);}\n'
+      +'.cheat-peek-item.tapd-peek-extra{display:none;}\n'
+      +'.cheat-peek-list.tapd-peek-show-all .tapd-peek-extra{display:block;}\n'
+      +'.tapd-peek-expand{width:100%;height:32px;margin-top:8px;border-radius:9px;background:transparent;border:1px dashed rgba(234,179,8,.25);color:#EAB308;font-size:11px;font-weight:800;font-family:Inter,sans-serif;cursor:pointer;letter-spacing:.3px;}\n'
+      +'#tapdPainHub{padding:0 16px 24px;font-family:Inter,sans-serif;}\n'
+      +'.pain-hero{margin:6px 0 16px;}\n'
+      +'.pain-kicker{font-size:10px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:#EAB308;opacity:.85;margin-bottom:4px;}\n'
+      +'.pain-title{font-size:20px;font-weight:900;color:#F0F4F8;line-height:1.2;letter-spacing:-.3px;}\n'
+      +'.pain-rows{display:grid;gap:8px;margin-bottom:22px;}\n'
+      +'.pain-row{display:grid;grid-template-columns:38px 1fr 16px;gap:11px;align-items:center;padding:13px 14px;border-radius:14px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);cursor:pointer;transition:background .15s,border-color .15s;}\n'
+      +'.pain-row:active{background:rgba(255,255,255,.04);}\n'
+      +'.pain-row.urgent{border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.05);}\n'
+      +'.pain-row.urgent:active{background:rgba(239,68,68,.10);}\n'
+      +'.pain-row.warn{border-color:rgba(234,179,8,.28);background:rgba(234,179,8,.04);}\n'
+      +'.pain-row.calm{border-color:rgba(14,206,192,.22);background:rgba(14,206,192,.03);}\n'
+      +'.pain-row.none{opacity:.55;cursor:default;}\n'
+      +'.pain-emoji{width:38px;height:38px;border-radius:11px;background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center;font-size:18px;}\n'
+      +'.pain-row.urgent .pain-emoji{background:rgba(239,68,68,.12);}\n'
+      +'.pain-row.warn .pain-emoji{background:rgba(234,179,8,.10);}\n'
+      +'.pain-row.calm .pain-emoji{background:rgba(14,206,192,.10);}\n'
+      +'.pain-headline{font-size:14px;font-weight:800;color:#F0F4F8;line-height:1.3;letter-spacing:-.1px;}\n'
+      +'.pain-headline b{font-weight:900;}\n'
+      +'.pain-row.urgent .pain-headline b{color:#FCA5A5;}\n'
+      +'.pain-row.warn .pain-headline b{color:#EAB308;}\n'
+      +'.pain-row.calm .pain-headline b{color:#0ECEC0;}\n'
+      +'.pain-sub{font-size:11px;color:rgba(255,255,255,.50);margin-top:3px;line-height:1.4;}\n'
+      +'.pain-arrow{color:rgba(255,255,255,.30);font-size:18px;}\n'
+      +'.pain-row.none .pain-arrow{display:none;}\n'
+      +'.pain-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:14px;}\n'
+      +'.pain-tab{height:40px;border-radius:11px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);color:rgba(255,255,255,.65);font-size:11px;font-weight:800;font-family:Inter,sans-serif;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1;padding:0 4px;}\n'
+      +'.pain-tab.active{background:linear-gradient(135deg,#EAB308,#ca8a04);border-color:#EAB308;color:#050505;}\n'
+      +'.pain-tab-count{font-size:9px;opacity:.75;margin-top:1px;}\n'
+      +'.pain-tab.active .pain-tab-count{opacity:.85;}\n'
+      +'.pain-cards{display:grid;gap:10px;}\n'
+      +'.pain-card{padding:14px 14px 12px;border-radius:14px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.07);}\n'
+      +'.pain-card-name{font-size:15px;font-weight:900;color:#F0F4F8;letter-spacing:-.2px;margin-bottom:6px;}\n'
+      +'.pain-badge{display:inline-block;padding:3px 9px;border-radius:999px;font-size:10px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;}\n'
+      +'.pain-badge.opp{background:rgba(234,179,8,.12);color:#EAB308;border:1px solid rgba(234,179,8,.30);}\n'
+      +'.pain-badge.warm{background:rgba(14,206,192,.10);color:#0ECEC0;border:1px solid rgba(14,206,192,.25);}\n'
+      +'.pain-badge.calm{background:rgba(255,255,255,.04);color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.10);}\n'
+      +'.pain-card-action{margin-top:10px;font-size:12px;color:rgba(255,255,255,.78);line-height:1.45;display:flex;align-items:flex-start;gap:6px;}\n'
+      +'.pain-card-action b{color:#0ECEC0;font-weight:800;font-size:10px;letter-spacing:.8px;text-transform:uppercase;flex-shrink:0;margin-top:1px;}\n'
+      +'.pain-card-age{margin-top:8px;font-size:10px;color:rgba(255,255,255,.40);letter-spacing:.2px;}\n'
+      +'.pain-empty{padding:36px 16px;text-align:center;color:rgba(255,255,255,.45);}\n'
+      +'.pain-empty-emoji{font-size:32px;margin-bottom:8px;opacity:.6;}\n'
+      +'.pain-empty-title{font-size:13px;font-weight:700;color:rgba(255,255,255,.65);margin-bottom:4px;}\n'
+      +'.pain-empty-sub{font-size:11px;line-height:1.5;}\n'
       +'.tapd-cheat-primary{width:100%;height:44px;border-radius:14px;border:1px solid #EAB308;background:linear-gradient(135deg,#EAB308,#ca8a04);color:#050505;font-size:13px;font-weight:900;font-family:Inter,sans-serif;}';
     document.head.appendChild(style);
   }
@@ -17590,6 +17646,345 @@ input::placeholder, textarea::placeholder {
     window.closeConnectSheet=function(){};
   }
 
+  // ── Sync prep panel + peek card to new TEMPLATE_HINTS ─────────────────────
+  // Update 27 renders #cheatPrepPanel27 (idle/pre-capture) and #cheatPeekCard27
+  // (mid-recording peek). Both use their own internal question source. We patch
+  // them at the DOM level so the questions match the cheat sheet overlay AND
+  // apply the same Q1/Q3/Q5 default + "Show 2 more" expand pattern.
+  function patchPrepPanel(){
+    var panel=document.getElementById('cheatPrepPanel27');
+    if(!panel)return;
+    var anglesContainer=panel.querySelector('.cheat-prep-angles');
+    if(!anglesContainer)return;
+    // Bail if our patch is already in place (prevents observer feedback loop)
+    if(anglesContainer.querySelector('.tapd-prep-extra'))return;
+    var key=(window._nextStepTemplateKey||window.currentRelationshipMode||'direct_opportunity');
+    var hints=TEMPLATE_HINTS[key]||TEMPLATE_HINTS.custom;
+    if(!hints||!hints.length)return;
+    var primaryIdx={0:true,2:true,4:true};
+    anglesContainer.innerHTML=hints.map(function(h,i){
+      var extra=primaryIdx[i]?'':' tapd-prep-extra';
+      return '<div class="cheat-prep-angle'+extra+'">'
+        +'<div class="cheat-prep-dot"></div>'
+        +'<span><b style="color:#EAB308;margin-right:6px;font-weight:800;">'+(i+1)+'.</b>'+h+'</span>'
+        +'</div>';
+    }).join('');
+    // Remove any previous expand button before adding a fresh one
+    var oldBtn=panel.querySelector('.tapd-prep-expand');
+    if(oldBtn)oldBtn.remove();
+    var expand=document.createElement('button');
+    expand.type='button';
+    expand.className='tapd-prep-expand';
+    expand.textContent='Show 2 more \u2193';
+    expand.onclick=function(){
+      var expanded=anglesContainer.classList.toggle('tapd-prep-show-all');
+      this.textContent=expanded?'Show fewer \u2191':'Show 2 more \u2193';
+    };
+    anglesContainer.parentNode.insertBefore(expand,anglesContainer.nextSibling);
+  }
+
+  function patchPeekCard(){
+    var card=document.getElementById('cheatPeekCard27');
+    if(!card)return;
+    var list=card.querySelector('.cheat-peek-list');
+    if(!list)return;
+    if(list.querySelector('.tapd-peek-extra'))return;
+    var key=(window._nextStepTemplateKey||window.currentRelationshipMode||'direct_opportunity');
+    var hints=TEMPLATE_HINTS[key]||TEMPLATE_HINTS.custom;
+    if(!hints||!hints.length)return;
+    var primaryIdx={0:true,2:true,4:true};
+    list.innerHTML=hints.map(function(h,i){
+      var extra=primaryIdx[i]?'':' tapd-peek-extra';
+      return '<div class="cheat-peek-item'+extra+'"><b style="color:#EAB308;margin-right:6px;font-weight:800;">'+(i+1)+'.</b>'+h+'</div>';
+    }).join('');
+    var oldBtn=card.querySelector('.tapd-peek-expand');
+    if(oldBtn)oldBtn.remove();
+    var expand=document.createElement('button');
+    expand.type='button';
+    expand.className='tapd-peek-expand';
+    expand.textContent='Show 2 more \u2193';
+    expand.onclick=function(){
+      var expanded=list.classList.toggle('tapd-peek-show-all');
+      this.textContent=expanded?'Show fewer \u2191':'Show 2 more \u2193';
+    };
+    list.parentNode.insertBefore(expand,list.nextSibling);
+  }
+
+  function watchCheatPanels(){
+    try{
+      var obs=new MutationObserver(function(){
+        patchPrepPanel();
+        patchPeekCard();
+      });
+      obs.observe(document.body,{childList:true,subtree:true});
+    }catch(e){}
+    // Also run once now in case panels already exist
+    patchPrepPanel();
+    patchPeekCard();
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  // PAINKILLER RELATIONSHIP HUB
+  // Replaces the vanity-metric layout (X captured, Y sent) with a
+  // pain-surfacing layout: "What needs you next" + 4 action-tab list.
+  // Reads the same data store the existing rh56 hub reads.
+  // ═══════════════════════════════════════════════════════════════════════
+
+  // Template → human-readable status badge.
+  var TEMPLATE_STATUS={
+    direct_opportunity:'Direct Opportunity',
+    stay_in_touch:'Warm Conversation',
+    collaboration:'Collaboration Opportunity',
+    connector_referral:'Referral Source',
+    strategic_partnership:'Partnership Discussion',
+    customer_discovery:'Discovery Conversation',
+    investor_funding:'Investor Conversation',
+    pilot_beta:'Pilot Opportunity',
+    speaking_media:'Speaking Opportunity',
+    advisory_mentor:'Advisory Conversation',
+    community_access:'Community Connection',
+    custom:'Captured Conversation'
+  };
+  // Templates that count as "opportunities".
+  var OPPORTUNITY_TEMPLATES={
+    direct_opportunity:1,investor_funding:1,strategic_partnership:1,
+    collaboration:1,pilot_beta:1,connector_referral:1,speaking_media:1
+  };
+
+  function safeGetCaptures(){try{return (typeof getCaptures==='function')?(getCaptures()||[]):[];}catch(e){return [];}}
+  function safeGetConnections(){try{return (typeof getConnections==='function')?(getConnections()||[]):[];}catch(e){return [];}}
+
+  function templateOf(item){
+    return item.template_id||item.selected_template_id||item.relationship_pathway||item.detected_engagement_type||'custom';
+  }
+  function badgeForTemplate(t){return TEMPLATE_STATUS[t]||TEMPLATE_STATUS.custom;}
+  function badgeClass(t){
+    if(OPPORTUNITY_TEMPLATES[t])return 'opp';
+    if(t==='stay_in_touch'||t==='advisory_mentor'||t==='customer_discovery'||t==='community_access')return 'warm';
+    return 'calm';
+  }
+  function isOpportunity(item){return !!OPPORTUNITY_TEMPLATES[templateOf(item)];}
+
+  function daysSince(item){
+    var t=item.captured_at||item.date||item.created_at||item.timestamp||0;
+    if(!t)return 0;
+    var ms=(typeof t==='string')?Date.parse(t):t;
+    if(!ms||isNaN(ms))return 0;
+    return Math.floor((Date.now()-ms)/86400000);
+  }
+  function ageLabel(d){
+    if(d<=0)return 'today';
+    if(d===1)return 'yesterday';
+    if(d<7)return d+' days ago';
+    if(d<14)return 'last week';
+    if(d<31)return Math.floor(d/7)+' weeks ago';
+    return Math.floor(d/30)+' months ago';
+  }
+
+  // What does this person need next? Short, action-oriented.
+  function nextActionFor(item){
+    var s=String(item.status||item.followup_status||'').toLowerCase();
+    if(s==='sent')return 'Sent — awaiting reply';
+    if(s==='waiting')return 'Awaiting response';
+    if(s==='archived')return 'Closed';
+    if(s==='needs_capture'||s==='pending')return 'Capture this conversation';
+    if(s==='draft'||s==='ready'||s==='follow_up_ready')return 'Review draft and send';
+    var summary=(item.action_summary||item.contact_message||item.summary||'').trim();
+    if(summary){
+      var first=summary.split(/[.!?\n]/)[0].trim();
+      return first.length>72?first.slice(0,69)+'...':first;
+    }
+    return 'Review and decide next step';
+  }
+
+  // Status flags used downstream.
+  function isSent(item){var s=String(item.status||item.followup_status||'').toLowerCase();return s==='sent'||s==='waiting';}
+  function isAwaitingFollowup(item){var s=String(item.status||item.followup_status||'').toLowerCase();return s==='draft'||s==='ready'||s==='follow_up_ready';}
+  function isUncaptured(item){var s=String(item.status||'').toLowerCase();return s==='pending'||s==='needs_capture'||s==='accepted';}
+
+  // Returns a single normalised list of people, captures preferred over bare connections.
+  function getAllPeople(){
+    var caps=safeGetCaptures();
+    var conns=safeGetConnections();
+    var seenNames={};
+    var out=[];
+    caps.forEach(function(c){
+      if(!c)return;
+      var n=(c.person_name||c.name||'').toLowerCase().trim();
+      if(n)seenNames[n]=1;
+      out.push(c);
+    });
+    conns.forEach(function(c){
+      if(!c)return;
+      var n=(c.person_name||c.name||'').toLowerCase().trim();
+      if(n&&seenNames[n])return; // already represented by a capture
+      out.push(c);
+    });
+    return out;
+  }
+
+  // Categorise once, use everywhere.
+  function categorisePeople(){
+    var people=getAllPeople();
+    var opportunities=[],needs=[],done=[],all=people;
+    var cold=[],awaiting=[],uncaptured=[];
+    people.forEach(function(p){
+      var sent=isSent(p);
+      if(isOpportunity(p))opportunities.push(p);
+      if(!sent&&(isAwaitingFollowup(p)||isUncaptured(p)))needs.push(p);
+      if(sent)done.push(p);
+      // Pain detection
+      if(isOpportunity(p)&&!sent&&daysSince(p)>=3)cold.push(p);
+      if(isAwaitingFollowup(p))awaiting.push(p);
+      if(isUncaptured(p))uncaptured.push(p);
+    });
+    return {opportunities:opportunities,needs:needs,done:done,all:all,
+            cold:cold,awaiting:awaiting,uncaptured:uncaptured};
+  }
+
+  function nameOf(p){return p.person_name||p.name||'Name not captured';}
+
+  function renderPersonCard(p){
+    var t=templateOf(p);
+    var badgeTxt=badgeForTemplate(t);
+    var bClass=badgeClass(t);
+    var action=nextActionFor(p);
+    var age=ageLabel(daysSince(p));
+    return '<div class="pain-card">'
+      +'<p class="pain-card-name">'+esc(nameOf(p))+'</p>'
+      +'<span class="pain-badge '+bClass+'">'+esc(badgeTxt)+'</span>'
+      +'<p class="pain-card-action"><b>Next:</b><span>'+esc(action)+'</span></p>'
+      +'<p class="pain-card-age">Captured '+esc(age)+'</p>'
+      +'</div>';
+  }
+
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];});}
+
+  function renderEmpty(emoji,title,sub){
+    return '<div class="pain-empty"><div class="pain-empty-emoji">'+emoji+'</div>'
+      +'<p class="pain-empty-title">'+title+'</p>'
+      +'<p class="pain-empty-sub">'+sub+'</p></div>';
+  }
+
+  function renderTabContent(tab,cats){
+    var list,empty;
+    if(tab==='opp'){list=cats.opportunities;empty=renderEmpty('🔥','No opportunities yet','Captured conversations with opportunity templates appear here.');}
+    else if(tab==='need'){list=cats.needs;empty=renderEmpty('🤝','Nothing needs you right now','Anything waiting for your move will appear here.');}
+    else if(tab==='done'){list=cats.done;empty=renderEmpty('✅','Nothing sent yet','Follow-ups you send appear here so you can track replies.');}
+    else {list=cats.all;empty=renderEmpty('👥','No relationships yet','Every captured conversation and NFC tap appears here.');}
+    if(!list.length)return empty;
+    return '<div class="pain-cards">'+list.map(renderPersonCard).join('')+'</div>';
+  }
+
+  // Switch tab — re-renders just the cards container.
+  window.tapdPainTab=function(tab){
+    var hub=document.getElementById('tapdPainHub');if(!hub)return;
+    var cats=categorisePeople();
+    hub.querySelectorAll('.pain-tab').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-tab')===tab);});
+    var slot=hub.querySelector('#tapdPainTabContent');
+    if(slot)slot.innerHTML=renderTabContent(tab,cats);
+    try{hub.dataset.activeTab=tab;}catch(e){}
+  };
+
+  // Pain row click → jump to the relevant tab.
+  window.tapdPainJump=function(tab){if(window.tapdPainTab)window.tapdPainTab(tab);};
+
+  function renderPainkillerHub(){
+    var cats=categorisePeople();
+    var n=function(a){return a.length;};
+    // Pain rows
+    var rows=[];
+    if(n(cats.cold)>0){
+      rows.push('<div class="pain-row urgent" onclick="tapdPainJump(\'opp\')">'
+        +'<div class="pain-emoji">🔥</div>'
+        +'<div><div class="pain-headline"><b>'+n(cats.cold)+'</b> '+(n(cats.cold)===1?'opportunity':'opportunities')+' going cold</div>'
+        +'<div class="pain-sub">'+esc(nameOf(cats.cold[0]))+' · '+esc(badgeForTemplate(templateOf(cats.cold[0])))+' · '+esc(ageLabel(daysSince(cats.cold[0])))+', no follow-up</div></div>'
+        +'<div class="pain-arrow">\u203A</div></div>');
+    }
+    if(n(cats.awaiting)>0){
+      var oldest=cats.awaiting.slice().sort(function(a,b){return daysSince(b)-daysSince(a);})[0];
+      rows.push('<div class="pain-row warn" onclick="tapdPainJump(\'need\')">'
+        +'<div class="pain-emoji">\u23F0</div>'
+        +'<div><div class="pain-headline"><b>'+n(cats.awaiting)+'</b> follow-'+(n(cats.awaiting)===1?'up':'ups')+' awaiting your move</div>'
+        +'<div class="pain-sub">Drafts ready to send · longest waiting '+esc(ageLabel(daysSince(oldest)))+'</div></div>'
+        +'<div class="pain-arrow">\u203A</div></div>');
+    }
+    if(n(cats.uncaptured)>0){
+      rows.push('<div class="pain-row calm" onclick="tapdPainJump(\'need\')">'
+        +'<div class="pain-emoji">\uD83D\uDCDD</div>'
+        +'<div><div class="pain-headline"><b>'+n(cats.uncaptured)+'</b> '+(n(cats.uncaptured)===1?'conversation':'conversations')+' still uncaptured</div>'
+        +'<div class="pain-sub">Tap the gold button before memory fades</div></div>'
+        +'<div class="pain-arrow">\u203A</div></div>');
+    }
+    if(!rows.length){
+      rows.push('<div class="pain-row none">'
+        +'<div class="pain-emoji">\u2728</div>'
+        +'<div><div class="pain-headline">Nothing needs you right now</div>'
+        +'<div class="pain-sub">Capture your next conversation when it happens</div></div>'
+        +'<div class="pain-arrow">\u203A</div></div>');
+    }
+    var activeTab=(document.getElementById('tapdPainHub')&&document.getElementById('tapdPainHub').dataset.activeTab)||'opp';
+    function tab(id,emoji,label,count){
+      return '<button class="pain-tab'+(id===activeTab?' active':'')+'" data-tab="'+id+'" onclick="tapdPainTab(\''+id+'\')">'
+        +'<span>'+emoji+' '+label+'</span>'
+        +'<span class="pain-tab-count">'+count+'</span></button>';
+    }
+    return '<div id="tapdPainHub" data-active-tab="'+activeTab+'">'
+      +'<div class="pain-hero">'
+      +'<p class="pain-kicker">What needs you next</p>'
+      +'<p class="pain-title">Your relationship pain, surfaced.</p>'
+      +'</div>'
+      +'<div class="pain-rows">'+rows.join('')+'</div>'
+      +'<div class="pain-tabs">'
+      +tab('opp','\uD83D\uDD25','Opps',n(cats.opportunities))
+      +tab('need','\uD83E\uDD1D','Needs you',n(cats.needs))
+      +tab('done','\u2705','Done',n(cats.done))
+      +tab('all','\uD83D\uDC65','All',n(cats.all))
+      +'</div>'
+      +'<div id="tapdPainTabContent">'+renderTabContent(activeTab,cats)+'</div>'
+      +'</div>';
+  }
+
+  // Find the rh56 body container and replace its contents with our hub.
+  function findHubBody(){
+    var ids=['rh56Body','rh56-body','tapd54RelHubShell','page-relhub-56'];
+    for(var i=0;i<ids.length;i++){
+      var el=document.getElementById(ids[i]);
+      if(el)return el;
+    }
+    var anchor=document.querySelector('.tapd54-hub-header,#rh56Tabs,.tapd54-section-tabs');
+    if(anchor){
+      var p=anchor.parentNode;
+      while(p&&p!==document.body){
+        if(p.scrollHeight>200||p.classList.contains('owner-side-body'))return p;
+        p=p.parentNode;
+      }
+      return anchor.parentNode;
+    }
+    return null;
+  }
+
+  function patchRelationshipHub(){
+    if(!document.body.classList.contains('tapd-relhub-mode'))return;
+    var body=findHubBody();
+    if(!body)return;
+    if(body.dataset.tapdPainHubRendered==='1'&&body.querySelector('#tapdPainHub'))return;
+    body.innerHTML=renderPainkillerHub();
+    body.dataset.tapdPainHubRendered='1';
+  }
+
+  function watchRelationshipHub(){
+    try{
+      var obs=new MutationObserver(function(){
+        if(document.body.classList.contains('tapd-relhub-mode'))patchRelationshipHub();
+      });
+      obs.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
+    }catch(e){}
+    setTimeout(patchRelationshipHub,80);
+    setTimeout(patchRelationshipHub,280);
+    setTimeout(patchRelationshipHub,800);
+  }
+
   // Personalise the vCard button: inject owner's first name the moment visitor connects.
   // Runs after showConnected() hides the options and reveals visitorSent.
   function upgradeShowConnected(){
@@ -17627,6 +18022,8 @@ input::placeholder, textarea::placeholder {
     setTimeout(cleanRelationshipHubText,400);
     upgradeShowConnected();
     noopConnectSheet();
+    watchCheatPanels();
+    watchRelationshipHub();
     window.buildVisitorStrip=buildCleanVisitorStrip;
     // Re-run if strip already rendered before our script loaded
     if(inVisitorMode()){
