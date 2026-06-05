@@ -226,21 +226,25 @@ const controller = String.raw`
       +'.pain-sub{font-size:11px;color:rgba(255,255,255,.50);margin-top:3px;line-height:1.4;}\n'
       +'.pain-arrow{color:rgba(255,255,255,.30);font-size:18px;}\n'
       +'.pain-row.none .pain-arrow{display:none;}\n'
-      +'.pain-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:14px;}\n'
-      +'.pain-tab{height:40px;border-radius:11px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);color:rgba(255,255,255,.65);font-size:11px;font-weight:800;font-family:Inter,sans-serif;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1;padding:0 4px;}\n'
+      +'.pain-tabs{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}\n'
+      +'.pain-tab{min-height:44px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);color:rgba(255,255,255,.72);font-size:13px;font-weight:800;font-family:Inter,sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:space-between;line-height:1.2;padding:0 14px;letter-spacing:-.1px;}\n'
+      +'.pain-tab-label{display:flex;align-items:center;gap:9px;}\n'
+      +'.pain-tab-count{font-size:11px;font-weight:900;opacity:.55;}\n'
       +'.pain-tab.active{background:linear-gradient(135deg,#EAB308,#ca8a04);border-color:#EAB308;color:#050505;}\n'
-      +'.pain-tab-count{font-size:9px;opacity:.75;margin-top:1px;}\n'
-      +'.pain-tab.active .pain-tab-count{opacity:.85;}\n'
+      +'.pain-tab.active .pain-tab-count{opacity:.80;}\n'
       +'.pain-cards{display:grid;gap:10px;}\n'
-      +'.pain-card{padding:14px 14px 12px;border-radius:14px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.07);}\n'
-      +'.pain-card-name{font-size:15px;font-weight:900;color:#F0F4F8;letter-spacing:-.2px;margin-bottom:6px;}\n'
+      +'.pain-card{padding:15px 15px 13px;border-radius:14px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.07);}\n'
+      +'.pain-card-name{font-size:15px;font-weight:900;color:#F0F4F8;letter-spacing:-.2px;margin-bottom:7px;}\n'
       +'.pain-badge{display:inline-block;padding:3px 9px;border-radius:999px;font-size:10px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;}\n'
       +'.pain-badge.opp{background:rgba(234,179,8,.12);color:#EAB308;border:1px solid rgba(234,179,8,.30);}\n'
       +'.pain-badge.warm{background:rgba(14,206,192,.10);color:#0ECEC0;border:1px solid rgba(14,206,192,.25);}\n'
       +'.pain-badge.calm{background:rgba(255,255,255,.04);color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.10);}\n'
-      +'.pain-card-action{margin-top:10px;font-size:12px;color:rgba(255,255,255,.78);line-height:1.45;display:flex;align-items:flex-start;gap:6px;}\n'
-      +'.pain-card-action b{color:#0ECEC0;font-weight:800;font-size:10px;letter-spacing:.8px;text-transform:uppercase;flex-shrink:0;margin-top:1px;}\n'
-      +'.pain-card-age{margin-top:8px;font-size:10px;color:rgba(255,255,255,.40);letter-spacing:.2px;}\n'
+      +'.pain-card-expect{margin-top:12px;font-size:10px;font-weight:800;color:#0ECEC0;letter-spacing:.6px;text-transform:uppercase;margin-bottom:4px;}\n'
+      +'.pain-card-action{font-size:13px;color:#F0F4F8;line-height:1.45;}\n'
+      +'.pain-card-age{margin-top:10px;font-size:11px;color:rgba(255,255,255,.42);letter-spacing:.2px;display:flex;align-items:center;gap:5px;}\n'
+      +'.pain-card-age.overdue{color:#FCA5A5;font-weight:700;}\n'
+      +'.pain-card-age .age-warn{display:none;}\n'
+      +'.pain-card-age.overdue .age-warn{display:inline;}\n'
       +'.pain-empty{padding:36px 16px;text-align:center;color:rgba(255,255,255,.45);}\n'
       +'.pain-empty-emoji{font-size:32px;margin-bottom:8px;opacity:.6;}\n'
       +'.pain-empty-title{font-size:13px;font-weight:700;color:rgba(255,255,255,.65);margin-bottom:4px;}\n'
@@ -676,12 +680,19 @@ const controller = String.raw`
     var badgeTxt=badgeForTemplate(t);
     var bClass=badgeClass(t);
     var action=nextActionFor(p);
-    var age=ageLabel(daysSince(p));
+    var d=daysSince(p);
+    var age=ageLabel(d);
+    // Overdue rules: opportunities >= 3 days, drafts/awaiting >= 1 day
+    var overdue=false;
+    if(isOpportunity(p)&&!isSent(p)&&d>=3)overdue=true;
+    else if(isAwaitingFollowup(p)&&d>=1)overdue=true;
+    var firstName=String(nameOf(p)).split(' ')[0]||'they';
     return '<div class="pain-card">'
       +'<p class="pain-card-name">'+esc(nameOf(p))+'</p>'
       +'<span class="pain-badge '+bClass+'">'+esc(badgeTxt)+'</span>'
-      +'<p class="pain-card-action"><b>Next:</b><span>'+esc(action)+'</span></p>'
-      +'<p class="pain-card-age">Captured '+esc(age)+'</p>'
+      +'<p class="pain-card-expect">What '+esc(firstName)+' is expecting from you</p>'
+      +'<p class="pain-card-action">'+esc(action)+'</p>'
+      +'<p class="pain-card-age'+(overdue?' overdue':'')+'"><span class="age-warn">\u26A0</span><span>Captured '+esc(age)+'</span></p>'
       +'</div>';
   }
 
@@ -719,54 +730,62 @@ const controller = String.raw`
   function renderPainkillerHub(){
     var cats=categorisePeople();
     var n=function(a){return a.length;};
-    // Pain rows
+    // Pain rows — each row names a consequence, not a metric.
     var rows=[];
+    var actionCount=0;
     if(n(cats.cold)>0){
+      actionCount+=n(cats.cold);
+      var coldLeader=cats.cold[0];
       rows.push('<div class="pain-row urgent" onclick="tapdPainJump(\'opp\')">'
-        +'<div class="pain-emoji">🔥</div>'
-        +'<div><div class="pain-headline"><b>'+n(cats.cold)+'</b> '+(n(cats.cold)===1?'opportunity':'opportunities')+' going cold</div>'
-        +'<div class="pain-sub">'+esc(nameOf(cats.cold[0]))+' · '+esc(badgeForTemplate(templateOf(cats.cold[0])))+' · '+esc(ageLabel(daysSince(cats.cold[0])))+', no follow-up</div></div>'
+        +'<div class="pain-emoji">\uD83D\uDD25</div>'
+        +'<div><div class="pain-headline"><b>'+n(cats.cold)+'</b> '+(n(cats.cold)===1?'opportunity is':'opportunities are')+' going cold</div>'
+        +'<div class="pain-sub">'+esc(nameOf(coldLeader))+' \u00B7 '+esc(badgeForTemplate(templateOf(coldLeader)))+' \u00B7 captured '+esc(ageLabel(daysSince(coldLeader)))+', no follow-up sent</div></div>'
         +'<div class="pain-arrow">\u203A</div></div>');
     }
     if(n(cats.awaiting)>0){
+      actionCount+=n(cats.awaiting);
       var oldest=cats.awaiting.slice().sort(function(a,b){return daysSince(b)-daysSince(a);})[0];
       rows.push('<div class="pain-row warn" onclick="tapdPainJump(\'need\')">'
         +'<div class="pain-emoji">\u23F0</div>'
-        +'<div><div class="pain-headline"><b>'+n(cats.awaiting)+'</b> follow-'+(n(cats.awaiting)===1?'up':'ups')+' awaiting your move</div>'
-        +'<div class="pain-sub">Drafts ready to send · longest waiting '+esc(ageLabel(daysSince(oldest)))+'</div></div>'
+        +'<div><div class="pain-headline"><b>'+n(cats.awaiting)+'</b> follow-'+(n(cats.awaiting)===1?'up is':'ups are')+' sitting in draft</div>'
+        +'<div class="pain-sub">Longest one has been waiting '+esc(ageLabel(daysSince(oldest)))+'. They\u2019re starting to wonder.</div></div>'
         +'<div class="pain-arrow">\u203A</div></div>');
     }
     if(n(cats.uncaptured)>0){
+      actionCount+=n(cats.uncaptured);
       rows.push('<div class="pain-row calm" onclick="tapdPainJump(\'need\')">'
         +'<div class="pain-emoji">\uD83D\uDCDD</div>'
-        +'<div><div class="pain-headline"><b>'+n(cats.uncaptured)+'</b> '+(n(cats.uncaptured)===1?'conversation':'conversations')+' still uncaptured</div>'
-        +'<div class="pain-sub">Tap the gold button before memory fades</div></div>'
+        +'<div><div class="pain-headline"><b>'+n(cats.uncaptured)+'</b> '+(n(cats.uncaptured)===1?'conversation you haven\u2019t':'conversations you haven\u2019t')+' captured</div>'
+        +'<div class="pain-sub">Capture them before the details fade. Memory loses 50% in 24 hours.</div></div>'
         +'<div class="pain-arrow">\u203A</div></div>');
     }
     if(!rows.length){
       rows.push('<div class="pain-row none">'
         +'<div class="pain-emoji">\u2728</div>'
-        +'<div><div class="pain-headline">Nothing needs you right now</div>'
-        +'<div class="pain-sub">Capture your next conversation when it happens</div></div>'
+        +'<div><div class="pain-headline">You\u2019re all caught up</div>'
+        +'<div class="pain-sub">Every relationship has been acted on. Capture your next conversation when it happens.</div></div>'
         +'<div class="pain-arrow">\u203A</div></div>');
     }
     var activeTab=(document.getElementById('tapdPainHub')&&document.getElementById('tapdPainHub').dataset.activeTab)||'opp';
     function tab(id,emoji,label,count){
       return '<button class="pain-tab'+(id===activeTab?' active':'')+'" data-tab="'+id+'" onclick="tapdPainTab(\''+id+'\')">'
-        +'<span>'+emoji+' '+label+'</span>'
+        +'<span class="pain-tab-label">'+emoji+' '+label+'</span>'
         +'<span class="pain-tab-count">'+count+'</span></button>';
     }
+    var heroSub=actionCount>0
+      ? actionCount+' thing'+(actionCount===1?'':'s')+' waiting on your next move.'
+      : 'Nothing waiting on your next move.';
     return '<div id="tapdPainHub" data-active-tab="'+activeTab+'">'
       +'<div class="pain-hero">'
-      +'<p class="pain-kicker">What needs you next</p>'
-      +'<p class="pain-title">Your relationship pain, surfaced.</p>'
+      +'<p class="pain-kicker">The people who need you now</p>'
+      +'<p class="pain-title">'+esc(heroSub)+'</p>'
       +'</div>'
       +'<div class="pain-rows">'+rows.join('')+'</div>'
       +'<div class="pain-tabs">'
-      +tab('opp','\uD83D\uDD25','Opps',n(cats.opportunities))
-      +tab('need','\uD83E\uDD1D','Needs you',n(cats.needs))
-      +tab('done','\u2705','Done',n(cats.done))
-      +tab('all','\uD83D\uDC65','All',n(cats.all))
+      +tab('opp','\uD83D\uDD25','Opportunities',n(cats.opportunities))
+      +tab('need','\uD83E\uDD1D','Awaiting your move',n(cats.needs))
+      +tab('done','\u2705','Followed up',n(cats.done))
+      +tab('all','\uD83D\uDC65','Everyone you\u2019ve met',n(cats.all))
       +'</div>'
       +'<div id="tapdPainTabContent">'+renderTabContent(activeTab,cats)+'</div>'
       +'</div>';
