@@ -11,35 +11,47 @@ html = html.replace(/<script id="tapdTemplateSaveCaptureLayoutScript">[\s\S]*?<\
 const style = String.raw`
 <style id="tapdTemplateSaveCaptureLayoutStyle">
   .tapd-template-original-save-hidden{display:none!important;visibility:hidden!important;pointer-events:none!important;height:0!important;min-height:0!important;margin:0!important;padding:0!important;overflow:hidden!important;}
+
+  /* Keep Capture this moment only at the bottom of Templates. */
+  .tapd-template-action-bar .tapd-template-capture-btn{display:none!important;visibility:hidden!important;pointer-events:none!important;}
+  .tapd-template-action-bar .tapd-template-action-row{grid-template-columns:1fr!important;}
+  .tapd-template-action-bar .tapd-template-cheat-btn{width:100%!important;}
+
   .tapd-template-inline-save{
-    min-width:96px!important;height:46px!important;border-radius:14px!important;
+    min-width:68px!important;height:38px!important;padding:0 11px!important;border-radius:12px!important;
     border:1px solid #EAB308!important;background:linear-gradient(135deg,#EAB308,#ca8a04)!important;
-    color:#050505!important;font-family:Inter,sans-serif!important;font-size:13px!important;font-weight:900!important;
-    cursor:pointer!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;
-    box-shadow:0 8px 22px rgba(234,179,8,.18)!important;
+    color:#050505!important;font-family:Inter,sans-serif!important;font-size:12px!important;font-weight:900!important;
+    cursor:pointer!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:6px!important;
+    box-shadow:0 6px 16px rgba(234,179,8,.16)!important;line-height:1!important;
   }
+  .tapd-template-inline-save svg{width:11px!important;height:11px!important;display:block!important;stroke-width:2.7!important;}
   .tapd-template-inline-save[disabled]{opacity:.42!important;filter:grayscale(.35)!important;cursor:not-allowed!important;box-shadow:none!important;}
   .tapd-template-inline-save-wrap{display:inline-flex!important;align-items:center!important;gap:8px!important;flex-wrap:wrap!important;}
   .tapd-template-changed-note{font-size:11px!important;color:#22C55E!important;font-weight:800!important;display:none!important;width:100%;text-align:right!important;margin-top:5px!important;}
   .tapd-template-inline-save-wrap.is-dirty .tapd-template-changed-note{display:block!important;}
+
   .tapd-template-bottom-capture{
-    width:100%!important;min-height:78px!important;border-radius:22px!important;border:1px solid #FACC15!important;
-    background:linear-gradient(135deg,#FACC15 0%,#EAB308 48%,#B87503 100%)!important;color:#050505!important;
-    font-family:Inter,sans-serif!important;font-size:18px!important;font-weight:950!important;letter-spacing:-.25px!important;
-    cursor:pointer!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:12px!important;
-    box-shadow:0 0 0 2px rgba(234,179,8,.24),0 14px 34px rgba(234,179,8,.22)!important;
-    position:relative!important;overflow:hidden!important;margin:18px 0 4px!important;
+    width:min(288px,100%)!important;height:54px!important;min-height:0!important;border-radius:16px!important;border:1px solid #EAB308!important;
+    background:linear-gradient(135deg,#FACC15 0%,#EAB308 52%,#B87503 100%)!important;color:#050505!important;
+    font-family:Inter,sans-serif!important;font-size:14px!important;font-weight:950!important;letter-spacing:-.12px!important;
+    cursor:pointer!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:9px!important;
+    box-shadow:0 0 0 1px rgba(234,179,8,.24),0 8px 22px rgba(234,179,8,.20)!important;
+    position:relative!important;overflow:hidden!important;margin:16px auto 4px!important;padding:0 20px!important;
+    animation:tapdCaptureLive 2.6s ease-in-out infinite!important;
   }
   .tapd-template-bottom-capture:before{
-    content:"";position:absolute;inset:-45%;background:radial-gradient(circle,rgba(255,255,255,.26),transparent 38%);
-    opacity:.0;animation:tapdCapturePulse 2.4s ease-in-out infinite;
+    content:"";position:absolute;inset:-60%;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.30) 48%,transparent 62%);
+    opacity:.0;animation:tapdCaptureShimmer 2.7s ease-in-out infinite;
   }
   .tapd-template-bottom-capture span{position:relative;z-index:1;}
+  .tapd-template-bottom-capture .tapd-capture-star{font-size:15px!important;line-height:1!important;animation:tapdCaptureStar 2.2s ease-in-out infinite!important;}
   .tapd-template-bottom-capture:after{
-    content:"";position:absolute;inset:8px;border-radius:18px;border:1px solid rgba(255,255,255,.25);pointer-events:none;
+    content:"";position:absolute;inset:5px;border-radius:13px;border:1px solid rgba(255,255,255,.20);pointer-events:none;
   }
-  @keyframes tapdCapturePulse{0%,100%{opacity:.10;transform:scale(.96)}50%{opacity:.32;transform:scale(1.05)}}
-  @media(max-width:420px){.tapd-template-bottom-capture{min-height:72px;font-size:16px}.tapd-template-inline-save{min-width:88px;height:43px}}
+  @keyframes tapdCaptureLive{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-1px) scale(1.012)}}
+  @keyframes tapdCaptureShimmer{0%,18%{opacity:0;transform:translateX(-22%)}38%{opacity:.26}58%,100%{opacity:0;transform:translateX(22%)}}
+  @keyframes tapdCaptureStar{0%,100%{transform:scale(1);opacity:.92}50%{transform:scale(1.16);opacity:1}}
+  @media(max-width:420px){.tapd-template-bottom-capture{width:min(286px,100%)!important;height:52px!important;font-size:13px!important}.tapd-template-inline-save{height:36px!important;font-size:11px!important;min-width:64px!important}}
 </style>`;
 
 const script = String.raw`
@@ -66,7 +78,12 @@ const script = String.raw`
   function findEditButton(){
     var buttons=[].slice.call(document.querySelectorAll('button'));
     return buttons.find(function(b){
-      if(b.closest&&b.closest('.tapd-template-inline-save-wrap'))return false;
+      if(b.closest&&(
+        b.closest('.tapd-template-inline-save-wrap')||
+        b.closest('#tapdHardOwnerHeader')||
+        b.closest('#tapdTemplateActionBar')||
+        b.closest('#tapdTemplateBottomCapture')
+      ))return false;
       var t=txt(b);
       return t==='edit'||t.indexOf('edit')===0;
     })||null;
@@ -75,6 +92,32 @@ const script = String.raw`
     dirty=!!on;
     document.querySelectorAll('.tapd-template-inline-save').forEach(function(btn){btn.disabled=!dirty;});
     document.querySelectorAll('.tapd-template-inline-save-wrap').forEach(function(w){w.classList.toggle('is-dirty',dirty);});
+  }
+  function syncSaveSize(save,edit){
+    if(!save||!edit||typeof getComputedStyle==='undefined')return;
+    try{
+      var r=edit.getBoundingClientRect();
+      var cs=getComputedStyle(edit);
+      if(r&&r.height>24)save.style.setProperty('height',Math.round(r.height)+'px','important');
+      if(r&&r.width>40)save.style.setProperty('min-width',Math.max(64,Math.round(r.width))+'px','important');
+      if(cs.borderRadius)save.style.setProperty('border-radius',cs.borderRadius,'important');
+      if(cs.fontSize)save.style.setProperty('font-size',cs.fontSize,'important');
+    }catch(e){}
+  }
+  function syncAllSaveSizes(){
+    document.querySelectorAll('.tapd-template-inline-save-wrap').forEach(function(w){
+      syncSaveSize(w.querySelector('.tapd-template-inline-save'),w.querySelector('button:not(.tapd-template-inline-save)'));
+    });
+  }
+  function hideDuplicateTopCapture(){
+    document.querySelectorAll('.tapd-template-action-bar .tapd-template-capture-btn').forEach(function(btn){
+      btn.style.setProperty('display','none','important');
+      btn.style.setProperty('visibility','hidden','important');
+      btn.style.setProperty('pointer-events','none','important');
+    });
+    document.querySelectorAll('.tapd-template-action-bar .tapd-template-action-row').forEach(function(row){
+      row.style.setProperty('grid-template-columns','1fr','important');
+    });
   }
   function runOriginalSave(){
     var original=findOriginalSave();
@@ -113,13 +156,14 @@ const script = String.raw`
     save.type='button';
     save.className='tapd-template-inline-save';
     save.disabled=true;
-    save.innerHTML='<span>💾</span><span>Save</span>';
+    save.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"></path><path d="M17 21v-8H7v8"></path><path d="M7 3v5h8"></path></svg><span>Save</span>';
     save.onclick=function(ev){ev.preventDefault();ev.stopPropagation();if(!save.disabled)runOriginalSave();};
     wrap.appendChild(save);
     var note=document.createElement('span');
     note.className='tapd-template-changed-note';
     note.textContent='✓ Changes made';
     wrap.appendChild(note);
+    syncSaveSize(save,edit);
   }
   function replaceBottomSave(){
     var original=findOriginalSave();
@@ -136,7 +180,7 @@ const script = String.raw`
     capture.id='tapdTemplateBottomCapture';
     capture.type='button';
     capture.className='tapd-template-bottom-capture';
-    capture.innerHTML='<span>✦</span><span>Capture this moment</span>';
+    capture.innerHTML='<span class="tapd-capture-star">✦</span><span>Capture this moment</span>';
     capture.onclick=function(ev){ev.preventDefault();ev.stopPropagation();startCapture();};
     var host=original.parentNode||document.body;
     host.insertBefore(capture,original);
@@ -156,9 +200,11 @@ const script = String.raw`
     applying=true;
     try{
       if(looksLikeTemplateScreen()){
+        hideDuplicateTopCapture();
         addInlineSave();
         replaceBottomSave();
         bindDirtyWatch();
+        syncAllSaveSizes();
         setDirty(dirty);
       }
     }finally{applying=false;}
@@ -190,7 +236,7 @@ else html += '\n'+script+'\n';
 
 if (html !== before) {
   fs.writeFileSync(indexPath, html, 'utf8');
-  console.log('[TAPD build] Applied robust template save/capture layout refinement.');
+  console.log('[TAPD build] Applied refined template save/capture layout with single bottom CTA.');
 } else {
   console.log('[TAPD build] Template save/capture layout already present.');
 }
