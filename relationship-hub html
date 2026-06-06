@@ -1716,16 +1716,10 @@ function loadIntent() {
 function loadCaptures() {
   const stored = localStorage.getItem(STORAGE.CAPTURES);
   if (stored) {
-    try {
-      state.captures = JSON.parse(stored);
-    } catch (e) {
-      state.captures = SAMPLE_CAPTURES;
-      saveCaptures();
-    }
+    try { state.captures = JSON.parse(stored); }
+    catch (e) { state.captures = []; }
   } else {
-    // First visit — seed with sample data so the Hub demonstrates immediately
-    state.captures = SAMPLE_CAPTURES;
-    saveCaptures();
+    state.captures = []; // start empty — real captures arrive from capture.html
   }
 }
 
@@ -1752,6 +1746,16 @@ function saveIntent(intent) {
 // ============================================================
 // FILTERING & RENDERING
 // ============================================================
+// Fold every signal / template into one of the 5 tabs. Keys off the AI's
+// signal first, then the chosen template — so canonical captures land correctly.
+function categoryOf(c) {
+  const v = ((c.signal || c.template || '') + '').toLowerCase();
+  if (['connector', 'community_access'].includes(v)) return 'connectors';
+  if (['collaboration', 'strategic_partnership', 'advisory'].includes(v)) return 'collaborations';
+  if (['stay', 'stay_in_touch', 'keep_warm'].includes(v)) return 'stay';
+  return 'opportunities'; // opportunity, pilot_beta, career, speaking, product_discovery, default
+}
+
 function getFilteredCaptures() {
   let filtered = state.captures.filter(c => c.outcome === 'active');
 
@@ -1768,13 +1772,7 @@ function getFilteredCaptures() {
 
   // Signal tab filter
   if (state.activeTab !== 'all') {
-    const tabToSignal = {
-      'opportunities': 'opportunity',
-      'connectors': 'connector',
-      'collaborations': 'collaboration',
-      'stay': 'stay'
-    };
-    filtered = filtered.filter(c => c.signal === tabToSignal[state.activeTab]);
+    filtered = filtered.filter(c => categoryOf(c) === state.activeTab);
   }
 
   // Sort by priority (act-soon first, then slip-away, then worth-exploring, then keep-warm)
@@ -1804,10 +1802,10 @@ function countBySignal() {
 
   return {
     all: scoped.length,
-    opportunities: scoped.filter(c => c.signal === 'opportunity').length,
-    connectors: scoped.filter(c => c.signal === 'connector').length,
-    collaborations: scoped.filter(c => c.signal === 'collaboration').length,
-    stay: scoped.filter(c => c.signal === 'stay').length
+    opportunities: scoped.filter(c => categoryOf(c) === 'opportunities').length,
+    connectors: scoped.filter(c => categoryOf(c) === 'connectors').length,
+    collaborations: scoped.filter(c => categoryOf(c) === 'collaborations').length,
+    stay: scoped.filter(c => categoryOf(c) === 'stay').length
   };
 }
 
@@ -1940,6 +1938,7 @@ function renderCard(c) {
         <span class="signal-separator">\u00B7</span>
         <span class="signal-evidence">${escapeHtml(c.evidence)}</span>
       </div>
+      ${c.secondaryThread ? `<div class="card-secondary" style="font-size:13px;color:var(--text-muted);margin-top:6px;font-style:italic;">${escapeHtml(c.secondaryThread)}</div>` : ''}
       <div class="card-priority" data-priority="${c.priority}">${priorityLabels[c.priority]}</div>
       <div class="card-action">${escapeHtml(c.action)}</div>
       <div class="card-footer">
@@ -2156,10 +2155,14 @@ function openDraft(id) {
   const c = state.captures.find(x => x.id === id);
   if (!c) return;
 
-  const firstName = c.name.split(' ')[0];
-  const draftText = `Hi ${firstName},\n\nGreat to meet at ${c.event} \u2014 really enjoyed the conversation.\n\n${c.action.replace(/\.$/, '')}. Let me know what works on your end.\n\nBest,\n[Your name]`;
+  // Use the actual draft composed at capture time (already in the owner's voice).
+  let draftText = c.draftMessage;
+  if (!draftText) {
+    const firstName = (c.name || '').split(' ')[0] || '[First name]';
+    draftText = `Hi ${firstName},\n\n${(c.context || '').trim()}\n\n${(c.action || '').replace(/\.$/, '')}.\n\nBest,\n[Your name]`;
+  }
 
-  document.getElementById('draftTitle').textContent = `Draft for ${c.name}`;
+  document.getElementById('draftTitle').textContent = `Draft for ${c.name || 'this connection'}`;
   document.getElementById('draftSubtitle').textContent = 'Edit before sending. Nothing leaves your device until you copy or send.';
   document.getElementById('draftContext').textContent = c.context;
   document.getElementById('draftText').value = draftText;
@@ -2186,7 +2189,7 @@ function sendDraft() {
 
   // Trust architecture: check confidence before completing send
   maybeShowConfidenceModal(id, () => {
-    showToast('Draft saved \u2014 swipe right when they respond', '\u2192');
+    showToast('Draft ready \u2014 mark Moved Forward or Let Go when you know', '\u2713');
   });
 }
 
