@@ -1469,6 +1469,63 @@ const TEMPLATES = [
   }
 ];
 
+// ============ CUSTOM TEMPLATE OVERRIDES (from the Templates screen) ============
+// Applies any edits saved in templates.html so the picker + AI reflect them.
+(function applyTemplateOverrides() {
+  let ov = {};
+  try { ov = JSON.parse(localStorage.getItem(STORAGE.TEMPLATES_CUSTOM)) || {}; } catch (e) {}
+  TEMPLATES.forEach(t => {
+    const o = ov[t.id];
+    if (!o) return;
+    if (o.name) t.name = o.name;
+    if (o.outcomeCategory) t.outcomeCategory = o.outcomeCategory;
+    if (Array.isArray(o.questions)) t.questions = o.questions.slice();
+    if (Array.isArray(o.signals)) t.signals = o.signals.slice();
+    if (Array.isArray(o.whatToOffer)) t.whatToOffer = o.whatToOffer.slice();
+    if (Array.isArray(o.aiListening)) t.aiListening = o.aiListening.slice();
+  });
+})();
+
+// ============ OWNER STYLE (from onboarding) ============
+function loadOwnerStyle() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(STORAGE.ONBOARDING));
+    return (raw && raw.data) ? raw.data : null;
+  } catch (e) { return null; }
+}
+function onboardingDefaultTemplateId() {
+  const o = loadOwnerStyle();
+  return o && o.selectedTemplate ? o.selectedTemplate : null;
+}
+
+// Compose the outbound draft in the owner's voice. Never invents a voice:
+// if no Owner Style is set, the AI/mock message is left untouched.
+function applyOwnerStyle(ai) {
+  const o = loadOwnerStyle();
+  if (!o || !o.greeting) return ai;
+  const firstName = (ai.person && ai.person.name) ? ai.person.name.split(' ')[0] : '[First name]';
+  const fill = (s) => (s || '')
+    .replace(/\[First name\]/gi, firstName)
+    .replace(/\[My name\]/gi, o.name || '')
+    .replace(/\[Where we met\]/gi, (ai.draft && ai.draft.eventLabel) || 'the event')
+    .replace(/\[What we discussed\]/gi, (ai.draft && ai.draft.topic) || (ai.signal && ai.signal.evidence) || 'what you\u2019re working on')
+    .replace(/\[Next step\]/gi, (ai.draft && ai.draft.nextStep) || '');
+  ai.draft.message = [
+    fill(o.greeting), '',
+    fill(o.opening),
+    fill(o.conversationRef), '',
+    fill(o.nextStepStyle), '',
+    fill(o.signOff)
+  ].join('\n').replace(/\n{3,}/g, '\n\n').trim();
+  ai.draft._ownerVoiced = true;
+  return ai;
+}
+
+// ============ API ENDPOINTS ============
+// Rename here if your backend routes differ. Until they return real data,
+// capture falls back to a local draft so the flow stays testable.
+const ENDPOINTS = { transcribe: '/api/transcribe', structure: '/api/process-capture' };
+
 // ============ MOCK AI RESPONSE GENERATOR ============
 // In production, this is replaced by a real OpenAI API call using the master prompt v1.1
 function generateMockAIResponse(template, transcript) {
@@ -1626,6 +1683,7 @@ function renderTemplateCard(template, locked) {
       <div class="template-card-summary">${escapeHtml(template.summary)}</div>
       <div class="template-card-meta">
         <span class="outcome-badge">${escapeHtml(template.outcomeCategory)}</span>
+        ${template.id === onboardingDefaultTemplateId() ? '<span class="outcome-badge" style="background:var(--success-bg);color:var(--success)">Your default</span>' : ''}
         ${template.outcomes.slice(0, 2).map(o => `<span style="font-size: 12px; color: var(--text-muted);">${escapeHtml(o)}</span>`).join(' \u00b7 ')}
       </div>
     </div>
@@ -2187,35 +2245,86 @@ function warnBeforeLeaving(e) {
 }
 
 // ============ PROCESSING (mock for now) ============
-function runProcessing() {
+async function runProcessing() {
+  const setStep = (id, cls) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('active', 'done');
+    if (cls) el.classList.add(cls);
+  };
+  setTimeout(() => { setStep('step2', 'done'); setStep('step3', 'active'); }, 1500);
+
+  // Try the real pipeline; fall back to a local draft if endpoints aren't live yet.
+  let ai = null;
+  try { ai = await processViaApi(); }
+  catch (e) { console.warn('Capture API unavailable, using local draft:', e); }
+  if (!ai) ai = generateMockAIResponse(state.selectedTemplate, 'mock transcript');
+
+  // Continuation recording merges INTO the existing draft — never a second person.
+  if (state.isCompletionMode && state.draft) ai = mergeDrafts(state.draft, ai);
+
+  // Draft in the owner's voice (if Owner Style is set)
+  ai = applyOwnerStyle(ai);
+
+  state.draft = ai;
+  state.transcriptConfidence = ai.verification.needsNameConfirmation ? 'low' : 'high';
+  setStep('step3', 'done');
+
+  const hasAnyMissing = ai.completeness.criticalMissing.length > 0 || ai.completeness.qualityMissing.length > 0;
   setTimeout(() => {
-    const step1 = document.getElementById('step1');
-    const step2 = document.getElementById('step2');
-    const step3 = document.getElementById('step3');
-    if (step2) { step2.classList.remove('active'); step2.classList.add('done'); }
-    if (step3) step3.classList.add('active');
-  }, 1500);
+    if (hasAnyMissing && !state.isCompletionMode) goTo('completion_offered');
+    else goTo('review');
+  }, 600);
+}
 
-  setTimeout(() => {
-    const step3 = document.getElementById('step3');
-    if (step3) { step3.classList.remove('active'); step3.classList.add('done'); }
+// Real transcription + structuring. Returns null (→ fallback) if endpoints aren't live.
+async function processViaApi() {
+  const blob = new Blob(state.audio.chunks, { type: 'audio/webm' });
+  if (!blob.size) return null;
 
-    // Generate mock AI response
-    state.draft = generateMockAIResponse(state.selectedTemplate, 'mock transcript');
-    state.transcriptConfidence = state.draft.verification.needsNameConfirmation ? 'low' : 'high';
+  const fd = new FormData();
+  fd.append('audio', blob, 'capture.webm');
+  const tRes = await fetch(ENDPOINTS.transcribe, { method: 'POST', body: fd });
+  if (!tRes.ok) return null;
+  const tJson = await tRes.json();
+  if (tJson.status === 'placeholder' || !tJson.transcript) return null;
 
-    setTimeout(() => {
-      // Pro: route through Completion Mode if anything is missing
-      const hasAnyMissing = state.draft.completeness.criticalMissing.length > 0 || state.draft.completeness.qualityMissing.length > 0;
-      if (state.plan === 'pro' && hasAnyMissing && !state.isCompletionMode) {
-        goTo('completion_offered');
-      } else if (state.plan === 'starter' && hasAnyMissing) {
-        goTo('completion_offered');
-      } else {
-        goTo('review');
-      }
-    }, 600);
-  }, 3000);
+  const tpl = state.selectedTemplate;
+  const sRes = await fetch(ENDPOINTS.structure, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      transcript: tJson.transcript,
+      template: {
+        id: tpl.id, name: tpl.name,
+        questions: tpl.questions, signals: tpl.signals,
+        whatToOffer: tpl.whatToOffer,
+        aiListening: tpl.aiListening || tpl.signals
+      },
+      ownerStyle: loadOwnerStyle()
+    })
+  });
+  if (!sRes.ok) return null;
+  const sJson = await sRes.json();
+  if (sJson.status === 'placeholder' || !sJson.person) return null;
+  return sJson;
+}
+
+// Merge a continuation pass into the prior draft (fill gaps, keep what we had).
+function mergeDrafts(prev, next) {
+  const m = JSON.parse(JSON.stringify(prev));
+  ['name', 'company', 'role'].forEach(k => { if (!m.person[k] && next.person[k]) m.person[k] = next.person[k]; });
+  if (m.person.nameConfidence !== 'high' && next.person.nameConfidence === 'high') m.person.nameConfidence = 'high';
+  if (next.draft.context && next.draft.context.length > (m.draft.context || '').length) m.draft.context = next.draft.context;
+  if (next.draft.nextStep) m.draft.nextStep = next.draft.nextStep;
+  const crit = [];
+  if (!m.person.name) crit.push('Person name');
+  if (!m.person.company) crit.push('Company');
+  m.completeness = m.completeness || { score: 0, scoreLabel: '', criticalMissing: [], qualityMissing: [] };
+  m.completeness.criticalMissing = crit;
+  m.verification = m.verification || {};
+  m.verification.needsNameConfirmation = !m.person.name;
+  return m;
 }
 
 // ============ COMPLETION MODE (PRO) ============
