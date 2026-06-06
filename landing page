@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="TAPDconnex — relationship intelligence for the conversations that matter. Join the waitlist.">
+<title>TAPDconnex — Networking memory that works</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500;1,9..144,600&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #F6F2EA;
+    --bg-paper: #F2EDE2;
+    --surface: #FFFFFF;
+    --surface-warm: #FBF8F2;
+    --text-primary: #181410;
+    --text-secondary: #5C5247;
+    --text-muted: #95887A;
+    --text-faint: #C2B7A8;
+    --border-soft: #EAE2D2;
+    --border-medium: #D9CDB6;
+    --accent: #1E4F5C;
+    --accent-hover: #14404C;
+    --accent-bg: #E8EFEF;
+    --warm-accent: #B8501E;
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-body: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-image:
+      radial-gradient(circle at 15% 5%, rgba(30, 79, 92, 0.04) 0%, transparent 45%),
+      radial-gradient(circle at 85% 95%, rgba(184, 80, 30, 0.03) 0%, transparent 45%);
+    background-attachment: fixed;
+    overflow-x: hidden;
+  }
+
+  /* ============ NAV ============ */
+  .nav {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .brand-mark {
+    width: 36px;
+    height: 36px;
+    background: var(--accent);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  .brand-name {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    align-items: center;
+  }
+
+  .nav-link {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.15s ease;
+  }
+  .nav-link:hover { color: var(--text-primary); }
+
+  .nav-cta {
+    background: var(--text-primary);
+    color: var(--bg);
+    padding: 10px 20px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    transition: background 0.15s ease;
+  }
+  .nav-cta:hover { background: var(--accent); }
+
+  /* ============ HERO ============ */
+  .hero {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 80px 40px 120px;
+    text-align: center;
+    position: relative;
+  }
+
+  .hero-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .hero-eyebrow::before,
+  .hero-eyebrow::after {
+    content: '';
+    width: 32px;
+    height: 1px;
+    background: var(--border-medium);
+  }
+
+  .hero-headline {
+    font-family: var(--font-display);
+    font-size: clamp(40px, 8vw, 88px);
+    font-weight: 500;
+    line-height: 1.04;
+    letter-spacing: -0.035em;
+    color: var(--text-primary);
+    margin-bottom: 32px;
+    max-width: 920px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .hero-headline em {
+    font-style: italic;
+    color: var(--accent);
+    font-weight: 400;
+  }
+
+  .hero-headline-emphasis {
+    display: block;
+  }
+
+  .hero-subhead {
+    font-family: var(--font-body);
+    font-size: clamp(17px, 2vw, 20px);
+    color: var(--text-secondary);
+    max-width: 620px;
+    margin: 0 auto 56px;
+    line-height: 1.55;
+  }
+
+  /* ============ WAITLIST FORM ============ */
+  .waitlist {
+    max-width: 480px;
+    margin: 0 auto;
+    background: var(--surface);
+    border: 1px solid var(--border-soft);
+    border-radius: 20px;
+    padding: 32px;
+    box-shadow: 0 8px 32px rgba(24, 20, 16, 0.06);
+    position: relative;
+  }
+
+  .waitlist::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: 20px;
+    right: 20px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    border-radius: 2px;
+  }
+
+  .waitlist-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+
+  .waitlist-headline {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    margin-bottom: 24px;
+    color: var(--text-primary);
+  }
+
+  .waitlist-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .waitlist-input {
+    width: 100%;
+    background: var(--surface-warm);
+    border: 1px solid var(--border-medium);
+    border-radius: 12px;
+    padding: 16px 18px;
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: var(--text-primary);
+    transition: all 0.15s ease;
+  }
+  .waitlist-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: var(--surface);
+  }
+
+  .waitlist-button {
+    width: 100%;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 16px;
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .waitlist-button:hover {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(30, 79, 92, 0.2);
+  }
+
+  .waitlist-fineprint {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 16px;
+    text-align: center;
+  }
+
+  /* ============ HOW IT WORKS ============ */
+  .section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 100px 40px;
+  }
+
+  .section-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .section-headline {
+    font-family: var(--font-display);
+    font-size: clamp(32px, 5vw, 48px);
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    text-align: center;
+    margin-bottom: 24px;
+    color: var(--text-primary);
+  }
+  .section-headline em {
+    font-style: italic;
+    color: var(--accent);
+    font-weight: 400;
+  }
+
+  .section-sub {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 17px;
+    max-width: 580px;
+    margin: 0 auto 80px;
+  }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .step {
+    background: var(--surface);
+    border: 1px solid var(--border-soft);
+    border-radius: 20px;
+    padding: 40px 32px;
+    position: relative;
+    transition: all 0.2s ease;
+  }
+  .step:hover {
+    border-color: var(--border-medium);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(24, 20, 16, 0.06);
+  }
+
+  .step-number {
+    font-family: var(--font-display);
+    font-size: 64px;
+    font-weight: 500;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 24px;
+    letter-spacing: -0.04em;
+    font-style: italic;
+  }
+
+  .step-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+    letter-spacing: -0.01em;
+  }
+
+  .step-body {
+    color: var(--text-secondary);
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  /* ============ WHO IT'S FOR ============ */
+  .audience-section {
+    background: var(--bg-paper);
+    padding: 100px 40px;
+  }
+
+  .audience-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    max-width: 1200px;
+    margin: 60px auto 0;
+  }
+
+  .audience-card {
+    background: var(--surface);
+    border: 1px solid var(--border-soft);
+    border-radius: 16px;
+    padding: 32px 24px;
+    transition: all 0.2s ease;
+  }
+  .audience-card:hover {
+    border-color: var(--border-medium);
+    transform: translateY(-2px);
+  }
+
+  .audience-icon {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--warm-accent);
+    margin-bottom: 12px;
+  }
+
+  .audience-title {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+  }
+
+  .audience-body {
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* ============ PRINCIPLES ============ */
+  .principles-section {
+    padding: 120px 40px;
+  }
+
+  .principles-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    max-width: 1100px;
+    margin: 0 auto;
+    align-items: center;
+  }
+
+  .principles-text h2 {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 4vw, 40px);
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    margin-bottom: 24px;
+    color: var(--text-primary);
+  }
+  .principles-text h2 em {
+    font-style: italic;
+    color: var(--accent);
+    font-weight: 400;
+  }
+
+  .principles-text p {
+    color: var(--text-secondary);
+    font-size: 16px;
+    line-height: 1.65;
+    margin-bottom: 20px;
+  }
+
+  .principles-quote {
+    background: var(--surface);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 16px 16px 0;
+    padding: 32px 32px;
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-style: italic;
+    line-height: 1.4;
+    color: var(--text-primary);
+    letter-spacing: -0.005em;
+  }
+  .principles-quote::before {
+    content: '\201C';
+    font-family: var(--font-display);
+    font-size: 72px;
+    color: var(--accent);
+    line-height: 0;
+    display: block;
+    margin-bottom: 12px;
+    opacity: 0.4;
+  }
+
+  /* ============ FINAL CTA ============ */
+  .final-cta {
+    background: var(--text-primary);
+    color: var(--bg);
+    padding: 100px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .final-cta::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(30, 79, 92, 0.3) 0%, transparent 40%),
+      radial-gradient(circle at 80% 70%, rgba(184, 80, 30, 0.15) 0%, transparent 40%);
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  .final-cta-inner {
+    position: relative;
+    z-index: 1;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .final-cta-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(246, 242, 234, 0.6);
+    margin-bottom: 24px;
+  }
+
+  .final-cta-headline {
+    font-family: var(--font-display);
+    font-size: clamp(32px, 5vw, 48px);
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+    margin-bottom: 24px;
+  }
+  .final-cta-headline em {
+    font-style: italic;
+    color: #C2B7A8;
+    font-weight: 400;
+  }
+
+  .final-cta-sub {
+    color: rgba(246, 242, 234, 0.75);
+    font-size: 17px;
+    margin-bottom: 40px;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .final-cta-form {
+    display: flex;
+    gap: 12px;
+    max-width: 440px;
+    margin: 0 auto;
+  }
+
+  .final-cta-input {
+    flex: 1;
+    background: rgba(246, 242, 234, 0.08);
+    border: 1px solid rgba(246, 242, 234, 0.15);
+    color: var(--bg);
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-family: var(--font-body);
+    font-size: 15px;
+    transition: all 0.15s ease;
+  }
+  .final-cta-input::placeholder {
+    color: rgba(246, 242, 234, 0.4);
+  }
+  .final-cta-input:focus {
+    outline: none;
+    background: rgba(246, 242, 234, 0.12);
+    border-color: rgba(246, 242, 234, 0.3);
+  }
+
+  .final-cta-button {
+    background: var(--bg);
+    color: var(--text-primary);
+    border: none;
+    border-radius: 12px;
+    padding: 14px 24px;
+    font-family: var(--font-body);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+  .final-cta-button:hover {
+    background: white;
+    transform: translateY(-1px);
+  }
+
+  /* ============ FOOTER ============ */
+  .footer {
+    padding: 48px 40px;
+    background: var(--bg);
+    border-top: 1px solid var(--border-soft);
+  }
+
+  .footer-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+
+  .footer-tagline {
+    font-family: var(--font-display);
+    font-style: italic;
+    color: var(--text-secondary);
+    font-size: 15px;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .footer-link {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 13px;
+    transition: color 0.15s ease;
+  }
+  .footer-link:hover { color: var(--text-primary); }
+
+  /* ============ TOAST ============ */
+  .toast {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%) translateY(120px);
+    background: var(--text-primary);
+    color: var(--bg);
+    padding: 14px 24px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 8px 24px rgba(24, 20, 16, 0.16);
+    z-index: 100;
+    transition: transform 0.3s ease-out;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ============ ANIMATIONS ============ */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-eyebrow { animation: fadeUp 0.6s ease-out 0.1s backwards; }
+  .hero-headline { animation: fadeUp 0.8s ease-out 0.2s backwards; }
+  .hero-subhead { animation: fadeUp 0.8s ease-out 0.4s backwards; }
+  .waitlist { animation: fadeUp 0.8s ease-out 0.6s backwards; }
+
+  /* ============ MOBILE ============ */
+  @media (max-width: 900px) {
+    .nav { padding: 20px 24px; }
+    .nav-links { gap: 16px; }
+    .nav-links .nav-link { display: none; }
+    .hero { padding: 48px 24px 80px; }
+    .section { padding: 64px 24px; }
+    .audience-section { padding: 64px 24px; }
+    .principles-section { padding: 80px 24px; }
+    .final-cta { padding: 64px 24px; }
+    .steps { grid-template-columns: 1fr; gap: 16px; }
+    .audience-grid { grid-template-columns: 1fr 1fr; }
+    .principles-grid { grid-template-columns: 1fr; gap: 40px; }
+    .final-cta-form { flex-direction: column; }
+    .footer-inner { flex-direction: column; text-align: center; }
+  }
+
+  @media (max-width: 500px) {
+    .audience-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<nav class="nav">
+  <div class="brand">
+    <div class="brand-mark">T</div>
+    <div class="brand-name">TAPDconnex</div>
+  </div>
+  <div class="nav-links">
+    <a href="#how" class="nav-link">How it works</a>
+    <a href="#who" class="nav-link">Who it's for</a>
+    <a href="#waitlist" class="nav-cta">Join waitlist</a>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="hero-eyebrow">Built for professional networking</div>
+  <h1 class="hero-headline">
+    TAPD remembers what was <em>said</em>.<br>
+    <span class="hero-headline-emphasis">You remember who said it.</span>
+  </h1>
+  <p class="hero-subhead">
+    At every event, you meet people who could change your business. Then names slip, details blur, and the opportunity walks out the door. TAPDconnex captures the conversation so you can act on it before the moment is gone.
+  </p>
+
+  <div class="waitlist" id="waitlist">
+    <div class="waitlist-label">Limited early access</div>
+    <h2 class="waitlist-headline">Join the waitlist</h2>
+    <form class="waitlist-form" id="waitlistForm">
+      <input type="text" class="waitlist-input" placeholder="Your name" id="wlName" required>
+      <input type="email" class="waitlist-input" placeholder="Email address" id="wlEmail" required>
+      <input type="text" class="waitlist-input" placeholder="What do you do? (one line)" id="wlRole">
+      <button type="submit" class="waitlist-button">Reserve my spot</button>
+    </form>
+    <p class="waitlist-fineprint">We&rsquo;ll reach out when your spot opens. No spam, ever.</p>
+  </div>
+</section>
+
+<!-- ============ HOW IT WORKS ============ -->
+<section class="section" id="how">
+  <div class="section-eyebrow">How it works</div>
+  <h2 class="section-headline">Three steps. Zero <em>admin</em>.</h2>
+  <p class="section-sub">From the moment you meet someone to the moment you follow up, TAPDconnex sits between you and the cognitive load.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-number">01</div>
+      <div class="step-title">Tap</div>
+      <div class="step-body">Your NFC card opens your TAPD profile on their phone. They save your contact in one tap. Their details come back to you via WhatsApp.</div>
+    </div>
+    <div class="step">
+      <div class="step-number">02</div>
+      <div class="step-title">Capture</div>
+      <div class="step-body">As you walk away, record the conversation. TAPD transcribes it and structures the conversation through the template you chose. Owner Style applied. Draft ready in seconds.</div>
+    </div>
+    <div class="step">
+      <div class="step-number">03</div>
+      <div class="step-title">Act</div>
+      <div class="step-body">Your Relationship Hub shows who deserves your attention today, why they matter, and exactly what to send. Open the draft, send via WhatsApp, swipe to close the loop.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WHO IT'S FOR ============ -->
+<section class="audience-section" id="who">
+  <div class="section-eyebrow">Built for</div>
+  <h2 class="section-headline">Professionals who network <em>seriously</em>.</h2>
+
+  <div class="audience-grid">
+    <div class="audience-card">
+      <div class="audience-icon">FOUNDERS</div>
+      <div class="audience-title">Founders &amp; CEOs</div>
+      <div class="audience-body">Capture investor, customer, and partner conversations without losing the thread.</div>
+    </div>
+    <div class="audience-card">
+      <div class="audience-icon">BD &amp; SALES</div>
+      <div class="audience-title">Business Development</div>
+      <div class="audience-body">Turn every event into a structured pipeline of warm follow-ups.</div>
+    </div>
+    <div class="audience-card">
+      <div class="audience-icon">ADVISORS</div>
+      <div class="audience-title">Advisors &amp; Consultants</div>
+      <div class="audience-body">Keep your network warm without managing a CRM you secretly hate.</div>
+    </div>
+    <div class="audience-card">
+      <div class="audience-icon">SPEAKERS</div>
+      <div class="audience-title">Speakers &amp; Operators</div>
+      <div class="audience-body">Turn every panel, fireside, and green-room conversation into something real.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRINCIPLES ============ -->
+<section class="principles-section">
+  <div class="principles-grid">
+    <div class="principles-text">
+      <div class="section-eyebrow" style="text-align: left;">The principle</div>
+      <h2>We don&rsquo;t push volume. We help you preserve <em>quality</em>.</h2>
+      <p>TAPDconnex is one slice of your pie. We&rsquo;re not trying to be your CRM, your calendar, or your inbox. We sit in the small, fragile window between a real-world conversation and the follow-up that actually happens.</p>
+      <p>The product respects your time. It doesn&rsquo;t nag. It doesn&rsquo;t guilt you with vanity metrics. It just makes sure the relationships that mattered stay alive long enough for you to do something about them.</p>
+    </div>
+    <div class="principles-quote">
+      The opportunity is not lost because you failed to network. The opportunity is lost because important details were never captured.
+    </div>
+  </div>
+</section>
+
+<!-- ============ FINAL CTA ============ -->
+<section class="final-cta">
+  <div class="final-cta-inner">
+    <div class="final-cta-eyebrow">Join the waitlist</div>
+    <h2 class="final-cta-headline">Networking memory that <em>actually works</em>.</h2>
+    <p class="final-cta-sub">Early access opens to a small group first. Get in line.</p>
+    <form class="final-cta-form" id="finalCtaForm">
+      <input type="email" class="final-cta-input" placeholder="Your email address" id="finalEmail" required>
+      <button type="submit" class="final-cta-button">Reserve spot</button>
+    </form>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-tagline">TAPD remembers what was said. You remember who said it.</div>
+    <div class="footer-links">
+      <a href="privacy-policy.html" class="footer-link">Privacy</a>
+      <a href="terms-of-use.html" class="footer-link">Terms</a>
+      <a href="ai-disclosure.html" class="footer-link">AI disclosure</a>
+      <a href="responsible-recording.html" class="footer-link">Responsible recording</a>
+      <a href="contact.html" class="footer-link">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ============ TOAST ============ -->
+<div class="toast" id="toast">You&rsquo;re on the list. We&rsquo;ll be in touch.</div>
+
+<script>
+const STORAGE_KEY = 'tapd_waitlist';
+
+function showToast(message) {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3200);
+}
+
+function saveSignup(data) {
+  const existing = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  existing.push({ ...data, timestamp: new Date().toISOString() });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));
+}
+
+document.getElementById('waitlistForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const name = document.getElementById('wlName').value.trim();
+  const email = document.getElementById('wlEmail').value.trim();
+  const role = document.getElementById('wlRole').value.trim();
+
+  if (!name || !email) return;
+
+  saveSignup({ name, email, role, source: 'hero' });
+  e.target.reset();
+  showToast('You\u2019re on the list. We\u2019ll be in touch soon.');
+});
+
+document.getElementById('finalCtaForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const email = document.getElementById('finalEmail').value.trim();
+  if (!email) return;
+
+  saveSignup({ email, source: 'footer' });
+  e.target.reset();
+  showToast('You\u2019re on the list. We\u2019ll be in touch soon.');
+});
+
+// Smooth scroll for nav links
+document.querySelectorAll('a[href^="#"]').forEach(link => {
+  link.addEventListener('click', (e) => {
+    const target = document.querySelector(link.getAttribute('href'));
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+</script>
+
+</body>
+</html>
