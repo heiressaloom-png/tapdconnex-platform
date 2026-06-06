@@ -1,0 +1,2356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="description" content="TAPDconnex Capture — record a networking conversation and turn it into a relationship">
+<title>Capture — TAPDconnex</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  /* ============ DESIGN SYSTEM (matches Hub + Onboarding) ============ */
+  :root {
+    --bg: #F6F2EA;
+    --bg-paper: #F2EDE2;
+    --surface: #FFFFFF;
+    --surface-warm: #FBF8F2;
+    --text-primary: #181410;
+    --text-secondary: #5C5247;
+    --text-muted: #95887A;
+    --text-faint: #C2B7A8;
+    --border-soft: #EAE2D2;
+    --border-medium: #D9CDB6;
+    --accent: #1E4F5C;
+    --accent-hover: #14404C;
+    --accent-bg: #E8EFEF;
+    --warm-accent: #B8501E;
+    --warm-bg: #FBEDD9;
+    --pro: #7C2D3F;
+    --pro-bg: #F5E8EC;
+    --pro-soft: #FAF2F4;
+    --success: #2D6A4F;
+    --success-bg: #DCEFE3;
+    --recording: #C24545;
+    --recording-bg: #FBE5E5;
+    --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+    --space-5: 20px; --space-6: 24px; --space-7: 32px; --space-8: 40px; --space-9: 56px;
+    --radius-sm: 6px; --radius-md: 10px; --radius-lg: 14px;
+    --radius-xl: 20px; --radius-pill: 999px;
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-body: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+    --shadow-sm: 0 1px 2px rgba(24, 20, 16, 0.04);
+    --shadow-md: 0 2px 8px rgba(24, 20, 16, 0.06);
+    --shadow-lg: 0 8px 24px rgba(24, 20, 16, 0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    overscroll-behavior: none;
+  }
+
+  /* ============ SHELL ============ */
+  .shell {
+    max-width: 680px;
+    margin: 0 auto;
+    min-height: 100vh;
+    padding: 0 0 120px;
+    position: relative;
+  }
+
+  /* ============ HEADER ============ */
+  .top {
+    padding: var(--space-5) var(--space-5) var(--space-4);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .brand-mark {
+    width: 30px;
+    height: 30px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .brand-name {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+  }
+  .header-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .header-btn {
+    background: transparent;
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-pill);
+    padding: 8px 14px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .header-btn:hover {
+    border-color: var(--text-secondary);
+    color: var(--text-primary);
+  }
+
+  /* ============ STEP CONTENT ============ */
+  .step-content {
+    padding: 0 var(--space-5);
+    animation: stepEnter 0.4s ease-out;
+  }
+  @keyframes stepEnter {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .step-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+    margin-top: var(--space-7);
+  }
+  .step-headline {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 5vw, 34px);
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    margin-bottom: 14px;
+  }
+  .step-headline em {
+    font-style: italic;
+    color: var(--accent);
+    font-weight: 400;
+  }
+  .step-sub {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: var(--space-7);
+  }
+
+  /* ============ TEMPLATE PICKER ============ */
+  .template-section-title {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin: var(--space-7) 0 var(--space-3);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .template-section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border-soft);
+  }
+
+  .template-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .template-card {
+    background: var(--surface);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-lg);
+    padding: 18px var(--space-5);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .template-card:hover:not(.locked) {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+  .template-card.locked {
+    background: var(--pro-soft);
+    cursor: pointer;
+  }
+  .template-card.locked:hover {
+    border-color: var(--pro);
+  }
+  .template-card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .template-card-name {
+    font-family: var(--font-display);
+    font-size: 19px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.005em;
+    line-height: 1.2;
+  }
+  .template-card.locked .template-card-name {
+    color: var(--text-secondary);
+  }
+  .template-card-summary {
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-style: italic;
+    color: var(--text-secondary);
+    line-height: 1.45;
+    margin-bottom: 12px;
+  }
+  .template-card-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .outcome-badge {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-bg);
+    padding: 4px 8px;
+    border-radius: 5px;
+    font-weight: 600;
+  }
+  .pro-badge {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--pro);
+    background: var(--pro-bg);
+    padding: 4px 8px;
+    border-radius: 5px;
+    font-weight: 600;
+  }
+  .edited-badge {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--success);
+    background: var(--success-bg);
+    padding: 4px 8px;
+    border-radius: 5px;
+    font-weight: 600;
+  }
+
+  /* ============ CHEAT SHEET PREVIEW ============ */
+  .cheat-preview {
+    background: var(--surface);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-lg);
+    padding: var(--space-5);
+    margin-bottom: var(--space-5);
+  }
+  .cheat-preview-section {
+    margin-bottom: var(--space-5);
+  }
+  .cheat-preview-section:last-child {
+    margin-bottom: 0;
+  }
+  .cheat-preview-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+  .cheat-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .cheat-list li {
+    font-size: 15px;
+    color: var(--text-primary);
+    line-height: 1.55;
+    padding-left: 24px;
+    position: relative;
+    font-family: var(--font-display);
+    font-style: italic;
+  }
+  .cheat-list li::before {
+    content: '\2014';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-style: normal;
+  }
+  .cheat-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .cheat-tag {
+    background: var(--surface-warm);
+    border: 1px solid var(--border-soft);
+    padding: 5px 12px;
+    border-radius: var(--radius-pill);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+  .cheat-helper {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-top: var(--space-3);
+    text-align: center;
+  }
+
+  /* ============ RECORDING SCREEN ============ */
+  .record-shell {
+    min-height: calc(100vh - 80px);
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-5);
+  }
+  .record-context {
+    text-align: center;
+    margin-bottom: var(--space-7);
+  }
+  .record-context-template {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    margin-bottom: 6px;
+  }
+  .record-context-summary {
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-style: italic;
+  }
+
+  .timer-block {
+    text-align: center;
+    margin: var(--space-7) auto;
+  }
+  .timer-display {
+    font-family: var(--font-display);
+    font-size: 64px;
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    color: var(--text-primary);
+    line-height: 1;
+    margin-bottom: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+  .timer-display.recording {
+    color: var(--recording);
+  }
+  .timer-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .recording-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--recording);
+    border-radius: 50%;
+    animation: recordPulse 1.4s ease-in-out infinite;
+  }
+  @keyframes recordPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+  .timer-meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 12px;
+  }
+
+  /* ============ RECORD BUTTON CLUSTER ============ */
+  .record-cluster {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: auto 0 var(--space-7);
+    gap: var(--space-4);
+  }
+
+  .record-button {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: white;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 8px 24px rgba(30, 79, 92, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .record-button:hover {
+    transform: scale(1.02);
+  }
+  .record-button:active {
+    transform: scale(0.96);
+  }
+  .record-button.recording {
+    background: var(--recording);
+    box-shadow: 0 0 0 8px var(--recording-bg), 0 8px 24px rgba(194, 69, 69, 0.25);
+  }
+  .record-button.recording::before {
+    content: '';
+    width: 28px;
+    height: 28px;
+    background: white;
+    border-radius: 4px;
+  }
+  .record-button:not(.recording)::before {
+    content: '';
+    width: 32px;
+    height: 32px;
+    background: white;
+    border-radius: 50%;
+  }
+
+  .record-controls {
+    display: flex;
+    gap: var(--space-3);
+    align-items: center;
+  }
+  .control-btn {
+    background: var(--surface);
+    border: 1px solid var(--border-medium);
+    color: var(--text-secondary);
+    padding: 10px var(--space-5);
+    border-radius: var(--radius-pill);
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .control-btn:hover {
+    border-color: var(--text-secondary);
+    color: var(--text-primary);
+  }
+
+  /* ============ CHEAT SHEET PEEK PANEL ============ */
+  .cheat-peek {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--border-soft);
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    box-shadow: 0 -8px 32px rgba(24, 20, 16, 0.08);
+    z-index: 40;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    max-width: 680px;
+    margin: 0 auto;
+    transform: translateY(calc(100% - 60px));
+  }
+  .cheat-peek.expanded {
+    transform: translateY(0);
+  }
+  .cheat-peek-handle {
+    padding: var(--space-3) var(--space-5);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+    border-bottom: 1px solid transparent;
+  }
+  .cheat-peek.expanded .cheat-peek-handle {
+    border-bottom-color: var(--border-soft);
+  }
+  .cheat-peek-handle-grip {
+    width: 36px;
+    height: 4px;
+    background: var(--border-medium);
+    border-radius: 2px;
+    margin: 0 auto var(--space-2);
+  }
+  .cheat-peek-title {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    font-weight: 600;
+  }
+  .cheat-peek-toggle {
+    color: var(--text-muted);
+    font-family: var(--font-display);
+    font-size: 20px;
+    line-height: 1;
+  }
+  .cheat-peek-body {
+    padding: var(--space-3) var(--space-5) var(--space-7);
+    max-height: 50vh;
+    overflow-y: auto;
+  }
+
+  /* ============ TRANSCRIBING / STRUCTURING ============ */
+  .processing {
+    min-height: calc(100vh - 80px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-7) var(--space-5);
+    text-align: center;
+  }
+  .processing-headline {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+  }
+  .processing-headline em {
+    font-style: italic;
+    color: var(--accent);
+    font-weight: 400;
+  }
+  .processing-sub {
+    font-size: 14px;
+    color: var(--text-secondary);
+    max-width: 320px;
+    line-height: 1.5;
+    margin-bottom: var(--space-7);
+  }
+  .processing-steps {
+    width: 100%;
+    max-width: 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .processing-step {
+    background: var(--surface);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-md);
+    padding: 14px var(--space-4);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+  }
+  .processing-step.active {
+    border-color: var(--accent);
+    background: var(--accent-bg);
+    color: var(--accent);
+  }
+  .processing-step.done {
+    color: var(--success);
+    background: var(--success-bg);
+    border-color: var(--success-bg);
+  }
+  .processing-step-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+  }
+  .processing-step.done .processing-step-icon::after {
+    content: '\2713';
+  }
+  .processing-step.active .processing-step-icon {
+    animation: rotate 1.4s linear infinite;
+    border-top-color: transparent;
+  }
+  @keyframes rotate {
+    to { transform: rotate(360deg); }
+  }
+
+  /* ============ DRAFT REVIEW ============ */
+  .completeness-strip {
+    background: var(--surface);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-lg);
+    padding: 14px var(--space-5);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-4);
+  }
+  .completeness-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .completeness-score {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--accent);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .completeness-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    font-weight: 600;
+  }
+  .completeness-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .confidence-tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+  .confidence-tag[data-level="high"] { background: var(--success-bg); color: var(--success); }
+  .confidence-tag[data-level="medium"] { background: var(--warm-bg); color: var(--warm-accent); }
+  .confidence-tag[data-level="low"] { background: var(--pro-bg); color: var(--pro); }
+
+  /* ============ COMPLETION MODE (PRO) ============ */
+  .completion-mode {
+    background: var(--surface);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-lg);
+    padding: var(--space-5);
+    margin-bottom: var(--space-4);
+  }
+  .completion-mode[data-urgent="true"] {
+    border-color: var(--warm-accent);
+    background: linear-gradient(135deg, #FFFBF4 0%, #FBEDD9 100%);
+  }
+  .completion-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--pro);
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .completion-mode[data-urgent="true"] .completion-eyebrow {
+    color: var(--warm-accent);
+  }
+  .completion-title {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    margin-bottom: var(--space-3);
+    line-height: 1.3;
+  }
+  .completion-critical {
+    margin-bottom: var(--space-3);
+  }
+  .completion-section-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--warm-accent);
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .completion-quality-label {
+    color: var(--text-muted);
+  }
+  .completion-fields {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: var(--space-4);
+  }
+  .completion-fields li {
+    font-size: 14px;
+    color: var(--text-primary);
+    padding-left: 18px;
+    position: relative;
+  }
+  .completion-fields li::before {
+    content: '\2013';
+    position: absolute;
+    left: 0;
+    color: var(--warm-accent);
+  }
+  .completion-quality-list li::before {
+    color: var(--text-muted);
+  }
+  .completion-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: var(--space-4);
+  }
+
+  /* ============ STARTER UPGRADE TRIGGER ============ */
+  .upgrade-trigger {
+    background: linear-gradient(135deg, var(--pro-soft) 0%, var(--pro-bg) 100%);
+    border: 1px solid var(--pro);
+    border-radius: var(--radius-lg);
+    padding: var(--space-5);
+    margin-bottom: var(--space-4);
+  }
+  .upgrade-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--pro);
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .upgrade-headline {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.35;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+    letter-spacing: -0.005em;
+  }
+  .upgrade-headline strong {
+    color: var(--pro);
+    font-weight: 600;
+  }
+  .upgrade-action {
+    background: var(--pro);
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .upgrade-action:hover {
+    background: #5A1F2D;
+  }
+
+  /* ============ DRAFT BLOCK ============ */
+  .draft-block {
+    background: var(--surface);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-lg);
+    padding: var(--space-5);
+    margin-bottom: var(--space-4);
+  }
+  .draft-block-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    gap: 12px;
+  }
+  .draft-person-name {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.005em;
+  }
+  .draft-person-name.unconfirmed {
+    color: var(--warm-accent);
+    font-style: italic;
+  }
+  .draft-person-meta {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+  .draft-signal {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-3);
+  }
+  .signal-dot {
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+  .signal-type {
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .draft-message {
+    width: 100%;
+    min-height: 200px;
+    background: var(--surface-warm);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-primary);
+    resize: vertical;
+    font-family: var(--font-body);
+  }
+  .draft-message:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: var(--surface);
+  }
+
+  /* ============ CAPTURE END PROMPT ============ */
+  .end-prompt {
+    background: var(--surface);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-lg);
+    padding: var(--space-5);
+    margin-bottom: var(--space-4);
+  }
+  .end-prompt-question {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 1.4;
+    margin-bottom: 6px;
+    color: var(--text-primary);
+  }
+  .end-prompt-question em {
+    font-style: italic;
+    color: var(--accent);
+    font-weight: 400;
+  }
+  .end-prompt-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-bottom: var(--space-4);
+  }
+  .channel-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .channel-option {
+    background: var(--surface-warm);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-md);
+    padding: 12px var(--space-4);
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
+  }
+  .channel-option:hover {
+    border-color: var(--accent);
+    background: var(--surface);
+  }
+  .channel-option.selected {
+    background: var(--accent-bg);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .channel-radio {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    border: 2px solid var(--border-medium);
+    flex-shrink: 0;
+    position: relative;
+  }
+  .channel-option.selected .channel-radio {
+    border-color: var(--accent);
+  }
+  .channel-option.selected .channel-radio::after {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  /* ============ BOTTOM ACTION BAR ============ */
+  .action-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--bg);
+    border-top: 1px solid var(--border-soft);
+    padding: var(--space-3) var(--space-5);
+    z-index: 30;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .action-bar-inner {
+    max-width: 680px;
+    margin: 0 auto;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .btn {
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 600;
+    padding: 14px 24px;
+    border-radius: var(--radius-md);
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 52px;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+    flex: 1;
+  }
+  .btn-primary:hover { background: var(--accent-hover); }
+  .btn-primary:disabled {
+    background: var(--border-medium);
+    color: var(--text-muted);
+    cursor: not-allowed;
+  }
+  .btn-secondary {
+    background: var(--surface);
+    color: var(--text-primary);
+    border: 1px solid var(--border-medium);
+  }
+  .btn-secondary:hover { border-color: var(--text-secondary); }
+  .btn-back {
+    background: transparent;
+    color: var(--text-secondary);
+    padding: 14px 18px;
+    border: 1px solid var(--border-medium);
+  }
+  .btn-back:hover {
+    border-color: var(--text-secondary);
+    color: var(--text-primary);
+  }
+  .btn-completion {
+    background: var(--pro);
+    color: white;
+    flex: 1;
+  }
+  .btn-completion:hover { background: #5A1F2D; }
+  .btn-skip-completion {
+    background: var(--surface);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-medium);
+  }
+
+  /* ============ TEMPLATE PREVIEW MODAL ============ */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(24, 20, 16, 0.45);
+    backdrop-filter: blur(8px);
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 100;
+    padding: var(--space-4);
+  }
+  @media (min-width: 640px) {
+    .modal-backdrop { align-items: center; padding: var(--space-7); }
+  }
+  .modal-backdrop.active { display: flex; }
+  .modal {
+    background: var(--surface);
+    border-radius: var(--radius-xl);
+    width: 100%;
+    max-width: 560px;
+    max-height: 88vh;
+    overflow-y: auto;
+    animation: modalSlideUp 0.25s ease-out;
+  }
+  @keyframes modalSlideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .modal-head {
+    padding: var(--space-6) var(--space-5) var(--space-3);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .modal-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .modal-summary {
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-style: italic;
+    color: var(--text-secondary);
+    margin-top: 6px;
+    line-height: 1.45;
+  }
+  .modal-close {
+    background: var(--surface-warm);
+    border: 1px solid var(--border-soft);
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+  }
+  .modal-body {
+    padding: 0 var(--space-5) var(--space-5);
+  }
+  .modal-actions {
+    padding: var(--space-4) var(--space-5);
+    border-top: 1px solid var(--border-soft);
+    display: flex;
+    gap: 10px;
+  }
+
+  /* ============ TOAST ============ */
+  .toast {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%) translateY(120px);
+    background: var(--text-primary);
+    color: white;
+    padding: 14px 24px;
+    border-radius: var(--radius-pill);
+    font-size: 13px;
+    font-weight: 500;
+    z-index: 200;
+    transition: transform 0.3s ease-out;
+    pointer-events: none;
+    box-shadow: var(--shadow-lg);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ============ FIRST-CAPTURE POPOVER ============ */
+  .first-capture-popover {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%) translateY(180px);
+    background: var(--surface);
+    border: 1px solid var(--border-medium);
+    border-radius: var(--radius-lg);
+    padding: var(--space-5);
+    max-width: 420px;
+    width: calc(100% - 32px);
+    box-shadow: var(--shadow-lg);
+    z-index: 100;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .first-capture-popover.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .popover-icon {
+    width: 28px; height: 28px;
+    background: var(--accent-bg);
+    color: var(--accent);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: var(--space-3);
+  }
+  .popover-title {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    letter-spacing: -0.005em;
+  }
+  .popover-body {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.55;
+    margin-bottom: var(--space-4);
+  }
+  .popover-actions {
+    display: flex;
+    justify-content: flex-end;
+  }
+  .popover-dismiss {
+    background: var(--text-primary);
+    color: var(--bg);
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  /* ============ MOBILE ============ */
+  @media (max-width: 600px) {
+    .top { padding: var(--space-4); }
+    .step-content { padding: 0 var(--space-4); }
+    .record-shell { padding: var(--space-4); }
+    .timer-display { font-size: 56px; }
+    .record-button { width: 88px; height: 88px; }
+    .action-bar { padding: 10px var(--space-4); }
+    .btn { font-size: 14px; padding: 12px 18px; min-height: 48px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- ============ HEADER ============ -->
+  <header class="top">
+    <div class="brand">
+      <div class="brand-mark">T</div>
+      <div class="brand-name">Capture</div>
+    </div>
+    <div class="header-actions">
+      <a href="relationship-hub.html" class="header-btn">Hub &rarr;</a>
+    </div>
+  </header>
+
+  <!-- ============ STEP CONTAINER ============ -->
+  <div id="stepContainer"></div>
+
+</div>
+
+<!-- ============ ACTION BAR ============ -->
+<div class="action-bar" id="actionBar"></div>
+
+<!-- ============ TEMPLATE PREVIEW MODAL ============ -->
+<div class="modal-backdrop" id="templateModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="modalTemplateName">&nbsp;</div>
+        <div class="modal-summary" id="modalTemplateSummary">&nbsp;</div>
+      </div>
+      <button class="modal-close" data-close-modal="templateModal">&times;</button>
+    </div>
+    <div class="modal-body" id="modalTemplateBody"></div>
+    <div class="modal-actions" id="modalTemplateActions"></div>
+  </div>
+</div>
+
+<!-- ============ TOAST ============ -->
+<div class="toast" id="toast">&nbsp;</div>
+
+<!-- ============ FIRST-CAPTURE POPOVER ============ -->
+<div class="first-capture-popover" id="firstCapturePopover">
+  <div class="popover-icon">!</div>
+  <div class="popover-title">This one needs a name before you can send it.</div>
+  <div class="popover-body">
+    At networking events, that happens often &mdash; names move fast. We&rsquo;ve saved it in <strong>Needs a name</strong> so you can confirm when you&rsquo;re ready in the Hub.
+  </div>
+  <div class="popover-actions">
+    <button class="popover-dismiss" id="dismissPopover">Got it</button>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// TAPDCONNEX CAPTURE FLOW
+// Implements Sections 2 & 3 of the spec
+// ============================================================
+
+// ============ STORAGE KEYS ============
+const STORAGE = {
+  CAPTURES: 'tapd_captures',
+  PLAN: 'tapd_user_plan',
+  ONBOARDING: 'tapd_onboarding_data',
+  TEMPLATES_CUSTOM: 'tapd_templates_custom',
+  FIRST_CAPTURE_SHOWN: 'tapd_first_capture_popover_shown',
+  CURRENT_DRAFT: 'tapd_current_draft'
+};
+
+// ============ 10 TEMPLATES (Source of Truth) ============
+const TEMPLATES = [
+  {
+    id: 'opportunity',
+    name: 'Opportunity',
+    tier: 'starter',
+    summary: 'Find out if there\u2019s a real deal here and lock in the next step.',
+    outcomes: ['Revenue', 'Customer', 'Client', 'Buyer', 'Pilot Customer'],
+    outcomeCategory: 'Revenue',
+    questions: [
+      'What are you focused on at the moment?',
+      'What\u2019s been taking up most of your time recently?',
+      'What\u2019s working well and what\u2019s proving challenging?',
+      'Is there anything you\u2019re actively trying to improve?',
+      'Have you looked at other ways of solving that?',
+      'What would success look like for you?',
+      'What\u2019s your timeline around this?',
+      'What\u2019s the best next step from here?'
+    ],
+    signals: ['Frustration', 'Urgency', 'Budget', 'Growth goals', 'Active projects', 'Buying intent'],
+    whatToOffer: ['Demo', 'Case study', 'Pilot', 'Introduction', 'Discovery call']
+  },
+  {
+    id: 'connector',
+    name: 'Connector',
+    tier: 'starter',
+    summary: 'Discover who they can introduce me to and how to make it happen.',
+    outcomes: ['Access', 'Introductions', 'Networks', 'Decision Makers', 'Communities'],
+    outcomeCategory: 'Access',
+    questions: [
+      'What kind of people do you enjoy connecting?',
+      'Who are you currently working with?',
+      'What communities are you involved in?',
+      'Who should I know in your world?',
+      'Who do you think would benefit from what I do?',
+      'What\u2019s the best way to approach them?',
+      'Would you be comfortable introducing us?',
+      'What would make that introduction easier?'
+    ],
+    signals: ['Name dropping', 'Community involvement', 'Referrals', 'Access to decision makers', 'Strong networks'],
+    whatToOffer: ['Intro paragraph', 'One-pager', 'LinkedIn profile', 'Mutual value']
+  },
+  {
+    id: 'stay_in_touch',
+    name: 'Stay in Touch',
+    tier: 'starter',
+    summary: 'Keep the door open without forcing anything.',
+    outcomes: ['Future Value', 'Future Opportunity', 'Long-Term Relationship'],
+    outcomeCategory: 'Partnerships',
+    questions: [
+      'What projects are exciting you right now?',
+      'Where do you see things heading?',
+      'What are you keeping an eye on?',
+      'What are you hoping to achieve this year?',
+      'Is there anything you\u2019d like help with?',
+      'How can I support you?',
+      'What\u2019s the best way to stay connected?',
+      'When should we reconnect?'
+    ],
+    signals: ['Shared interests', 'Future goals', 'Personal chemistry', 'Long-term potential'],
+    whatToOffer: ['Useful article', 'Introduction', 'Resource', 'Event invite']
+  },
+  {
+    id: 'strategic_partnership',
+    name: 'Strategic Partnership',
+    tier: 'pro',
+    summary: 'Explore where our work could overlap and find one thing to do together.',
+    outcomes: ['Partnership', 'Joint Venture', 'Collaboration', 'Co-Creation'],
+    outcomeCategory: 'Partnerships',
+    questions: [
+      'What are you building at the moment?',
+      'Where do you see opportunities for collaboration?',
+      'What strengths does your organisation bring?',
+      'What\u2019s missing today that would help you move faster?',
+      'What partnerships have worked well for you before?',
+      'What would success look like together?',
+      'Who else should be involved?',
+      'What should we explore next?'
+    ],
+    signals: ['Shared audience', 'Complementary strengths', 'Mutual benefit', 'Resource gaps'],
+    whatToOffer: ['Partnership brief', 'Pilot collaboration', 'Joint event', 'Mutual intro']
+  },
+  {
+    id: 'speaking',
+    name: 'Speaking Opportunity',
+    tier: 'pro',
+    summary: 'Find the stage that fits and the angle that earns it.',
+    outcomes: ['Visibility', 'Authority', 'Audience Growth', 'Brand Building'],
+    outcomeCategory: 'Visibility',
+    questions: [
+      'What events are you involved with?',
+      'What topics resonate most with your audience?',
+      'What challenges are people talking about?',
+      'What type of speakers do you usually look for?',
+      'What outcomes do you want attendees to leave with?',
+      'What events are coming up?',
+      'How do you select speakers?',
+      'What should happen next?'
+    ],
+    signals: ['Upcoming events', 'Audience pain points', 'Speaker shortages', 'Community building'],
+    whatToOffer: ['Speaker reel', 'Topic outline', 'Mutual promotion', 'Free first session']
+  },
+  {
+    id: 'career',
+    name: 'Career Opportunity',
+    tier: 'pro',
+    summary: 'Surface the role, the timing, and the path in.',
+    outcomes: ['Job', 'Contract', 'Consulting', 'Advisory Role', 'Board Role'],
+    outcomeCategory: 'Career',
+    questions: [
+      'What initiatives are you focused on?',
+      'What skills are hardest to find right now?',
+      'What types of people do well in your environment?',
+      'What projects are coming up?',
+      'Where are you looking for support?',
+      'What experience would be most valuable?',
+      'What would success look like?',
+      'What\u2019s the next step?'
+    ],
+    signals: ['Hiring', 'Capacity constraints', 'New projects', 'Team growth'],
+    whatToOffer: ['CV or portfolio', 'Case study', 'Reference', 'Short pilot project']
+  },
+  {
+    id: 'product_discovery',
+    name: 'Product Discovery',
+    tier: 'pro',
+    summary: 'Hear how they actually solve this today and what\u2019s broken about it.',
+    outcomes: ['Customer Insight', 'Market Validation', 'Problem Discovery'],
+    outcomeCategory: 'Learning',
+    questions: [
+      'How are you currently solving that?',
+      'What\u2019s frustrating about the current approach?',
+      'How often does this happen?',
+      'What impact does it have?',
+      'What have you already tried?',
+      'What would an ideal solution look like?',
+      'How would you know it worked?',
+      'Would you be open to testing something new?'
+    ],
+    signals: ['Pain', 'Frequency', 'Cost', 'Workarounds', 'Frustration'],
+    whatToOffer: ['Early prototype', 'User research call', 'Beta access', 'Concept walkthrough']
+  },
+  {
+    id: 'pilot_beta',
+    name: 'Pilot / Beta Opportunity',
+    tier: 'pro',
+    summary: 'Test interest in trying something new and lock in what would make it worth it.',
+    outcomes: ['Validation', 'Testing', 'Early Adoption'],
+    outcomeCategory: 'Revenue',
+    questions: [
+      'Would you be open to testing something new?',
+      'What would make it worth trying?',
+      'Who would use it?',
+      'What would success look like?',
+      'What concerns would you have?',
+      'What support would you need?',
+      'How long would you want to test it?',
+      'What would happen if it worked?'
+    ],
+    signals: ['Curiosity', 'Early adopter behaviour', 'Innovation mindset'],
+    whatToOffer: ['Pilot invite', 'Custom demo', 'Founder call', 'Free trial']
+  },
+  {
+    id: 'advisory',
+    name: 'Advisory / Mentor',
+    tier: 'pro',
+    summary: 'Learn from someone further down the road and earn the right to come back.',
+    outcomes: ['Guidance', 'Expertise', 'Wisdom', 'Growth'],
+    outcomeCategory: 'Learning',
+    questions: [
+      'What trends are you seeing?',
+      'What lessons have shaped your career?',
+      'If you were starting today, what would you do differently?',
+      'What\u2019s a mistake people commonly make?',
+      'What opportunities do you think are overlooked?',
+      'What would you focus on if you were in my position?',
+      'How can I learn more about this area?',
+      'Would you be open to continuing the conversation?'
+    ],
+    signals: ['Experience', 'Pattern recognition', 'Generosity', 'Thought leadership'],
+    whatToOffer: ['Coffee chat', 'Update note', 'Useful intro back', 'Project update']
+  },
+  {
+    id: 'community_access',
+    name: 'Community Access',
+    tier: 'pro',
+    summary: 'Find the doorway in and the right way to walk through it.',
+    outcomes: ['Ecosystem Access', 'Communities', 'Networks', 'Influence'],
+    outcomeCategory: 'Access',
+    questions: [
+      'What communities are you involved in?',
+      'What makes that community valuable?',
+      'Who tends to thrive there?',
+      'How do people usually get involved?',
+      'What opportunities come from being part of it?',
+      'What do members contribute?',
+      'Do you think I\u2019d be a good fit?',
+      'What would be the best way to get involved?'
+    ],
+    signals: ['Gatekeepers', 'Communities', 'Ecosystems', 'Influence networks'],
+    whatToOffer: ['Bio summary', 'Joining note', 'Reciprocal intro', 'Contribution offer']
+  }
+];
+
+// ============ MOCK AI RESPONSE GENERATOR ============
+// In production, this is replaced by a real OpenAI API call using the master prompt v1.1
+function generateMockAIResponse(template, transcript) {
+  // Realistic mock based on the selected template
+  const mocks = {
+    opportunity: {
+      person: { name: 'Sarah Chen', nameConfidence: 'high', company: 'Northvale Group', role: 'Head of Innovation' },
+      signal: {
+        primary: 'opportunity', primaryLabel: 'Likely Opportunity',
+        primarySubtype: 'direct_opportunity',
+        evidence: 'Active project, clear budget signals',
+        secondary: 'Also: could refer me to procurement lead',
+        secondarySubtype: 'referral'
+      },
+      draft: {
+        nextStep: 'Send short deck and propose a Tuesday discovery call.',
+        message: 'Hi Sarah,\n\nGreat to meet at the event \u2014 really enjoyed our conversation about how Northvale is approaching innovation across the team.\n\nI\u2019ll send through a short deck this afternoon. Would Tuesday work for a 30-min discovery call to walk through how it could fit?\n\nBest,\n[Your name]',
+        context: 'Sarah leads innovation at Northvale Group. The team is actively looking at new tools to support a project starting next quarter. She mentioned budget is locked in and the procurement lead is the decision-maker.'
+      },
+      completeness: {
+        score: 78,
+        scoreLabel: 'Strong capture',
+        criticalMissing: [],
+        qualityMissing: ['Contact information', 'Timeline detail']
+      },
+      verification: { needsNameConfirmation: false }
+    },
+    connector: {
+      person: { name: 'Marcus Wright', nameConfidence: 'high', company: 'TechBridge', role: 'Partner' },
+      signal: {
+        primary: 'connector', primaryLabel: 'Possible Connector',
+        primarySubtype: 'introducer',
+        evidence: 'Offered intro to procurement lead',
+        secondary: null
+      },
+      draft: {
+        nextStep: 'Ask for intro to the procurement lead, with a short blurb he can forward.',
+        message: 'Hi Marcus,\n\nGreat catching up at the event. Thanks for the offer to connect me with your procurement lead at Northvale.\n\nI\u2019ve put together a short blurb you can forward whenever it works. Let me know if you\u2019d prefer a different angle.\n\nBest,\n[Your name]',
+        context: 'Marcus is a partner at TechBridge who works closely with Northvale Group. He offered to introduce me to their procurement lead, who is actively looking for tools in my space.'
+      },
+      completeness: {
+        score: 82,
+        scoreLabel: 'Strong capture',
+        criticalMissing: [],
+        qualityMissing: ['Timing for intro']
+      },
+      verification: { needsNameConfirmation: false }
+    },
+    default: {
+      person: { name: null, nameConfidence: 'none', company: null, role: null },
+      signal: {
+        primary: 'opportunity', primaryLabel: 'Possible Opportunity',
+        primarySubtype: 'product_lead',
+        evidence: 'Interest signals, name not captured',
+        secondary: null
+      },
+      draft: {
+        nextStep: 'Confirm who this was before sending. Then follow up with the deck.',
+        message: 'Hi [confirm name],\n\nGreat to meet at the event \u2014 the conversation has stayed with me. I\u2019ll send through a short deck and we can set up a quick call to dig into how it could work.\n\nBest,\n[Your name]',
+        context: 'Captured at an event. The person showed clear interest in the product but their name was not captured clearly in the audio. Needs name confirmation before send.'
+      },
+      completeness: {
+        score: 52,
+        scoreLabel: 'Solid capture',
+        criticalMissing: ['Person name', 'Company'],
+        qualityMissing: ['Role', 'Timeline', 'Contact information']
+      },
+      verification: { needsNameConfirmation: true }
+    }
+  };
+
+  return mocks[template.id] || mocks.default;
+}
+
+// ============ STATE ============
+let state = {
+  screen: 'picker',
+  selectedTemplate: null,
+  plan: localStorage.getItem(STORAGE.PLAN) || 'starter',
+  audio: { stream: null, recorder: null, chunks: [] },
+  recording: false,
+  paused: false,
+  elapsed: 0,
+  timerInterval: null,
+  cheatPeekExpanded: false,
+  isCompletionMode: false,
+  completionElapsed: 0,
+  draft: null,
+  selectedChannel: null,
+  isFirstCapture: !localStorage.getItem('tapd_captures')
+};
+
+function getMaxSeconds() {
+  return state.isCompletionMode ? 180 : (state.plan === 'pro' ? 600 : 300);
+}
+
+// ============ MAIN RENDER ============
+function render() {
+  const container = document.getElementById('stepContainer');
+  container.innerHTML = renderScreen();
+  bindEvents();
+  renderActionBar();
+}
+
+function renderScreen() {
+  switch(state.screen) {
+    case 'picker': return renderPicker();
+    case 'cheat': return renderCheatPreview();
+    case 'recording': return renderRecording();
+    case 'processing': return renderProcessing();
+    case 'completion_offered': return renderCompletionOffered();
+    case 'review': return renderReview();
+    default: return '';
+  }
+}
+
+// ============ SCREEN: TEMPLATE PICKER ============
+function renderPicker() {
+  const starter = TEMPLATES.filter(t => t.tier === 'starter');
+  const pro = TEMPLATES.filter(t => t.tier === 'pro');
+
+  return `
+    <div class="step-content">
+      <div class="step-eyebrow">Pick your posture</div>
+      <h1 class="step-headline">What kind of <em>conversation</em> are you about to have?</h1>
+      <p class="step-sub">The template you pick tells the AI what to listen for and gives you questions you can use during the conversation. Pick one that fits the moment.</p>
+
+      <div class="template-section-title">Your templates</div>
+      <div class="template-grid">
+        ${starter.map(t => renderTemplateCard(t, false)).join('')}
+      </div>
+
+      ${state.plan === 'starter' ? `
+        <div class="template-section-title">Pro templates &mdash; coming with your upgrade</div>
+        <div class="template-grid">
+          ${pro.map(t => renderTemplateCard(t, true)).join('')}
+        </div>
+      ` : `
+        <div class="template-section-title">Pro templates</div>
+        <div class="template-grid">
+          ${pro.map(t => renderTemplateCard(t, false)).join('')}
+        </div>
+      `}
+    </div>
+  `;
+}
+
+function renderTemplateCard(template, locked) {
+  return `
+    <div class="template-card ${locked ? 'locked' : ''}" data-template-id="${template.id}" data-locked="${locked}">
+      <div class="template-card-head">
+        <div class="template-card-name">${escapeHtml(template.name)}</div>
+        ${locked ? '<span class="pro-badge">Pro</span>' : ''}
+      </div>
+      <div class="template-card-summary">${escapeHtml(template.summary)}</div>
+      <div class="template-card-meta">
+        <span class="outcome-badge">${escapeHtml(template.outcomeCategory)}</span>
+        ${template.outcomes.slice(0, 2).map(o => `<span style="font-size: 12px; color: var(--text-muted);">${escapeHtml(o)}</span>`).join(' \u00b7 ')}
+      </div>
+    </div>
+  `;
+}
+
+// ============ SCREEN: CHEAT SHEET PREVIEW ============
+function renderCheatPreview() {
+  const t = state.selectedTemplate;
+  if (!t) return '';
+
+  return `
+    <div class="step-content">
+      <div class="step-eyebrow">${escapeHtml(t.name)}  \u00b7  ${escapeHtml(t.outcomeCategory)}</div>
+      <h1 class="step-headline">${escapeHtml(t.summary)}</h1>
+      <p class="step-sub">These are questions you can ask during the conversation. The conversation is yours \u2014 these are just reminders of what tends to lead somewhere useful.</p>
+
+      <div class="cheat-preview">
+        <div class="cheat-preview-section">
+          <div class="cheat-preview-label">Questions to ask</div>
+          <ul class="cheat-list">
+            ${t.questions.map(q => `<li>${escapeHtml(q)}</li>`).join('')}
+          </ul>
+        </div>
+
+        <div class="cheat-preview-section">
+          <div class="cheat-preview-label">Signals to listen for</div>
+          <div class="cheat-tags">
+            ${t.signals.map(s => `<span class="cheat-tag">${escapeHtml(s)}</span>`).join('')}
+          </div>
+        </div>
+
+        <div class="cheat-preview-section">
+          <div class="cheat-preview-label">What to offer</div>
+          <div class="cheat-tags">
+            ${t.whatToOffer.map(o => `<span class="cheat-tag">${escapeHtml(o)}</span>`).join('')}
+          </div>
+        </div>
+      </div>
+
+      <p class="cheat-helper">You can re-open this cheat sheet anytime during the recording.</p>
+    </div>
+  `;
+}
+
+// ============ SCREEN: RECORDING ============
+function renderRecording() {
+  const t = state.selectedTemplate;
+  if (!t) return '';
+
+  const maxSec = getMaxSeconds();
+  const minutes = Math.floor((maxSec - state.elapsed) / 60);
+  const seconds = (maxSec - state.elapsed) % 60;
+  const display = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+  const modeLabel = state.isCompletionMode
+    ? 'AI Completion Mode'
+    : state.plan === 'pro' ? 'Extended Capture' : 'Capture';
+
+  return `
+    <div class="record-shell">
+      <div class="record-context">
+        <div class="record-context-template">${escapeHtml(t.name)}</div>
+        <div class="record-context-summary">${escapeHtml(t.summary)}</div>
+      </div>
+
+      <div class="timer-block">
+        <div class="timer-display ${state.recording && !state.paused ? 'recording' : ''}">${display}</div>
+        <div class="timer-label">
+          ${state.recording && !state.paused ? '<span class="recording-dot"></span>' : ''}
+          ${state.recording ? (state.paused ? 'Paused' : 'Recording') : modeLabel + ' \u00b7 Ready'}
+        </div>
+        <div class="timer-meta">${modeLabel} \u2014 ${formatTime(maxSec)} total</div>
+      </div>
+
+      <div class="record-cluster">
+        <button class="record-button ${state.recording && !state.paused ? 'recording' : ''}" id="recordBtn" aria-label="${state.recording ? 'Stop recording' : 'Start recording'}"></button>
+        ${state.recording ? `
+          <div class="record-controls">
+            <button class="control-btn" id="pauseBtn">${state.paused ? '\u25B6 Resume' : '\u2161 Pause'}</button>
+            <button class="control-btn" id="stopBtn">\u25A0 Stop</button>
+          </div>
+        ` : ''}
+      </div>
+    </div>
+
+    <!-- ============ CHEAT SHEET PEEK PANEL ============ -->
+    <div class="cheat-peek ${state.cheatPeekExpanded ? 'expanded' : ''}" id="cheatPeek">
+      <div class="cheat-peek-handle" id="cheatPeekHandle">
+        <div class="cheat-peek-handle-grip"></div>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div class="cheat-peek-title">Cheat sheet \u00b7 ${escapeHtml(t.name)}</div>
+          <div class="cheat-peek-toggle">${state.cheatPeekExpanded ? '\u02C5' : '\u02C4'}</div>
+        </div>
+      </div>
+      <div class="cheat-peek-body">
+        <div class="cheat-preview-section">
+          <div class="cheat-preview-label">Questions to ask</div>
+          <ul class="cheat-list">
+            ${t.questions.map(q => `<li>${escapeHtml(q)}</li>`).join('')}
+          </ul>
+        </div>
+        <div class="cheat-preview-section" style="margin-top: var(--space-5);">
+          <div class="cheat-preview-label">Listen for</div>
+          <div class="cheat-tags">
+            ${t.signals.map(s => `<span class="cheat-tag">${escapeHtml(s)}</span>`).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ============ SCREEN: PROCESSING ============
+function renderProcessing() {
+  return `
+    <div class="processing">
+      <div class="processing-headline">Working with what you <em>captured</em>&hellip;</div>
+      <p class="processing-sub">Hang on a moment. We&rsquo;re turning the conversation into something you can act on.</p>
+      <div class="processing-steps">
+        <div class="processing-step done" id="step1">
+          <div class="processing-step-icon"></div>
+          Transcribing the conversation
+        </div>
+        <div class="processing-step active" id="step2">
+          <div class="processing-step-icon"></div>
+          Structuring it through your template
+        </div>
+        <div class="processing-step" id="step3">
+          <div class="processing-step-icon"></div>
+          Writing your draft in your voice
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ============ SCREEN: COMPLETION OFFERED ============
+function renderCompletionOffered() {
+  const ai = state.draft;
+  if (!ai) return '';
+
+  const hasCritical = ai.completeness.criticalMissing.length > 0;
+  const hasQuality = ai.completeness.qualityMissing.length > 0;
+  const urgent = hasCritical;
+
+  if (state.plan === 'starter') {
+    return renderStarterUpgrade();
+  }
+
+  return `
+    <div class="step-content">
+      <div class="step-eyebrow">Pro \u00b7 AI Completeness Review</div>
+      <h1 class="step-headline">${urgent ? 'Get this before they <em>leave</em>.' : 'A few details could <em>strengthen</em> the draft.'}</h1>
+      <p class="step-sub">${urgent
+        ? 'We caught the conversation, but a few critical details are missing. Continue recording for 3 more minutes to capture them while you can.'
+        : 'The draft is solid. If they\u2019re still nearby, you could capture a little more to round it out \u2014 or proceed to the draft as-is.'}</p>
+
+      <div class="completion-mode" data-urgent="${urgent}">
+        <div class="completion-eyebrow">${urgent ? '\u26A0  AI Completion Mode' : 'Optional refinement'}</div>
+        <div class="completion-title">${ai.completeness.score}%  \u00b7  ${escapeHtml(ai.completeness.scoreLabel)}</div>
+
+        ${hasCritical ? `
+          <div class="completion-critical">
+            <div class="completion-section-label">Get this before they leave</div>
+            <ul class="completion-fields">
+              ${ai.completeness.criticalMissing.map(f => `<li>${escapeHtml(f)}</li>`).join('')}
+            </ul>
+          </div>
+        ` : ''}
+
+        ${hasQuality ? `
+          <div class="completion-quality">
+            <div class="completion-section-label completion-quality-label">${hasCritical ? 'Other details that would help' : 'Details that would help'}</div>
+            <ul class="completion-fields completion-quality-list">
+              ${ai.completeness.qualityMissing.map(f => `<li>${escapeHtml(f)}</li>`).join('')}
+            </ul>
+          </div>
+        ` : ''}
+      </div>
+    </div>
+  `;
+}
+
+function renderStarterUpgrade() {
+  const ai = state.draft;
+  const criticalField = ai.completeness.criticalMissing[0];
+  const hasCritical = ai.completeness.criticalMissing.length > 0;
+
+  return `
+    <div class="step-content">
+      <div class="step-eyebrow">Your draft is ready</div>
+      <h1 class="step-headline">${hasCritical ? `Captured the conversation \u2014 but <em>missed their ${criticalField === 'Person name' ? 'name' : criticalField.toLowerCase()}</em>.` : 'A few details could complete this <em>draft</em>.'}</h1>
+      <p class="step-sub">${hasCritical
+        ? `You can confirm later in the Hub. Pro users get AI Completion Mode \u2014 they could capture this in real time before the person walks away.`
+        : `Pro users can capture missing details with a 3-minute follow-up recording.`}</p>
+
+      <div class="upgrade-trigger">
+        <div class="upgrade-eyebrow">Pro feature</div>
+        <div class="upgrade-headline">
+          ${hasCritical
+            ? `<strong>AI Completion Mode</strong> would have caught the ${criticalField === 'Person name' ? 'name' : criticalField.toLowerCase()} before the person left \u2014 not after.`
+            : `<strong>AI Completion Mode</strong> gives you a 3-minute follow-up recording to round out captures like this.`}
+        </div>
+        <button class="upgrade-action" id="upgradeBtn">Unlock Pro \u2192</button>
+      </div>
+    </div>
+  `;
+}
+
+// ============ SCREEN: REVIEW ============
+function renderReview() {
+  const ai = state.draft;
+  if (!ai) return '';
+
+  const needsName = ai.verification.needsNameConfirmation;
+  const displayName = needsName ? 'Name not captured' : ai.person.name;
+  const confidence = state.transcriptConfidence || 'high';
+  const firstName = (ai.person.name || 'them').split(' ')[0];
+
+  return `
+    <div class="step-content">
+
+      <div class="completeness-strip">
+        <div class="completeness-info">
+          <div>
+            <div class="completeness-score">${ai.completeness.score}%</div>
+          </div>
+          <div>
+            <div class="completeness-label">${escapeHtml(ai.completeness.scoreLabel)}</div>
+            <div class="completeness-sub">Audio confidence: <span class="confidence-tag" data-level="${confidence}">${confidence}</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="draft-block">
+        <div class="draft-block-head">
+          <div>
+            <div class="draft-person-name ${needsName ? 'unconfirmed' : ''}">${escapeHtml(displayName)}</div>
+            <div class="draft-person-meta">${escapeHtml(ai.person.company || '')}${ai.person.role ? ' \u00b7 ' + escapeHtml(ai.person.role) : ''}</div>
+          </div>
+        </div>
+
+        <div class="draft-signal">
+          <span class="signal-dot"></span>
+          <span class="signal-type">${escapeHtml(ai.signal.primaryLabel)}</span>
+          <span style="color: var(--text-faint);">\u00b7</span>
+          <span style="font-style: italic;">${escapeHtml(ai.signal.evidence)}</span>
+        </div>
+
+        ${ai.signal.secondary ? `
+          <div style="font-size: 13px; color: var(--text-muted); font-style: italic; margin-bottom: var(--space-4);">${escapeHtml(ai.signal.secondary)}</div>
+        ` : ''}
+
+        <textarea class="draft-message" id="draftText">${escapeHtml(ai.draft.message)}</textarea>
+      </div>
+
+      <div class="end-prompt">
+        <h3 class="end-prompt-question">Quick one &mdash; did <em>${escapeHtml(firstName)}</em> mention how they wanted to be contacted?</h3>
+        <p class="end-prompt-sub">If not, no stress, you can pick later.</p>
+        <div class="channel-options" id="channelOptions">
+          <button class="channel-option" data-channel="whatsapp"><span>WhatsApp</span><span class="channel-radio"></span></button>
+          <button class="channel-option" data-channel="email"><span>Email</span><span class="channel-radio"></span></button>
+          <button class="channel-option" data-channel="linkedin"><span>LinkedIn</span><span class="channel-radio"></span></button>
+          <button class="channel-option" data-channel="not_said"><span>They didn\u2019t say</span><span class="channel-radio"></span></button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ============ ACTION BAR ============
+function renderActionBar() {
+  const bar = document.getElementById('actionBar');
+  const t = state.selectedTemplate;
+
+  switch(state.screen) {
+    case 'picker':
+      bar.innerHTML = '';
+      bar.style.display = 'none';
+      return;
+
+    case 'cheat':
+      bar.style.display = 'block';
+      bar.innerHTML = `
+        <div class="action-bar-inner">
+          <button class="btn btn-back" id="backBtn">&larr; Back</button>
+          <button class="btn btn-primary" id="startRecordBtn">Got it &mdash; start recording &rarr;</button>
+        </div>
+      `;
+      document.getElementById('backBtn').onclick = () => goTo('picker');
+      document.getElementById('startRecordBtn').onclick = () => goTo('recording');
+      return;
+
+    case 'recording':
+      bar.style.display = 'none';
+      bar.innerHTML = '';
+      return;
+
+    case 'processing':
+      bar.style.display = 'none';
+      bar.innerHTML = '';
+      return;
+
+    case 'completion_offered':
+      bar.style.display = 'block';
+      if (state.plan === 'pro') {
+        const urgent = state.draft.completeness.criticalMissing.length > 0;
+        bar.innerHTML = `
+          <div class="action-bar-inner">
+            <button class="btn btn-skip-completion" id="skipCompletionBtn">${urgent ? 'Skip \u2014 send to Hub' : 'Looks good \u2014 continue'}</button>
+            <button class="btn btn-completion" id="startCompletionBtn">Continue Recording &rarr;</button>
+          </div>
+        `;
+        document.getElementById('skipCompletionBtn').onclick = () => goTo('review');
+        document.getElementById('startCompletionBtn').onclick = () => startCompletionMode();
+      } else {
+        bar.innerHTML = `
+          <div class="action-bar-inner">
+            <button class="btn btn-primary" id="continueToReviewBtn">Continue to draft &rarr;</button>
+          </div>
+        `;
+        document.getElementById('continueToReviewBtn').onclick = () => goTo('review');
+      }
+      return;
+
+    case 'review':
+      bar.style.display = 'block';
+      bar.innerHTML = `
+        <div class="action-bar-inner">
+          <button class="btn btn-secondary" id="saveBtn">Save to Hub</button>
+          <button class="btn btn-primary" id="sendBtn">Open in WhatsApp &rarr;</button>
+        </div>
+      `;
+      document.getElementById('saveBtn').onclick = () => saveAndGoToHub();
+      document.getElementById('sendBtn').onclick = () => sendViaWhatsApp();
+      return;
+
+    default:
+      bar.style.display = 'none';
+  }
+}
+
+// ============ NAVIGATION ============
+function goTo(screen) {
+  state.screen = screen;
+  if (screen === 'recording') {
+    state.elapsed = 0;
+    state.recording = false;
+    state.paused = false;
+  }
+  render();
+
+  // Trigger processing if entering that screen
+  if (screen === 'processing') {
+    runProcessing();
+  }
+}
+
+// ============ EVENT BINDING ============
+function bindEvents() {
+
+  // Template selection
+  document.querySelectorAll('.template-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const id = card.dataset.templateId;
+      const t = TEMPLATES.find(x => x.id === id);
+      if (!t) return;
+      openTemplatePreview(t, card.dataset.locked === 'true');
+    });
+  });
+
+  // Recording button
+  const recordBtn = document.getElementById('recordBtn');
+  if (recordBtn) recordBtn.onclick = handleRecordToggle;
+  const pauseBtn = document.getElementById('pauseBtn');
+  if (pauseBtn) pauseBtn.onclick = handlePauseResume;
+  const stopBtn = document.getElementById('stopBtn');
+  if (stopBtn) stopBtn.onclick = handleStop;
+
+  // Cheat peek
+  const peekHandle = document.getElementById('cheatPeekHandle');
+  if (peekHandle) peekHandle.onclick = () => {
+    state.cheatPeekExpanded = !state.cheatPeekExpanded;
+    document.getElementById('cheatPeek').classList.toggle('expanded');
+    document.querySelector('.cheat-peek-toggle').textContent = state.cheatPeekExpanded ? '\u02C5' : '\u02C4';
+  };
+
+  // Modal close
+  document.querySelectorAll('[data-close-modal]').forEach(btn => {
+    btn.onclick = () => document.getElementById(btn.dataset.closeModal).classList.remove('active');
+  });
+
+  // Channel options
+  document.querySelectorAll('.channel-option').forEach(opt => {
+    opt.onclick = () => {
+      document.querySelectorAll('.channel-option').forEach(o => o.classList.remove('selected'));
+      opt.classList.add('selected');
+      state.selectedChannel = opt.dataset.channel;
+    };
+  });
+
+  // Upgrade button (placeholder)
+  const upgradeBtn = document.getElementById('upgradeBtn');
+  if (upgradeBtn) upgradeBtn.onclick = () => {
+    showToast('Pro upgrade coming soon. For demo: set localStorage tapd_user_plan = pro');
+  };
+
+  // Popover dismiss
+  const dismissBtn = document.getElementById('dismissPopover');
+  if (dismissBtn) dismissBtn.onclick = dismissPopover;
+}
+
+// ============ TEMPLATE PREVIEW MODAL ============
+function openTemplatePreview(template, locked) {
+  document.getElementById('modalTemplateName').textContent = template.name;
+  document.getElementById('modalTemplateSummary').textContent = template.summary;
+
+  document.getElementById('modalTemplateBody').innerHTML = `
+    <div class="cheat-preview-section">
+      <div class="cheat-preview-label">Questions to ask</div>
+      <ul class="cheat-list">
+        ${template.questions.slice(0, 5).map(q => `<li>${escapeHtml(q)}</li>`).join('')}
+        ${template.questions.length > 5 ? `<li style="font-style: normal; color: var(--text-muted); font-family: var(--font-body);">\u2026 and ${template.questions.length - 5} more questions during recording</li>` : ''}
+      </ul>
+    </div>
+    <div class="cheat-preview-section" style="margin-top: var(--space-5);">
+      <div class="cheat-preview-label">Listen for</div>
+      <div class="cheat-tags">
+        ${template.signals.map(s => `<span class="cheat-tag">${escapeHtml(s)}</span>`).join('')}
+      </div>
+    </div>
+    <div class="cheat-preview-section" style="margin-top: var(--space-5);">
+      <div class="cheat-preview-label">What to offer</div>
+      <div class="cheat-tags">
+        ${template.whatToOffer.map(o => `<span class="cheat-tag">${escapeHtml(o)}</span>`).join('')}
+      </div>
+    </div>
+  `;
+
+  if (locked) {
+    document.getElementById('modalTemplateActions').innerHTML = `
+      <button class="btn btn-secondary" data-close-modal="templateModal" style="flex: 1;">Close</button>
+      <button class="btn btn-completion" style="flex: 1;" onclick="alert('Pro upgrade coming soon')">Unlock Pro</button>
+    `;
+  } else {
+    document.getElementById('modalTemplateActions').innerHTML = `
+      <button class="btn btn-secondary" data-close-modal="templateModal" style="flex: 1;">Close</button>
+      <button class="btn btn-primary" id="useThisTemplateBtn" style="flex: 1;">Use this template</button>
+    `;
+    document.getElementById('useThisTemplateBtn').onclick = () => {
+      state.selectedTemplate = template;
+      document.getElementById('templateModal').classList.remove('active');
+      goTo('cheat');
+    };
+  }
+
+  document.querySelectorAll('[data-close-modal]').forEach(btn => {
+    btn.onclick = () => document.getElementById(btn.dataset.closeModal).classList.remove('active');
+  });
+
+  document.getElementById('templateModal').classList.add('active');
+}
+
+// ============ RECORDING LOGIC ============
+async function handleRecordToggle() {
+  if (!state.recording) {
+    await startRecording();
+  } else {
+    handleStop();
+  }
+}
+
+async function startRecording() {
+  try {
+    // Request mic permission
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    state.audio.stream = stream;
+    state.audio.chunks = [];
+
+    const recorder = new MediaRecorder(stream);
+    state.audio.recorder = recorder;
+
+    recorder.ondataavailable = (e) => {
+      if (e.data.size > 0) state.audio.chunks.push(e.data);
+    };
+
+    recorder.start();
+    state.recording = true;
+    state.paused = false;
+    startTimer();
+    render();
+
+    // Warn before leaving
+    window.addEventListener('beforeunload', warnBeforeLeaving);
+  } catch (err) {
+    console.error('Recording failed:', err);
+    showToast('Microphone access denied. Allow mic to capture conversations.');
+  }
+}
+
+function handlePauseResume() {
+  if (!state.audio.recorder) return;
+  if (state.paused) {
+    state.audio.recorder.resume();
+    state.paused = false;
+    startTimer();
+  } else {
+    state.audio.recorder.pause();
+    state.paused = true;
+    stopTimer();
+  }
+  render();
+}
+
+function handleStop() {
+  if (!state.audio.recorder) return;
+  state.audio.recorder.stop();
+  state.audio.stream.getTracks().forEach(t => t.stop());
+  state.recording = false;
+  state.paused = false;
+  stopTimer();
+  window.removeEventListener('beforeunload', warnBeforeLeaving);
+
+  goTo('processing');
+}
+
+function startTimer() {
+  stopTimer();
+  state.timerInterval = setInterval(() => {
+    state.elapsed++;
+    if (state.elapsed >= getMaxSeconds()) {
+      handleStop();
+      return;
+    }
+    // Update just the timer display
+    const display = document.querySelector('.timer-display');
+    if (display) {
+      const max = getMaxSeconds();
+      const remaining = max - state.elapsed;
+      const mm = String(Math.floor(remaining / 60)).padStart(2, '0');
+      const ss = String(remaining % 60).padStart(2, '0');
+      display.textContent = `${mm}:${ss}`;
+    }
+  }, 1000);
+}
+
+function stopTimer() {
+  if (state.timerInterval) {
+    clearInterval(state.timerInterval);
+    state.timerInterval = null;
+  }
+}
+
+function warnBeforeLeaving(e) {
+  e.preventDefault();
+  e.returnValue = '';
+  return '';
+}
+
+// ============ PROCESSING (mock for now) ============
+function runProcessing() {
+  setTimeout(() => {
+    const step1 = document.getElementById('step1');
+    const step2 = document.getElementById('step2');
+    const step3 = document.getElementById('step3');
+    if (step2) { step2.classList.remove('active'); step2.classList.add('done'); }
+    if (step3) step3.classList.add('active');
+  }, 1500);
+
+  setTimeout(() => {
+    const step3 = document.getElementById('step3');
+    if (step3) { step3.classList.remove('active'); step3.classList.add('done'); }
+
+    // Generate mock AI response
+    state.draft = generateMockAIResponse(state.selectedTemplate, 'mock transcript');
+    state.transcriptConfidence = state.draft.verification.needsNameConfirmation ? 'low' : 'high';
+
+    setTimeout(() => {
+      // Pro: route through Completion Mode if anything is missing
+      const hasAnyMissing = state.draft.completeness.criticalMissing.length > 0 || state.draft.completeness.qualityMissing.length > 0;
+      if (state.plan === 'pro' && hasAnyMissing && !state.isCompletionMode) {
+        goTo('completion_offered');
+      } else if (state.plan === 'starter' && hasAnyMissing) {
+        goTo('completion_offered');
+      } else {
+        goTo('review');
+      }
+    }, 600);
+  }, 3000);
+}
+
+// ============ COMPLETION MODE (PRO) ============
+function startCompletionMode() {
+  state.isCompletionMode = true;
+  state.screen = 'recording';
+  state.elapsed = 0;
+  state.recording = false;
+  state.paused = false;
+  render();
+}
+
+// ============ SAVE & SEND ============
+function saveAndGoToHub() {
+  const capture = buildCaptureForHub();
+  saveCaptureToHub(capture);
+
+  if (state.isFirstCapture && capture.needsNameConfirmation) {
+    setTimeout(() => showFirstCapturePopover(), 400);
+  }
+
+  showToast('Saved to Hub');
+  setTimeout(() => { window.location.href = 'relationship-hub.html'; }, 1200);
+}
+
+function sendViaWhatsApp() {
+  const capture = buildCaptureForHub();
+  saveCaptureToHub(capture);
+
+  const message = document.getElementById('draftText').value;
+  const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
+
+  if (state.isFirstCapture && capture.needsNameConfirmation) {
+    showFirstCapturePopover();
+    setTimeout(() => window.open(url, '_blank'), 1500);
+  } else {
+    window.open(url, '_blank');
+  }
+
+  showToast('Saved to Hub \u00b7 WhatsApp opening');
+  setTimeout(() => { window.location.href = 'relationship-hub.html'; }, 1500);
+}
+
+function buildCaptureForHub() {
+  const ai = state.draft;
+  const t = state.selectedTemplate;
+  const editedMessage = document.getElementById('draftText')?.value || ai.draft.message;
+
+  return {
+    id: 'cap_' + Date.now(),
+    name: ai.person.name,
+    company: ai.person.company,
+    role: ai.person.role,
+    signal: ai.signal.primary,
+    signalLabel: ai.signal.primaryLabel,
+    evidence: ai.signal.evidence,
+    secondaryThread: ai.signal.secondary,
+    priority: computePriority(ai),
+    action: ai.draft.nextStep,
+    draftMessage: editedMessage,
+    context: ai.draft.context,
+    capturedDaysAgo: 0,
+    capturedAt: new Date().toISOString(),
+    event: '',
+    eventKey: '',
+    outcome: 'active',
+    template: t.id,
+    templateName: t.name,
+    needsNameConfirmation: ai.verification.needsNameConfirmation,
+    nameConfidence: ai.person.nameConfidence,
+    completeness: ai.completeness,
+    channelPreference: state.selectedChannel,
+    transcriptConfidence: state.transcriptConfidence
+  };
+}
+
+function computePriority(ai) {
+  const signal = ai.signal.primary;
+  const subtype = ai.signal.primarySubtype;
+  const hasNextStep = !!ai.draft.nextStep;
+
+  const highUrgency = ['direct_opportunity', 'pilot_beta', 'investor', 'speaking_opportunity'];
+
+  if (signal === 'opportunity' && hasNextStep) return 'act-soon';
+  if (highUrgency.includes(subtype)) return 'act-soon';
+  if (signal === 'stay') return 'keep-warm';
+  return 'worth-exploring';
+}
+
+function saveCaptureToHub(capture) {
+  const existing = JSON.parse(localStorage.getItem(STORAGE.CAPTURES) || '[]');
+  existing.unshift(capture);
+  localStorage.setItem(STORAGE.CAPTURES, JSON.stringify(existing));
+}
+
+// ============ FIRST-CAPTURE POPOVER ============
+function showFirstCapturePopover() {
+  const shown = localStorage.getItem(STORAGE.FIRST_CAPTURE_SHOWN);
+  if (shown) return;
+  document.getElementById('firstCapturePopover').classList.add('show');
+  setTimeout(dismissPopover, 6000);
+}
+
+function dismissPopover() {
+  document.getElementById('firstCapturePopover').classList.remove('show');
+  localStorage.setItem(STORAGE.FIRST_CAPTURE_SHOWN, 'true');
+}
+
+// ============ HELPERS ============
+function formatTime(sec) {
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return `${m}:${String(s).padStart(2, '0')}`;
+}
+
+function escapeHtml(s) {
+  if (s == null) return '';
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+// ============ GO ============
+render();
+</script>
+
+</body>
+</html>
