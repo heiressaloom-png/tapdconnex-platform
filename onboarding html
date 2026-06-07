@@ -796,6 +796,7 @@
 </style>
 </head>
 <body>
+<script src="tapd-sync.js"></script>
 
 <div class="shell">
 
@@ -928,6 +929,15 @@ const TEMPLATES = [
 ];
 
 // ============ RENDER ============
+
+// Deep-link: ?step=N jumps to that step (used from the home "Profile & voice" card).
+(function applyStepParam() {
+  try {
+    const n = parseInt(new URLSearchParams(location.search).get('step'), 10);
+    if (Number.isFinite(n) && n >= 0 && n <= 8) state.currentStep = n;
+  } catch (e) {}
+})();
+
 function render() {
   document.getElementById('currentStep').textContent = state.currentStep + 1;
   document.getElementById('totalSteps').textContent = TOTAL_STEPS;
@@ -1342,6 +1352,7 @@ function bindStepEvents() {
       if (!btn) return;
       state.data.plan = btn.dataset.plan;
       save();
+      try { if (window.TapdSync) TapdSync.pushProfile(state.data, state.data.plan); } catch (e) {}
       render();
     });
   }
@@ -1570,7 +1581,8 @@ document.getElementById('nextBtn').addEventListener('click', () => {
   } else {
     // Final step \u2014 hand off to Hub
     save();
-    window.location.href = 'relationship-hub.html';
+    try { if (window.TapdSync) TapdSync.pushProfile(state.data, state.data.plan); } catch (e) {}
+    window.location.href = 'index.html';
   }
 });
 
