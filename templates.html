@@ -365,22 +365,44 @@
     .btn { font-size: 14px; padding: 12px 18px; min-height: 48px; }
     .header-btn { padding: 7px 11px; font-size: 12px; }
   }
+
+  .template-card { position: relative; }
+  .template-card.is-default { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+  .default-star {
+    position: absolute; top: 12px; right: 12px;
+    width: 32px; height: 32px; border-radius: 50%;
+    background: transparent; border: 1px solid var(--border-soft);
+    color: var(--text-faint); cursor: pointer;
+    font-size: 18px; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s ease; z-index: 2;
+  }
+  .default-star:hover { color: #B89540; border-color: #B89540; }
+  .default-star.active { color: #B89540; border-color: #B89540; background: #FAF3DD; }
+  .default-badge {
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em;
+    text-transform: uppercase; font-weight: 600;
+    padding: 2px 8px; border-radius: 999px;
+    color: #8A6C1F; background: #FAF3DD; border: 1px solid #E8D8A8;
+  }
 </style>
 </head>
 <body>
+<script src="tapd-fab.js" defer></script>
 
 <div class="shell">
   <header class="top">
-    <div class="brand">
+    <a href="index.html" style="text-decoration:none;color:inherit;"><div class="brand">
       <div class="brand-mark">T</div>
       <div class="brand-name">Templates</div>
-    </div>
+    </div></a>
     <div class="header-actions">
       <div class="plan-toggle" id="planToggle" title="Preview as Starter or Pro">
         <button data-plan="starter" id="planStarter">Starter</button>
         <button data-plan="pro" id="planPro" class="pro">Pro</button>
       </div>
       <button class="header-btn" id="navCapture">Capture →</button>
+      <a href="relationship-hub.html" class="header-btn">Hub →</a>
     </div>
   </header>
 
@@ -585,16 +607,42 @@ function renderList() {
   `;
 }
 
+
+// ============ DEFAULT TEMPLATE (selectedTemplate on the profile) ============
+function currentDefaultId() {
+  try {
+    const ob = JSON.parse(localStorage.getItem('tapd_onboarding_data') || 'null');
+    return ob && ob.data && ob.data.selectedTemplate ? ob.data.selectedTemplate : null;
+  } catch (e) { return null; }
+}
+function setDefaultId(id) {
+  try {
+    const ob = JSON.parse(localStorage.getItem('tapd_onboarding_data') || 'null') || { data: {} };
+    ob.data = ob.data || {};
+    ob.data.selectedTemplate = id;
+    localStorage.setItem('tapd_onboarding_data', JSON.stringify(ob));
+    if (window.TapdSync) { try { TapdSync.pushProfile(ob.data, ob.data.plan || state.plan); } catch (e) {} }
+  } catch (e) {}
+}
+
 function renderCard(base) {
   const t = effectiveTemplate(base);
   const editable = canEdit(base);
   const locked = !editable;
   const edited = isEdited(base.id);
+  const isDefault = (currentDefaultId() === base.id);
+  // A user can pick any template they could actually use in capture.
+  // Starter user gets starter templates; Pro gets all.
+  const canPickAsDefault = (state.plan === 'pro') || (base.tier === 'starter');
   return `
-    <button class="template-card ${locked ? 'locked' : ''}" data-id="${base.id}">
+    <div class="template-card ${locked ? 'locked' : ''} ${isDefault ? 'is-default' : ''}" data-id="${base.id}" role="button" tabindex="0">
+      ${canPickAsDefault
+        ? `<button class="default-star ${isDefault ? 'active' : ''}" data-default="${base.id}" title="${isDefault ? 'Your default template' : 'Make this your default'}" aria-label="${isDefault ? 'Default template' : 'Make default'}">${isDefault ? '\u2605' : '\u2606'}</button>`
+        : ''}
       <div class="template-card-head">
         <div class="template-card-name">${esc(t.name)}</div>
         ${base.tier === 'pro' ? '<span class="pro-badge">Pro</span>' : ''}
+        ${isDefault ? '<span class="default-badge">Default</span>' : ''}
       </div>
       <div class="template-card-summary">${esc(t.summary)}</div>
       <div class="template-card-meta">
@@ -604,13 +652,23 @@ function renderCard(base) {
       ${locked
         ? `<div class="lock-note">${base.tier === 'pro' ? 'Upgrade to Pro to edit' : 'Upgrade to edit more templates'}</div>`
         : `<div class="lock-note" style="color:var(--accent)">Tap to edit \u2192</div>`}
-    </button>
+    </div>
   `;
 }
 
 function bindList() {
   document.querySelectorAll('.template-card').forEach(card => {
     card.addEventListener('click', () => openEditor(card.dataset.id));
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openEditor(card.dataset.id); }
+    });
+  });
+  document.querySelectorAll('.default-star').forEach(star => {
+    star.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setDefaultId(star.dataset.default);
+      render();
+    });
   });
 }
 
