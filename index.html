@@ -150,6 +150,7 @@
 </style>
 </head>
 <body>
+<script src="tapd-fab.js" defer></script>
 
 <div class="shell">
   <header class="top">
@@ -252,7 +253,7 @@ function render() {
     <div class="section-title">Pick up where you left off</div>
     ${card({ href: 'relationship-hub.html', icon: '\u25C8', title: 'Relationship Hub', desc: nameWarn + 'The people worth following up with.', extra: hubExtra })}
     ${card({ href: 'templates.html', icon: '\u25A4', title: 'Templates', desc: 'Tune what each conversation listens for.' })}
-    ${card({ href: 'onboarding.html', icon: '\u25CB', title: 'Profile & voice', desc: 'Update your details, follow-up voice, and plan.' })}
+    ${card({ href: 'onboarding.html?step=5', icon: '\u25CB', title: 'Profile & voice', desc: 'Update your style, see the live preview, then save.' })}
   `;
 }
 
