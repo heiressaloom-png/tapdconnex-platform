@@ -1194,24 +1194,48 @@
     .action-bar { padding: 10px var(--space-4); }
     .btn { font-size: 14px; padding: 12px 18px; min-height: 48px; }
   }
+
+  /* Quick template switcher */
+  #templateBar { padding: 0 var(--space-5); }
+  .tpl-bar { display: flex; align-items: center; gap: 10px; padding: 10px 0 4px; }
+  .tpl-bar-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); }
+  .tpl-bar-chip { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: var(--surface); border: 1px solid var(--border-medium); font-family: var(--font-body); font-size: 13px; font-weight: 600; color: var(--text-primary); cursor: pointer; transition: all 0.15s ease; }
+  .tpl-bar-chip:hover { border-color: var(--accent); color: var(--accent); }
+  .tpl-bar-caret { font-size: 10px; color: var(--text-muted); }
+  .tpl-overlay { position: fixed; inset: 0; background: rgba(24,20,16,0.45); z-index: 2000; display: flex; align-items: flex-end; justify-content: center; }
+  .tpl-sheet { width: 100%; max-width: 680px; background: var(--surface); border-radius: 20px 20px 0 0; padding: 18px 20px 28px; max-height: 80vh; overflow-y: auto; }
+  .tpl-sheet-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
+  .tpl-sheet-title { font-family: var(--font-display); font-size: 20px; font-weight: 600; }
+  .tpl-sheet-sub { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+  .tpl-sheet-close { background: transparent; border: none; font-size: 18px; cursor: pointer; color: var(--text-muted); padding: 4px 8px; }
+  .tpl-switch-list { display: flex; flex-direction: column; gap: 8px; }
+  .tpl-switch-item { text-align: left; background: var(--surface-warm); border: 1px solid var(--border-soft); border-radius: 12px; padding: 12px 14px; cursor: pointer; transition: all 0.15s ease; font-family: var(--font-body); }
+  .tpl-switch-item:hover { border-color: var(--accent); }
+  .tpl-switch-item.current { border-color: var(--accent); background: var(--accent-bg); }
+  .tpl-switch-name { font-weight: 600; font-size: 15px; display: flex; align-items: center; gap: 8px; }
+  .tpl-switch-sum { font-size: 13px; color: var(--text-secondary); margin-top: 3px; }
+  .pro-pill { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 7px; border-radius: 999px; background: var(--pro-bg); color: var(--pro); }
 </style>
 </head>
 <body>
+<script src="tapd-sync.js"></script>
 
 <div class="shell">
 
   <!-- ============ HEADER ============ -->
   <header class="top">
-    <div class="brand">
+    <a href="index.html" style="text-decoration:none;color:inherit;"><div class="brand">
       <div class="brand-mark">T</div>
       <div class="brand-name">Capture</div>
-    </div>
+    </div></a>
     <div class="header-actions">
+      <a href="templates.html" class="header-btn">Templates</a>
       <a href="relationship-hub.html" class="header-btn">Hub &rarr;</a>
     </div>
   </header>
 
   <!-- ============ STEP CONTAINER ============ -->
+  <div id="templateBar"></div>
   <div id="stepContainer"></div>
 
 </div>
@@ -1622,12 +1646,88 @@ function getMaxSeconds() {
   return state.isCompletionMode ? 180 : (state.plan === 'pro' ? 600 : 300);
 }
 
+
+// ============ QUICK TEMPLATE SWITCHER ============
+function updateTemplateBar() {
+  const bar = document.getElementById('templateBar');
+  if (!bar) return;
+  const t = state.selectedTemplate;
+  // Hide on picker (the screen IS the picker) and processing (busy)
+  const hidden = !t || state.screen === 'picker' || state.screen === 'processing';
+  if (hidden) { bar.innerHTML = ''; return; }
+  bar.innerHTML = `
+    <div class="tpl-bar">
+      <span class="tpl-bar-label">Template</span>
+      <button class="tpl-bar-chip" id="tplBarChip" type="button">
+        <span>${esc(t.name)}</span>
+        <span class="tpl-bar-caret">\u25BE</span>
+      </button>
+    </div>`;
+  const chip = document.getElementById('tplBarChip');
+  if (chip) chip.addEventListener('click', openTemplateSwitcher);
+}
+
+function openTemplateSwitcher() {
+  if (document.getElementById('tplSwitcher')) return;
+  const reprocessing = (state.screen === 'review');
+  const current = state.selectedTemplate ? state.selectedTemplate.id : null;
+  const list = TEMPLATES.map(t => `
+    <button class="tpl-switch-item ${t.id === current ? 'current' : ''}" data-id="${t.id}" type="button">
+      <div class="tpl-switch-name">${esc(t.name)} ${t.tier === 'pro' ? '<span class="pro-pill">Pro</span>' : ''}</div>
+      <div class="tpl-switch-sum">${esc(t.summary || '')}</div>
+    </button>`).join('');
+  const overlay = document.createElement('div');
+  overlay.id = 'tplSwitcher';
+  overlay.className = 'tpl-overlay';
+  overlay.innerHTML = `
+    <div class="tpl-sheet">
+      <div class="tpl-sheet-head">
+        <div>
+          <div class="tpl-sheet-title">Switch template</div>
+          <div class="tpl-sheet-sub">${reprocessing ? 'Choosing a different template will re-process this capture.' : 'The new template applies from here on.'}</div>
+        </div>
+        <button class="tpl-sheet-close" id="tplSwitchClose" aria-label="Close">\u2715</button>
+      </div>
+      <div class="tpl-switch-list">${list}</div>
+    </div>`;
+  document.body.appendChild(overlay);
+  document.getElementById('tplSwitchClose').addEventListener('click', closeTemplateSwitcher);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeTemplateSwitcher(); });
+  overlay.querySelectorAll('.tpl-switch-item').forEach(btn => {
+    btn.addEventListener('click', () => switchTemplate(btn.dataset.id));
+  });
+}
+function closeTemplateSwitcher() {
+  const el = document.getElementById('tplSwitcher');
+  if (el) el.remove();
+}
+
+function switchTemplate(id) {
+  const t = TEMPLATES.find(x => x.id === id);
+  if (!t) return closeTemplateSwitcher();
+  if (state.selectedTemplate && t.id === state.selectedTemplate.id) return closeTemplateSwitcher();
+  if (state.screen === 'review') {
+    const ok = confirm(`Re-process this capture with the "${t.name}" template? The draft will be rebuilt.`);
+    if (!ok) return closeTemplateSwitcher();
+    state.selectedTemplate = t;
+    closeTemplateSwitcher();
+    state.screen = 'processing';
+    render();
+    runProcessing();
+    return;
+  }
+  state.selectedTemplate = t;
+  closeTemplateSwitcher();
+  render();
+}
+
 // ============ MAIN RENDER ============
 function render() {
   const container = document.getElementById('stepContainer');
   container.innerHTML = renderScreen();
   bindEvents();
   renderActionBar();
+  updateTemplateBar();
 }
 
 function renderScreen() {
@@ -2418,6 +2518,7 @@ function saveCaptureToHub(capture) {
   const existing = JSON.parse(localStorage.getItem(STORAGE.CAPTURES) || '[]');
   existing.unshift(capture);
   localStorage.setItem(STORAGE.CAPTURES, JSON.stringify(existing));
+  try { if (window.TapdSync) TapdSync.pushCapture(capture); } catch (e) {}
 }
 
 // ============ FIRST-CAPTURE POPOVER ============
