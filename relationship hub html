@@ -1236,25 +1236,34 @@
     .card-name { font-size: 18px; }
     .success-options { flex-direction: column; }
   }
+
+  .hub-nav-link { font-size:13px; color:var(--text-secondary); text-decoration:none; padding:6px 12px; border-radius:999px; border:1px solid var(--border-soft); transition:all 0.15s; }
+  .hub-nav-link:hover { color:var(--accent); border-color:var(--accent); }
 </style>
 </head>
 <body>
+<script src="tapd-sync.js"></script>
+<script src="tapd-fab.js" defer></script>
 
 <div class="app">
 
   <!-- ============ HEADER ============ -->
   <header class="header">
-    <div class="brand">
+    <a href="index.html" style="text-decoration:none;color:inherit;"><div class="brand">
       <div class="brand-mark">T</div>
       <div class="brand-text">
         <div class="brand-text-top">TAPDconnex</div>
         <div class="brand-text-bottom">Relationship Hub</div>
       </div>
+    </div></a>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <a href="capture.html" class="hub-nav-link">Capture</a>
+      <a href="templates.html" class="hub-nav-link">Templates</a>
+      <button class="profile-button" id="profileButton">
+        <span class="profile-dot"></span>
+        <span>Profile</span>
+      </button>
     </div>
-    <button class="profile-button" id="profileButton">
-      <span class="profile-dot"></span>
-      <span>Profile</span>
-    </button>
   </header>
 
   <!-- ============ INTRO + OUTCOME SUMMARY ============ -->
@@ -1707,6 +1716,22 @@ function init() {
 
   bindEvents();
   render();
+  hydrateFromServer();
+}
+
+// Additively merge any server-persisted captures that aren't already local.
+// Never overwrites local rows, so there is no data-loss risk.
+async function hydrateFromServer() {
+  if (!window.TapdSync) return;
+  let rows = null;
+  try { rows = await TapdSync.pullCaptures(); } catch (e) { return; }
+  if (!rows || !rows.length) return;
+  const localIds = new Set(state.captures.map(c => c.id));
+  const additions = rows.filter(r => !localIds.has(r.id));
+  if (!additions.length) return;
+  state.captures = state.captures.concat(additions);
+  saveCaptures();
+  render();
 }
 
 function loadIntent() {
@@ -2088,6 +2113,7 @@ function confirmPickerSelection(name, company, role) {
   c.nameConfidence = 'confirmed';
 
   saveCaptures();
+  try { if (window.TapdSync) TapdSync.patchCapture(c.id, { name: c.name, needsNameConfirmation: false, nameConfidence: 'confirmed' }); } catch (e) {}
   document.getElementById('pickerModal').classList.remove('active');
   showToast(`Confirmed: ${name}`, '\u2713');
   render();
@@ -2129,6 +2155,7 @@ function handleMovedForward(id) {
     const capture = state.captures.find(c => c.id === id);
     if (capture) capture.outcome = 'moved_forward';
     saveCaptures();
+    try { if (window.TapdSync) TapdSync.patchCapture(id, { outcome: 'moved_forward' }); } catch (e) {}
     showToast('\u2192 Moved forward', '\u2713');
     render();
     maybeShowSuccessQuestion();
@@ -2143,6 +2170,7 @@ function handleLetGo(id) {
     const capture = state.captures.find(c => c.id === id);
     if (capture) capture.outcome = 'let_go';
     saveCaptures();
+    try { if (window.TapdSync) TapdSync.patchCapture(id, { outcome: 'let_go' }); } catch (e) {}
     showToast('\u2190 Let go', '\u2713');
     render();
   }, 350);
