@@ -45,7 +45,7 @@ Your job is to read a transcript of one captured conversation and produce a stru
 The user message will contain:
 
 - **Selected Template** — the relationship pathway the user chose before recording (Direct Opportunity, Investor, Pilot/Beta, Collaboration, Stay in Touch, or another). This tunes what fields you listen for.
-- **Owner Style** — the user's voice profile (greeting, opening line, conversation reference, next-step style, sign-off, locked variables).
+- **Owner Style** — the user's voice profile (greeting, opening line, conversation reference, next-step style, sign-off, what to emphasise, what to avoid, locked variables).
 - **User Intent** — the primary goal the user is networking toward (find customers, find investors, find collaborators, build presence, or other) and optional secondary goals.
 - **Event Context** — where the conversation happened (event name, date), if known.
 - **Transcript Confidence** — High / Medium / Low — from the Whisper transcription pipeline.
@@ -74,9 +74,13 @@ A single JSON object matching the schema below exactly. No prose before or after
   "draft": {
     "nextStep": "One sentence describing the action the user should take next. Imperative voice. Maximum 18 words.",
     "message": "The full draft message in the user's Owner Style. Multi-line. Ready to copy into WhatsApp.",
-    "context": "A 2-3 sentence paragraph capturing what was discussed, for the Hub's Open Draft view."
+    "context": "A 2-3 sentence paragraph capturing what was discussed, for the Hub's Open Draft view.",
+    "eventLabel": "Where they met, e.g. 'SaaS Summit'. Null if no event context was provided.",
+    "topic": "Short phrase naming what was discussed, used to voice the [What we discussed] line. Maximum 10 words."
   },
   "completeness": {
+    "score": 0,
+    "scoreLabel": "Light capture | Solid capture | Strong capture",
     "fields": [
       { "name": "Person name", "status": "present | partial | missing", "tier": "critical | quality" },
       { "name": "Company", "status": "present | partial | missing", "tier": "critical | quality" },
@@ -152,6 +156,8 @@ Use the Owner Style template provided in the user message. Fill in the locked va
 
 Do not invent details. If the user said they would send a deck, the message references the deck. If they did not, do not invent one.
 
+**Honour the user's emphasise / avoid guidance.** If Owner Style includes "what to emphasise" (e.g. "warm but concise, always suggest a concrete next step"), lean into it. If it includes "what to avoid" (e.g. "no hard selling, never sound like a template, no exclamation marks"), never do those things. These are guidance for tone — they are not literal text to paste into the message. If neither is provided, do not invent a voice; use the greeting/opening/sign-off templates as given.
+
 ## positioning.withheldThreads
 
 If you deliberately did NOT lead with a thread that was mentioned in the transcript (because leading with it would weaken the user's positioning), record it here with a short reason. Examples:
@@ -220,34 +226,49 @@ This is the function your app calls to construct the per-capture user message th
 ```javascript
 function buildCapturePrompt(captureContext) {
   const {
-    template,           // 'direct_opportunity' | 'investor' | 'pilot_beta' | 'collaboration' | 'stay_in_touch'
-    ownerStyle,         // { greeting, opening, conversationRef, nextStepStyle, signOff, userName }
-    userIntent,         // { primary: 'customers' | 'investors' | ..., secondary: [...] }
-    eventContext,       // { name: 'SaaS Summit', date: '2026-06-05' } or null
+    template,             // the SELECTED TEMPLATE OBJECT (canonical) — see note below
+    ownerStyle,           // { name, greeting, opening, conversationRef, nextStepStyle, signOff, voiceEmphasise, voiceAvoid }
+    userIntent,           // { primary: 'customers'|'investors'|'collaborators'|'presence'|'other', secondary: [...] }
+    eventContext,         // { name: 'SaaS Summit', date: '2026-06-05' } or null
     transcriptConfidence, // 'high' | 'medium' | 'low'
-    transcript          // string — full transcript from Whisper
+    transcript            // string — full transcript from the transcription step
   } = captureContext;
+
+  // capture.html passes `template` as an OBJECT. Its id is one of the canonical 10:
+  //   starter: opportunity, connector, stay_in_touch
+  //   pro:     strategic_partnership, speaking, career, product_discovery,
+  //            pilot_beta, advisory, community_access
+  // Use the template's own aiListening / signals as the "listen for" guidance.
+  const listenFor = (template.aiListening && template.aiListening.length)
+    ? template.aiListening.join(', ')
+    : (template.signals || []).join(', ');
+  const offers = (template.whatToOffer || []).join(', ');
+  const os = ownerStyle || {};
 
   return `# Capture Context
 
 ## Selected Template
-${template}
+${template.name} (${template.id})
 
-This template means the user is listening for: ${getTemplateListenFields(template)}
+This template means the user is listening for: ${listenFor || 'standard relationship fields'}
+Things the user can offer as a next step: ${offers || 'not specified'}
 
 ## Owner Style
-The user's voice profile. Use this to write the draft message in their voice, not generic AI voice.
+The user's voice profile. Write the draft message in THIS voice, never generic AI voice.
+If a field is blank, do not invent a voice — use only what is given.
 
-Greeting style: "${ownerStyle.greeting}"
-Opening line style: "${ownerStyle.opening}"
-Conversation reference style: "${ownerStyle.conversationRef}"
-Next-step line style: "${ownerStyle.nextStepStyle}"
-Sign-off: "${ownerStyle.signOff}"
-User's name (for [My name] variable): ${ownerStyle.userName}
+Greeting style: "${os.greeting || ''}"
+Opening line style: "${os.opening || ''}"
+Conversation reference style: "${os.conversationRef || ''}"
+Next-step line style: "${os.nextStepStyle || ''}"
+Sign-off: "${os.signOff || ''}"
+What to emphasise: ${os.voiceEmphasise || '(none given)'}
+What to avoid: ${os.voiceAvoid || '(none given)'}
+User's name (for [My name] variable): ${os.name || ''}
 
 ## User Intent
-Primary goal: ${userIntent.primary}
-${userIntent.secondary && userIntent.secondary.length > 0
+Primary goal: ${userIntent ? userIntent.primary : 'not set'}
+${userIntent && userIntent.secondary && userIntent.secondary.length > 0
   ? `Also open to: ${userIntent.secondary.join(', ')}`
   : 'No secondary intents declared'}
 
@@ -257,7 +278,7 @@ ${eventContext
   : 'No event context recorded'}
 
 ## Transcript Confidence
-${transcriptConfidence.toUpperCase()}
+${(transcriptConfidence || 'medium').toUpperCase()}
 
 ${transcriptConfidence === 'low'
   ? 'NOTE: Audio quality was poor. Be especially cautious about name accuracy and flag verification needed.'
@@ -270,17 +291,6 @@ ${transcript}
 ---
 
 Produce the structured JSON output now. Output the JSON object only — no commentary, no code fences, no prose.`;
-}
-
-function getTemplateListenFields(template) {
-  const fields = {
-    direct_opportunity: 'name, company, role, opportunity description, timeline, next step, contact information, follow-up action',
-    investor: 'name, fund, role, investment focus, stage, cheque size, thesis fit, follow-up commitment',
-    pilot_beta: 'company, use case, pilot scope, timing, decision-maker, next step',
-    collaboration: 'counterpart, their initiative, mutual angle, shared next conversation',
-    stay_in_touch: 'name, role, why worth remembering, connection rhythm'
-  };
-  return fields[template] || 'standard relationship fields';
 }
 ```
 
