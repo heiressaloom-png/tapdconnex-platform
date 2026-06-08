@@ -807,12 +807,12 @@
       <div class="brand-name">TAPDconnex</div>
     </div>
     <div class="step-counter">
-      Step <strong id="currentStep">1</strong> of <strong id="totalSteps">9</strong>
+      <strong id="percentComplete">0%</strong> complete
     </div>
   </header>
 
   <div class="progress">
-    <div class="progress-bar" id="progressBar" style="width: 11%;"></div>
+    <div class="progress-bar" id="progressBar" style="width: 0%;"></div>
   </div>
 
   <!-- ============ STEP CONTAINER ============ -->
@@ -905,6 +905,36 @@ function syncName() {
   state.data.name = [state.data.firstName, state.data.surname].filter(Boolean).join(' ').trim();
 }
 
+const PROFILE_BASE_URL = 'https://tapdconnex-platform.vercel.app';
+
+function getProfileSlug() {
+  const fallbackName = state.data.name || [state.data.firstName, state.data.surname].filter(Boolean).join(' ') || 'yourname';
+  return (state.data.username || fallbackName)
+    .toLowerCase()
+    .replace(/[^a-z0-9-]+/g, '-')
+    .replace(/^-+|-+$/g, '') || 'yourname';
+}
+
+function getProfileUrl(slug = getProfileSlug()) {
+  return `${PROFILE_BASE_URL}/?profile=${encodeURIComponent(slug)}&nfc=1`;
+}
+
+function copyText(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    return navigator.clipboard.writeText(text);
+  }
+  const temp = document.createElement('textarea');
+  temp.value = text;
+  temp.setAttribute('readonly', '');
+  temp.style.position = 'absolute';
+  temp.style.left = '-9999px';
+  document.body.appendChild(temp);
+  temp.select();
+  document.execCommand('copy');
+  document.body.removeChild(temp);
+  return Promise.resolve();
+}
+
 function save() {
   syncName();
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -914,7 +944,7 @@ function save() {
 
 // ============ STEP DEFINITIONS ============
 
-const TOTAL_STEPS = 12;
+const TOTAL_STEPS = 11;
 
 const NETWORKING_FOCUS = [
   {
@@ -1031,9 +1061,10 @@ function calculateCompletionPercent() {
 }
 
 function render() {
-  document.getElementById('currentStep').textContent = state.currentStep + 1;
-  document.getElementById('totalSteps').textContent = TOTAL_STEPS;
-  document.getElementById('progressBar').style.width = `${calculateCompletionPercent()}%`;
+  const percent = calculateCompletionPercent();
+  const percentEl = document.getElementById('percentComplete');
+  if (percentEl) percentEl.textContent = `${percent}%`;
+  document.getElementById('progressBar').style.width = `${percent}%`;
 
   const container = document.getElementById('stepContainer');
   container.innerHTML = renderStep(state.currentStep);
@@ -1064,13 +1095,12 @@ function renderStep(step) {
     case 2: return renderNetworkingFocusStep();
     case 3: return renderWhatDoYouDoStep();
     case 4: return renderCanYouRelateStep();
-    case 5: return renderWaysToWorkStep();
-    case 6: return renderTopFocusStep();
-    case 7: return renderReachStep();
-    case 8: return renderMessageStyleStep();
-    case 9: return renderNFCStep();
-    case 10: return renderTemplatesStep();
-    case 11: return renderCardLiveStep();
+    case 5: return renderWaysAndFocusStep();
+    case 6: return renderReachStep();
+    case 7: return renderMessageStyleStep();
+    case 8: return renderNFCStep();
+    case 9: return renderTemplatesStep();
+    case 10: return renderCardLiveStep();
     default: return '';
   }
 }
@@ -1120,7 +1150,7 @@ function renderTrustStep() {
 function renderIdentityStep() {
   const initials = (state.data.name || state.data.firstName || '?').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
   return `
-    <div class="step-eyebrow">Step 1 · Identity & Profile</div>
+    <div class="step-eyebrow">Profile setup · Identity & Profile</div>
     <h1 class="step-headline">Who <em>are</em> you?</h1>
     <p class="step-sub">Introduce yourself in one sentence. This appears at the top of your profile and helps people quickly understand who you are.</p>
 
@@ -1163,7 +1193,7 @@ function renderIdentityStep() {
 // ===== STEP 2: NETWORKING FOCUS AREAS =====
 function renderNetworkingFocusStep() {
   return `
-    <div class="step-eyebrow">Step 2 · Networking Focus Areas</div>
+    <div class="step-eyebrow">Profile setup · Networking Focus Areas</div>
     <h1 class="step-headline">What are you looking for through <em>networking</em>?</h1>
     <p class="step-sub">Choose your primary and secondary networking focus. This helps people quickly understand what conversations are most valuable to you.</p>
 
@@ -1201,7 +1231,7 @@ function renderNetworkingFocusStep() {
 // ===== STEP 3: WHAT DO YOU DO =====
 function renderWhatDoYouDoStep() {
   return `
-    <div class="step-eyebrow">Step 3 · What Do You Do?</div>
+    <div class="step-eyebrow">Profile setup · What Do You Do?</div>
     <h1 class="step-headline">What do you <em>do</em>?</h1>
     <p class="step-sub">Describe what you do in one or two sentences. This helps visitors understand how you create value.</p>
 
@@ -1222,7 +1252,7 @@ function renderCanYouRelateStep() {
     'We have plenty of ideas but struggle to turn them into action.'
   ];
   return `
-    <div class="step-eyebrow">Step 4 · Can You Relate To This?</div>
+    <div class="step-eyebrow">Profile setup · Can You Relate To This?</div>
     <h1 class="step-headline">Can you relate to <em>this</em>?</h1>
     <p class="step-sub">Describe the challenges your audience commonly experiences. Write each one as a recognition hook that feels familiar and relatable, as if the visitor is thinking: “That’s exactly my situation.”</p>
 
@@ -1240,26 +1270,30 @@ function renderCanYouRelateStep() {
   `;
 }
 
-// ===== STEP 5: WAYS WE COULD WORK TOGETHER =====
-function renderWaysToWorkStep() {
+// ===== STEP 5: WAYS WE COULD WORK TOGETHER + TOP FOCUS =====
+function renderWaysAndFocusStep() {
+  const wayPlaceholders = [
+    'e.g. Product Strategy Consulting',
+    'e.g. AI Opportunity Workshops',
+    'e.g. Speaking Engagements'
+  ];
+  const ways = Array.isArray(state.data.waysToWork) ? state.data.waysToWork : [''];
   return `
-    <div class="step-eyebrow">Step 5 · Ways We Could Work Together</div>
+    <div class="step-eyebrow">Profile setup · Ways We Could Work Together</div>
     <h1 class="step-headline">Ways we could <em>work together</em>.</h1>
-    <p class="step-sub">List the products, services, experiences or opportunities people can engage with.</p>
+    <p class="step-sub">List up to three concise products, services, experiences or opportunities people can engage with. Then add the one thing you most want people to notice right now.</p>
 
     <div class="field">
-      <div class="field-label">Ways we could work together <span class="field-required">REQUIRED</span></div>
-      <input type="text" class="input" id="waysToWork" value="${escapeHtml(state.data.waysToWork[0] || '')}" placeholder="e.g. Product Strategy Consulting, AI Opportunity Workshops, Speaking Engagements">
+      <div class="field-label">
+        Ways we could work together
+        <span class="field-hint">At least 1 · keep each one concise</span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        ${[0, 1, 2].map(i => `
+          <input type="text" class="input ways-input" data-idx="${i}" value="${escapeHtml(ways[i] || '')}" placeholder="${escapeHtml(wayPlaceholders[i])}">
+        `).join('')}
+      </div>
     </div>
-  `;
-}
-
-// ===== STEP 6: TOP FOCUS RIGHT NOW =====
-function renderTopFocusStep() {
-  return `
-    <div class="step-eyebrow">Step 6 · Top Focus Right Now</div>
-    <h1 class="step-headline">Top focus <em>right now</em>.</h1>
-    <p class="step-sub">What would you like people viewing your profile to know about your current priority?</p>
 
     <div class="field">
       <div class="field-label">Top focus right now <span class="field-required">REQUIRED</span></div>
@@ -1268,7 +1302,7 @@ function renderTopFocusStep() {
   `;
 }
 
-// ===== STEP 7: HOW SHOULD WE REACH YOU =====
+// ===== STEP 6: HOW SHOULD WE REACH YOU =====
 function renderReachStep() {
   const channels = [
     { id: 'whatsapp', label: 'WhatsApp' },
@@ -1277,7 +1311,7 @@ function renderReachStep() {
   ];
 
   return `
-    <div class="step-eyebrow">Step 7 · How Should We Reach You?</div>
+    <div class="step-eyebrow">Profile setup · How Should We Reach You?</div>
     <h1 class="step-headline">How should people <em>reach</em> you?</h1>
     <p class="step-sub">Your preferred follow-up channel is where TAPD prepares messages first. The others stay available on your card.</p>
 
@@ -1322,7 +1356,7 @@ function renderReachStep() {
 // ===== STEP 8: MESSAGE STYLE & VOICE INTRODUCTION =====
 function renderMessageStyleStep() {
   return `
-    <div class="step-eyebrow">Step 8 · Message Style & Voice Introduction</div>
+    <div class="step-eyebrow">Profile setup · Message Style & Voice Introduction</div>
     <h1 class="step-headline">Your follow-up <em>voice</em>.</h1>
     <p class="step-sub">Set this once. TAPD uses it every time it prepares a message after a capture. The bracketed parts like <code>[First name]</code> are filled in automatically — don’t change them. Everything else is your voice.</p>
 
@@ -1375,11 +1409,12 @@ function renderMessageStyleStep() {
 
 // ===== STEP 9: NFC SETUP =====
 function renderNFCStep() {
-  const username = state.data.username || (state.data.name || '').toLowerCase().replace(/[^a-z]/g, '');
+  const username = getProfileSlug();
+  const profileUrl = getProfileUrl(username);
   return `
-    <div class="step-eyebrow">Step 9 · Set Up Your NFC</div>
+    <div class="step-eyebrow">Profile setup · Set Up Your NFC</div>
     <h1 class="step-headline">Set up your <em>NFC</em> card.</h1>
-    <p class="step-sub">Your physical card carries the link to your TAPD profile. Anyone who taps it sees your page.</p>
+    <p class="step-sub">Your NFC card should carry your TAPD profile link. That profile becomes your main landing page, with your Instagram, LinkedIn, WhatsApp, website and email available as clickable links inside it.</p>
 
     <div class="field">
       <div class="field-label">Your username / profile slug</div>
@@ -1387,11 +1422,11 @@ function renderNFCStep() {
     </div>
 
     <div class="field">
-      <div class="field-label">Your NFC tag URL</div>
+      <div class="field-label">Main NFC profile URL</div>
       <div class="profile-link-box">
         <div class="profile-link-info">
-          <div class="profile-link-label">Profile URL</div>
-          <div class="profile-link-url" id="urlPreview">tapd.app/${escapeHtml(username || 'yourname')}?nfc=1</div>
+          <div class="profile-link-label">Profile URL to write onto your NFC tag</div>
+          <div class="profile-link-url" id="urlPreview">${escapeHtml(profileUrl)}</div>
         </div>
         <button class="copy-btn" id="copyUrlBtn">Copy</button>
       </div>
@@ -1404,11 +1439,11 @@ function renderNFCStep() {
       </div>
       <div class="nfc-step">
         <div class="nfc-step-num">2</div>
-        <div class="nfc-step-text"><strong>Write your URL to the card</strong> — In NFC Tools: tap Write → Add a record → URL/URI → paste your profile link → Write/OK → hold phone to the card.</div>
+        <div class="nfc-step-text"><strong>Write your profile URL to the card</strong> — In NFC Tools: tap Write → Add a record → URL/URI → paste this TAPD profile link → Write/OK → hold phone to the card.</div>
       </div>
       <div class="nfc-step">
         <div class="nfc-step-num">3</div>
-        <div class="nfc-step-text"><strong>Test it</strong> — Lock your phone and hold it near the card. Your profile should open instantly.</div>
+        <div class="nfc-step-text"><strong>Test it</strong> — Lock your phone and hold it near the card. Your TAPD profile should open, and visitors can then choose Instagram, LinkedIn, WhatsApp, your website or email from the profile.</div>
       </div>
     </div>
   `;
@@ -1417,7 +1452,7 @@ function renderNFCStep() {
 // ===== STEP 10: TEMPLATES =====
 function renderTemplatesStep() {
   return `
-    <div class="step-eyebrow">Step 10 · Capture Templates</div>
+    <div class="step-eyebrow">Profile setup · Capture Templates</div>
     <h1 class="step-headline">Your <em>capture</em> templates.</h1>
     <p class="step-sub">Before every capture you’ll pick a template — it tells the AI what to listen for. Tap any template below to see what it captures and how to use it. Pro templates are coming soon.</p>
 
@@ -1454,25 +1489,30 @@ function renderTemplatesStep() {
 
 // ===== STEP 11: CARD LIVE =====
 function renderCardLiveStep() {
-  const username = state.data.username || (state.data.name || 'you').toLowerCase().replace(/[^a-z]/g, '');
+  const username = getProfileSlug();
+  const profileUrl = getProfileUrl(username);
   return `
     <div class="live-celebration">
       <div class="live-mark">✓</div>
       <h1 class="step-headline">Your profile is <em>ready</em>.</h1>
-      <p class="step-sub" style="max-width: 480px; margin-left: auto; margin-right: auto;">Copy your profile URL, write it to your NFC tag, then test it by tapping your tag.</p>
+      <p class="step-sub" style="max-width: 480px; margin-left: auto; margin-right: auto;">Copy your TAPD profile URL, write it to your NFC tag, then test it by tapping your tag. This is the main link people should land on before choosing Instagram, LinkedIn, WhatsApp, your website or email.</p>
 
       <div class="profile-link-box">
         <div class="profile-link-info">
           <div class="profile-link-label">Your TAPD profile</div>
-          <div class="profile-link-url">tapd.app/${escapeHtml(username)}?nfc=1</div>
+          <div class="profile-link-url" id="finalProfileUrl">${escapeHtml(profileUrl)}</div>
         </div>
         <button class="copy-btn" id="copyFinalBtn">Copy</button>
       </div>
 
+      <p style="font-size: 13px; color: var(--text-muted); margin-top: -12px; margin-bottom: 20px; line-height: 1.5;">
+        Use the TAPD profile as your main NFC destination. Your social links sit inside the profile, so visitors can still open Instagram, LinkedIn, WhatsApp, your website or email from one place.
+      </p>
+
       <div class="nfc-steps">
         <div class="nfc-step">
           <div class="nfc-step-num">1</div>
-          <div class="nfc-step-text">Copy your profile URL.</div>
+          <div class="nfc-step-text">Copy your TAPD profile URL. This is the main link for your NFC tag.</div>
         </div>
         <div class="nfc-step">
           <div class="nfc-step-num">2</div>
@@ -1480,7 +1520,7 @@ function renderCardLiveStep() {
         </div>
         <div class="nfc-step">
           <div class="nfc-step-num">3</div>
-          <div class="nfc-step-text">Add Record → URL/URI → paste your profile URL → write to NFC tag.</div>
+          <div class="nfc-step-text">Add Record → URL/URI → paste your TAPD profile URL → write to NFC tag.</div>
         </div>
         <div class="nfc-step">
           <div class="nfc-step-num">4</div>
@@ -1588,18 +1628,18 @@ function bindStepEvents() {
   }
 
   if (step === 5) {
-    const el = document.getElementById('waysToWork');
-    if (el) el.addEventListener('input', (e) => {
-      state.data.waysToWork[0] = e.target.value;
-      validateStep();
-      updateProgressOnly();
-      save();
+    document.querySelectorAll('.ways-input').forEach(input => {
+      input.addEventListener('input', (e) => {
+        const idx = Number(e.target.dataset.idx);
+        if (!Array.isArray(state.data.waysToWork)) state.data.waysToWork = ['', '', ''];
+        state.data.waysToWork[idx] = e.target.value;
+        validateStep();
+        updateProgressOnly();
+        save();
+      });
     });
-  }
-
-  if (step === 6) {
-    const el = document.getElementById('topFocus');
-    if (el) el.addEventListener('input', (e) => {
+    const topFocus = document.getElementById('topFocus');
+    if (topFocus) topFocus.addEventListener('input', (e) => {
       state.data.topFocus = e.target.value;
       validateStep();
       updateProgressOnly();
@@ -1607,7 +1647,7 @@ function bindStepEvents() {
     });
   }
 
-  if (step === 7) {
+  if (step === 6) {
     document.querySelectorAll('[data-channel]').forEach(btn => {
       btn.addEventListener('click', () => {
         state.data.preferredChannel = btn.dataset.channel;
@@ -1629,7 +1669,7 @@ function bindStepEvents() {
     });
   }
 
-  if (step === 8) {
+  if (step === 7) {
     document.querySelectorAll('.voice-input').forEach(input => {
       input.addEventListener('input', (e) => {
         state.data[e.target.dataset.field] = e.target.value;
@@ -1647,23 +1687,23 @@ function bindStepEvents() {
     renderVoicePreview();
   }
 
-  if (step === 9) {
+  if (step === 8) {
     document.getElementById('username').addEventListener('input', (e) => {
       const clean = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
       e.target.value = clean;
       state.data.username = clean;
-      document.getElementById('urlPreview').textContent = `tapd.app/${clean || 'yourname'}?nfc=1`;
+      document.getElementById('urlPreview').textContent = getProfileUrl(clean || 'yourname');
       save();
     });
     document.getElementById('copyUrlBtn').addEventListener('click', () => {
-      const url = `tapd.app/${state.data.username || 'yourname'}?nfc=1`;
-      navigator.clipboard.writeText(url);
+      const url = getProfileUrl();
+      copyText(url);
       document.getElementById('copyUrlBtn').textContent = 'Copied';
       setTimeout(() => { document.getElementById('copyUrlBtn').textContent = 'Copy'; }, 1500);
     });
   }
 
-  if (step === 10) {
+  if (step === 9) {
     document.querySelectorAll('.template-card').forEach(card => {
       card.addEventListener('click', () => {
         if (card.classList.contains('pro-locked')) {
@@ -1678,12 +1718,11 @@ function bindStepEvents() {
     });
   }
 
-  if (step === 11) {
+  if (step === 10) {
     const copyBtn = document.getElementById('copyFinalBtn');
     if (copyBtn) {
       copyBtn.addEventListener('click', () => {
-        const username = state.data.username || (state.data.name || 'you').toLowerCase().replace(/[^a-z]/g, '');
-        navigator.clipboard.writeText(`tapd.app/${username}?nfc=1`);
+        copyText(getProfileUrl());
         copyBtn.textContent = 'Copied';
         setTimeout(() => { copyBtn.textContent = 'Copy'; }, 1500);
       });
@@ -1691,15 +1730,18 @@ function bindStepEvents() {
     const visitorBtn = document.getElementById('viewAsVisitor');
     if (visitorBtn) {
       visitorBtn.addEventListener('click', () => {
-        alert('Preview-as-visitor view would open here. In your live build, this links to the public profile view.');
+        window.open(getProfileUrl(), '_blank', 'noopener');
       });
     }
   }
 }
 
 function updateProgressOnly() {
+  const percent = calculateCompletionPercent();
   const bar = document.getElementById('progressBar');
-  if (bar) bar.style.width = `${calculateCompletionPercent()}%`;
+  if (bar) bar.style.width = `${percent}%`;
+  const percentEl = document.getElementById('percentComplete');
+  if (percentEl) percentEl.textContent = `${percent}%`;
 }
 
 function renderVoicePreview() {
@@ -1753,7 +1795,7 @@ function validateStep() {
     const ch = state.data.preferredChannel;
     const fieldFor = { whatsapp: 'whatsapp', email: 'email', linkedin: 'linkedin' };
     valid = !!(ch && fieldFor[ch] && state.data[fieldFor[ch]]);
-  } else if (step === 8) {
+  } else if (step === 7) {
     valid = !!(state.data.greeting && state.data.opening && state.data.conversationRef && state.data.nextStepStyle && state.data.signOff);
   }
 
