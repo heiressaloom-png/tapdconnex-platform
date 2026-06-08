@@ -239,6 +239,32 @@
     background: var(--surface);
   }
 
+  .waitlist-textarea {
+    min-height: 92px;
+    resize: vertical;
+    line-height: 1.5;
+  }
+
+  .waitlist-field-note {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.45;
+    margin-top: -4px;
+    margin-bottom: 2px;
+    text-align: left;
+  }
+
+  .beta-insight-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--warm-accent);
+    margin-top: 6px;
+    margin-bottom: -2px;
+    text-align: left;
+  }
+
   .waitlist-button {
     width: 100%;
     background: var(--accent);
@@ -263,59 +289,6 @@
     color: var(--text-muted);
     margin-top: 16px;
     text-align: center;
-  }
-
-  /* ============ WAITLIST CONFIRMATION STATE ============ */
-  .waitlist-confirm { text-align: center; }
-  .confirm-badge {
-    width: 56px; height: 56px; margin: 0 auto 20px;
-    border-radius: 50%;
-    background: var(--accent-bg);
-    color: var(--accent);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 28px; font-weight: 700;
-  }
-  .confirm-lead {
-    color: var(--text-secondary); font-size: 15px; line-height: 1.6;
-    max-width: 360px; margin: 0 auto;
-  }
-  .confirm-divider {
-    display: flex; align-items: center; gap: 14px;
-    margin: 28px 0 16px; color: var(--text-muted);
-    font-family: var(--font-mono); font-size: 10px;
-    letter-spacing: 0.12em; text-transform: uppercase;
-  }
-  .confirm-divider::before, .confirm-divider::after {
-    content: ''; flex: 1; height: 1px; background: var(--border-soft);
-  }
-  .confirm-optional {
-    color: var(--text-secondary); font-size: 14px; line-height: 1.55;
-    margin-bottom: 20px;
-  }
-  .confirm-actions {
-    display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px;
-  }
-  .confirm-btn {
-    display: block; width: 100%; padding: 15px 18px;
-    border-radius: 12px; font-family: var(--font-body);
-    font-size: 15px; font-weight: 600; text-decoration: none;
-    transition: all 0.15s ease; text-align: center;
-  }
-  .confirm-btn-primary { background: var(--accent); color: #fff; }
-  .confirm-btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
-  .confirm-btn-ghost {
-    background: var(--surface-warm); color: var(--text-primary);
-    border: 1px solid var(--border-medium);
-  }
-  .confirm-btn-ghost:hover { border-color: var(--accent); }
-  .confirm-link {
-    display: inline-block; color: var(--text-muted);
-    font-size: 13px; text-decoration: none;
-    border-bottom: 1px solid transparent; transition: all 0.15s ease;
-  }
-  .confirm-link:hover { color: var(--accent); border-bottom-color: var(--accent); }
-  .final-cta-joined {
-    color: rgba(246, 242, 234, 0.85); font-size: 15px; font-weight: 500;
   }
 
   /* ============ HOW IT WORKS ============ */
@@ -740,25 +713,18 @@
     <form class="waitlist-form" id="waitlistForm">
       <input type="text" class="waitlist-input" placeholder="Your name" id="wlName" required>
       <input type="email" class="waitlist-input" placeholder="Email address" id="wlEmail" required>
-      <input type="text" class="waitlist-input" placeholder="What do you do? (one line)" id="wlRole">
+      <input type="text" class="waitlist-input" placeholder="What are you building, growing, or working on?" id="wlRole" required>
+
+      <div class="beta-insight-label">Beta insight</div>
+      <textarea class="waitlist-input waitlist-textarea" id="wlDuringFrustration" required placeholder="What is the biggest frustration you experience during networking events?"></textarea>
+      <p class="waitlist-field-note">One sentence is enough. For example: “I meet interesting people but forget important details.”</p>
+
+      <textarea class="waitlist-input waitlist-textarea" id="wlAfterFrustration" required placeholder="What is the biggest frustration you experience after networking events?"></textarea>
+      <p class="waitlist-field-note">For example: “I leave with lots of contacts but no clear next steps.”</p>
+
       <button type="submit" class="waitlist-button">Reserve my spot</button>
     </form>
     <p class="waitlist-fineprint">We&rsquo;ll reach out when your spot opens. No spam, ever.</p>
-  </div>
-
-  <div class="waitlist waitlist-confirm" id="waitlistConfirm" style="display:none;">
-    <div class="confirm-badge">&#10003;</div>
-    <h2 class="waitlist-headline" id="confirmHeading" style="margin-bottom:12px;">Your place has been reserved.</h2>
-    <p class="confirm-lead" id="confirmLead">You&rsquo;re officially on the TAPDconnex early-access waitlist. We&rsquo;ll notify you the moment beta access opens.</p>
-
-    <div class="confirm-divider"><span>Optional &mdash; get a head start</span></div>
-    <p class="confirm-optional">Prepare your profile before launch so you&rsquo;re ready to capture from day one.</p>
-
-    <div class="confirm-actions">
-      <a href="onboarding.html" class="confirm-btn confirm-btn-primary">Prepare beta profile</a>
-      <a href="index.html" class="confirm-btn confirm-btn-ghost">Return home</a>
-    </div>
-    <a href="#how" class="confirm-link">Watch how it works</a>
   </div>
 </section>
 
@@ -837,10 +803,10 @@
     <div class="final-cta-eyebrow">Join the waitlist</div>
     <h2 class="final-cta-headline">Networking memory that <em>actually works</em>.</h2>
     <p class="final-cta-sub">Early access opens to a small group first. Get in line.</p>
-    <div class="final-cta-form" id="finalCtaAction" style="justify-content:center;">
-      <button type="button" class="final-cta-button" id="finalCtaBtn">Reserve my spot</button>
-    </div>
-    <div class="final-cta-joined" id="finalCtaJoined" style="display:none;">&#10003; You&rsquo;re already on the list. We&rsquo;ll be in touch.</div>
+    <form class="final-cta-form" id="finalCtaForm">
+      <input type="email" class="final-cta-input" placeholder="Your email address" id="finalEmail" required>
+      <button type="submit" class="final-cta-button">Reserve spot</button>
+    </form>
   </div>
 </section>
 
@@ -862,103 +828,63 @@
 <div class="toast" id="toast">You&rsquo;re on the list. We&rsquo;ll be in touch.</div>
 
 <script>
-const STORAGE_KEY = 'tapd_waitlist';            // append-only list, deduped by email
-const IDENTITY_KEY = 'tapd_waitlist_identity';  // single canonical identity (this device)
+const STORAGE_KEY = 'tapd_waitlist';
 
-function getIdentity() {
-  try { return JSON.parse(localStorage.getItem(IDENTITY_KEY) || 'null'); }
-  catch (e) { return null; }
+function showToast(message) {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3200);
 }
 
-// Within-device recognition. Cross-device email dedup (Issue 004) slots in here
-// once Supabase is wired — same function, server check instead of localStorage.
-function isOnList() { return !!getIdentity(); }
-
-function persistSignup(identity) {
-  localStorage.setItem(IDENTITY_KEY, JSON.stringify(identity));
-  let list = [];
-  try { list = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch (e) {}
-  const exists = list.some(function (e) { return (e.email || '').toLowerCase() === identity.email; });
-  if (!exists) list.push(identity);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+function saveSignup(data) {
+  const existing = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  existing.push({ ...data, timestamp: new Date().toISOString() });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));
 }
 
-function firstNameOf(identity) {
-  if (!identity || !identity.name) return '';
-  return identity.name.trim().split(/\s+/)[0];
-}
-
-function renderConfirmation(returning) {
-  const card = document.getElementById('waitlist');
-  const confirm = document.getElementById('waitlistConfirm');
-  if (card) card.style.display = 'none';
-  if (confirm) {
-    const fn = firstNameOf(getIdentity());
-    const heading = document.getElementById('confirmHeading');
-    const lead = document.getElementById('confirmLead');
-    if (returning) {
-      if (heading) heading.textContent = 'Welcome back.';
-      if (lead) lead.innerHTML = 'Your place on the TAPDconnex waitlist is already reserved' + (fn ? ', ' + fn : '') + '. No need to sign up again.';
-    } else {
-      if (heading) heading.textContent = 'Your place has been reserved.';
-      if (lead) lead.innerHTML = 'You\u2019re officially on the TAPDconnex early-access waitlist' + (fn ? ', ' + fn : '') + '. We\u2019ll notify you the moment beta access opens.';
-    }
-    confirm.style.display = 'block';
-  }
-  const footerForm = document.getElementById('finalCtaAction');
-  const footerJoined = document.getElementById('finalCtaJoined');
-  if (footerForm) footerForm.style.display = 'none';
-  if (footerJoined) footerJoined.style.display = 'block';
-}
-
-function joinWaitlist(data) {
-  const email = (data.email || '').trim().toLowerCase();
-  if (!email) return;
-  if (isOnList()) { renderConfirmation(true); return; }   // recognise, never duplicate
-  const identity = {
-    name: (data.name || '').trim(),
-    email: email,
-    role: (data.role || '').trim(),
-    source: data.source || 'hero',
-    joinedAt: new Date().toISOString(),
-    betaProfilePrepared: false
-  };
-  persistSignup(identity);
-  renderConfirmation(false);
-}
-
-document.getElementById('waitlistForm').addEventListener('submit', function (e) {
+document.getElementById('waitlistForm').addEventListener('submit', (e) => {
   e.preventDefault();
-  joinWaitlist({
-    name: document.getElementById('wlName').value,
-    email: document.getElementById('wlEmail').value,
-    role: document.getElementById('wlRole').value,
+  const name = document.getElementById('wlName').value.trim();
+  const email = document.getElementById('wlEmail').value.trim();
+  const role = document.getElementById('wlRole').value.trim();
+  const duringNetworkingFrustration = document.getElementById('wlDuringFrustration').value.trim();
+  const afterNetworkingFrustration = document.getElementById('wlAfterFrustration').value.trim();
+
+  if (!name || !email || !role || !duringNetworkingFrustration || !afterNetworkingFrustration) return;
+
+  saveSignup({
+    name,
+    email,
+    role,
+    duringNetworkingFrustration,
+    afterNetworkingFrustration,
     source: 'hero'
   });
+  e.target.reset();
+  showToast('You\u2019re on the list. We\u2019ll be in touch soon.');
 });
 
-// Footer is an invitation that points to the SAME single form (Issue 001).
-const finalCtaBtn = document.getElementById('finalCtaBtn');
-if (finalCtaBtn) {
-  finalCtaBtn.addEventListener('click', function () {
-    if (isOnList()) renderConfirmation(true);
-    const confirm = document.getElementById('waitlistConfirm');
-    const showingConfirm = confirm && confirm.style.display !== 'none';
-    const dest = showingConfirm ? confirm : document.getElementById('waitlist');
-    if (dest) dest.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  });
-}
+document.getElementById('finalCtaForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const email = document.getElementById('finalEmail').value.trim();
+  if (!email) return;
 
-// Smooth scroll for nav / in-page links
-document.querySelectorAll('a[href^="#"]').forEach(function (link) {
-  link.addEventListener('click', function (e) {
+  saveSignup({ email, source: 'footer' });
+  e.target.reset();
+  showToast('You\u2019re on the list. We\u2019ll be in touch soon.');
+});
+
+// Smooth scroll for nav links
+document.querySelectorAll('a[href^="#"]').forEach(link => {
+  link.addEventListener('click', (e) => {
     const target = document.querySelector(link.getAttribute('href'));
-    if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   });
 });
-
-// On load: already on the list? Go straight to the confirmation destination (Issues 003 + 004).
-if (isOnList()) renderConfirmation(true);
 </script>
 
 </body>
