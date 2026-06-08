@@ -3,266 +3,31 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="description" content="TAPDconnex — turn real-world conversations into relationships you actually follow up on.">
 <title>TAPDconnex</title>
-
+<meta name="description" content="TAPDconnex — capture conversations and turn them into meaningful follow-up.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  /* ============ DESIGN SYSTEM (matches all pages) ============ */
-  :root {
-    --bg: #F6F2EA;
-    --bg-paper: #F2EDE2;
-    --surface: #FFFFFF;
-    --surface-warm: #FBF8F2;
-    --text-primary: #181410;
-    --text-secondary: #5C5247;
-    --text-muted: #95887A;
-    --text-faint: #C2B7A8;
-    --border-soft: #EAE2D2;
-    --border-medium: #D9CDB6;
-    --accent: #1E4F5C;
-    --accent-hover: #14404C;
-    --accent-bg: #E8EFEF;
-    --warm-accent: #B8501E;
-    --warm-bg: #FBEDD9;
-    --pro: #7C2D3F;
-    --pro-bg: #F5E8EC;
-    --success: #2D6A4F;
-    --success-bg: #DCEFE3;
-    --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
-    --space-5: 20px; --space-6: 24px; --space-7: 32px; --space-8: 40px; --space-9: 56px;
-    --radius-sm: 6px; --radius-md: 10px; --radius-lg: 14px;
-    --radius-xl: 20px; --radius-pill: 999px;
-    --font-display: 'Fraunces', Georgia, serif;
-    --font-body: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
-    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
-    --shadow-sm: 0 1px 2px rgba(24, 20, 16, 0.04);
-    --shadow-md: 0 2px 8px rgba(24, 20, 16, 0.06);
-    --shadow-lg: 0 8px 24px rgba(24, 20, 16, 0.08);
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  html, body {
-    background: var(--bg);
-    color: var(--text-primary);
-    font-family: var(--font-body);
-    font-size: 16px;
-    line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
-    min-height: 100vh;
-  }
-
-  .shell { max-width: 680px; margin: 0 auto; min-height: 100vh; padding: 0 0 var(--space-8); }
-
-  /* Header */
-  .top {
-    padding: var(--space-5) var(--space-5) var(--space-4);
-    display: flex; align-items: center; justify-content: space-between;
-    border-bottom: 1px solid var(--border-soft);
-  }
-  .brand { display: flex; align-items: center; gap: 10px; }
-  .brand-mark {
-    width: 30px; height: 30px; background: var(--accent);
-    border-radius: 8px; display: flex; align-items: center; justify-content: center;
-    color: white; font-family: var(--font-display); font-size: 15px; font-weight: 600;
-  }
-  .brand-name { font-family: var(--font-display); font-size: 16px; font-weight: 600; letter-spacing: -0.005em; }
-  .plan-chip {
-    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
-    font-weight: 600; padding: 5px 10px; border-radius: var(--radius-pill);
-    color: var(--accent); background: var(--accent-bg);
-  }
-  .plan-chip.pro { color: var(--pro); background: var(--pro-bg); }
-
-  /* Hero */
-  .hero { padding: var(--space-8) var(--space-5) var(--space-6); }
-  .eyebrow {
-    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
-    color: var(--text-muted); margin-bottom: 14px;
-  }
-  .headline {
-    font-family: var(--font-display); font-size: clamp(30px, 6vw, 40px);
-    font-weight: 500; line-height: 1.15; letter-spacing: -0.02em; margin-bottom: 14px;
-  }
-  .headline em { font-style: italic; color: var(--accent); font-weight: 400; }
-  .sub { font-size: 16px; color: var(--text-secondary); line-height: 1.6; max-width: 52ch; }
-
-  /* Action cards */
-  .actions { padding: 0 var(--space-5); display: flex; flex-direction: column; gap: 12px; }
-  .section-title {
-    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
-    color: var(--text-muted); margin: var(--space-6) 0 var(--space-2);
-    display: flex; align-items: center; gap: 12px;
-  }
-  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border-soft); }
-
-  .card {
-    display: flex; align-items: center; gap: 16px;
-    background: var(--surface); border: 1px solid var(--border-soft);
-    border-radius: var(--radius-lg); padding: 18px var(--space-5);
-    cursor: pointer; transition: all 0.18s ease; text-align: left; width: 100%;
-    font-family: var(--font-body); text-decoration: none; color: inherit;
-  }
-  .card:hover { border-color: var(--accent); transform: translateY(-1px); box-shadow: var(--shadow-md); }
-  .card-icon {
-    width: 44px; height: 44px; flex-shrink: 0; border-radius: var(--radius-md);
-    background: var(--accent-bg); color: var(--accent);
-    display: flex; align-items: center; justify-content: center;
-    font-family: var(--font-display); font-size: 20px; font-weight: 600;
-  }
-  .card-body { flex: 1; min-width: 0; }
-  .card-title { font-family: var(--font-display); font-size: 18px; font-weight: 600; letter-spacing: -0.005em; }
-  .card-desc { font-size: 14px; color: var(--text-secondary); line-height: 1.45; margin-top: 2px; }
-  .card-arrow { color: var(--text-faint); font-size: 20px; flex-shrink: 0; }
-  .card:hover .card-arrow { color: var(--accent); }
-
-  .card.primary { background: var(--accent); border-color: var(--accent); }
-  .card.primary .card-title, .card.primary .card-desc, .card.primary .card-arrow { color: #fff; }
-  .card.primary .card-desc { color: rgba(255,255,255,0.82); }
-  .card.primary .card-icon { background: rgba(255,255,255,0.16); color: #fff; }
-  .card.primary:hover { background: var(--accent-hover); }
-
-  .count-pill {
-    font-family: var(--font-mono); font-size: 11px; font-weight: 600;
-    background: var(--success-bg); color: var(--success);
-    padding: 3px 9px; border-radius: var(--radius-pill); margin-left: 8px;
-  }
-
-  .footer-links {
-    margin-top: var(--space-7); padding: 0 var(--space-5);
-    display: flex; gap: 18px; flex-wrap: wrap;
-  }
-  .footer-links a {
-    font-size: 13px; color: var(--text-muted); text-decoration: none;
-    border-bottom: 1px solid transparent; transition: all 0.15s ease;
-  }
-  .footer-links a:hover { color: var(--text-primary); border-bottom-color: var(--text-muted); }
-
-  @media (max-width: 480px) {
-    .top { padding: var(--space-4); }
-    .hero { padding: var(--space-7) var(--space-4) var(--space-5); }
-    .actions, .footer-links { padding-left: var(--space-4); padding-right: var(--space-4); }
-  }
+:root{--bg:#F6F2EA;--surface:#fff;--text:#181410;--muted:#5C5247;--soft:#EAE2D2;--medium:#D9CDB6;--accent:#1E4F5C;--accent-hover:#14404C;--gold:#D8A637;--gold-deep:#9E7320;--font-display:'Fraunces',Georgia,serif;--font-body:'Manrope',sans-serif;--font-mono:'JetBrains Mono',monospace;--radius:18px;--shadow:0 18px 60px rgba(24,20,16,.08)}
+*{box-sizing:border-box;margin:0;padding:0}html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:var(--font-body);-webkit-font-smoothing:antialiased}body{background-image:radial-gradient(circle at 12% 0%,rgba(30,79,92,.05),transparent 36%),radial-gradient(circle at 85% 100%,rgba(216,166,55,.08),transparent 38%)}
+.shell{max-width:1180px;margin:0 auto;min-height:100vh;padding:28px 24px 40px}.top{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:34px}.brand{display:flex;align-items:center;gap:12px}.mark{width:38px;height:38px;border-radius:10px;background:var(--accent);color:#fff;display:grid;place-items:center;font-family:var(--font-display);font-weight:700}.brand-name{font-family:var(--font-display);font-size:24px;font-weight:600}.chip{font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--medium);border-radius:999px;padding:8px 12px;color:var(--muted)}
+.hero{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:stretch}.panel{background:rgba(255,255,255,.76);border:1px solid var(--soft);border-radius:24px;box-shadow:var(--shadow);padding:32px}.eyebrow{font-family:var(--font-mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}.headline{font-family:var(--font-display);font-size:clamp(34px,5vw,62px);line-height:1.05;font-weight:500;letter-spacing:-.03em}.headline em{font-style:italic;color:var(--accent)}.sub{font-size:18px;color:var(--muted);line-height:1.6;margin-top:20px;max-width:54ch}.actions{display:grid;gap:12px;margin-top:28px}.btn{border:1px solid var(--medium);background:#fff;color:var(--text);border-radius:16px;padding:18px 20px;text-decoration:none;font-weight:800;display:flex;align-items:center;justify-content:space-between;gap:14px;transition:.18s ease}.btn:hover{transform:translateY(-1px);border-color:var(--accent);box-shadow:0 10px 28px rgba(24,20,16,.08)}.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}.btn.primary:hover{background:var(--accent-hover)}
+.capture-preview{display:grid;place-items:center;min-height:480px;position:relative;overflow:hidden}.gold-button{width:240px;height:240px;border-radius:50%;border:1px solid rgba(158,115,32,.65);background:radial-gradient(circle at 35% 24%,#FFE796,#E9B63D 58%,#B97C17);box-shadow:inset 0 4px 16px rgba(255,255,255,.45),inset 0 -10px 18px rgba(105,67,10,.25),0 22px 80px rgba(216,166,55,.32);display:grid;place-items:center;text-align:center;font-family:var(--font-display);font-size:30px;font-weight:700;line-height:1.1;position:relative;animation:breathe 3.2s ease-in-out infinite}.gold-button:before,.gold-button:after{content:'';position:absolute;border-radius:50%;inset:-18px;border:1px solid rgba(216,166,55,.38);animation:ripple 3.2s ease-out infinite}.gold-button:after{inset:-38px;animation-delay:.7s}.wave{position:absolute;left:8%;right:8%;height:80px;opacity:.32;background:repeating-radial-gradient(ellipse at center,rgba(216,166,55,.55) 0 2px,transparent 3px 12px);filter:blur(.2px);animation:wave 2.8s ease-in-out infinite}@keyframes breathe{50%{transform:scale(1.035);box-shadow:inset 0 4px 16px rgba(255,255,255,.55),inset 0 -10px 18px rgba(105,67,10,.22),0 24px 92px rgba(216,166,55,.46)}}@keyframes ripple{0%{transform:scale(.94);opacity:.55}75%{transform:scale(1.16);opacity:0}100%{opacity:0}}@keyframes wave{50%{transform:scaleX(1.08);opacity:.48}}
+.foot{margin-top:24px;display:flex;gap:18px;flex-wrap:wrap}.foot a{color:var(--muted);font-size:13px;text-decoration:none}.foot a:hover{color:var(--text)}@media(max-width:820px){.hero{grid-template-columns:1fr}.capture-preview{min-height:380px}.gold-button{width:190px;height:190px;font-size:25px}.top{align-items:flex-start}.brand-name{font-size:20px}}
 </style>
 </head>
 <body>
-<script src="tapd-fab.js" defer></script>
-
-<div class="shell">
-  <header class="top">
-    <div class="brand">
-      <div class="brand-mark">T</div>
-      <div class="brand-name">TAPDconnex</div>
-    </div>
-    <span class="plan-chip" id="planChip">Starter</span>
-  </header>
-
-  <section class="hero">
-    <div class="eyebrow" id="heroEyebrow">Welcome</div>
-    <h1 class="headline" id="heroHeadline">Turn conversations into <em>relationships</em>.</h1>
-    <p class="sub" id="heroSub">Tap a card, capture the conversation, and TAPD writes the follow-up in your voice. Let&rsquo;s get you set up.</p>
-  </section>
-
-  <div class="actions" id="actions"></div>
-
-  <nav class="footer-links">
-    <a href="landing.html">How it works</a>
-    <a href="onboarding.html">Profile &amp; voice</a>
-    <a href="privacy-policy.html">Privacy</a>
-    <a href="terms-of-use.html">Terms</a>
-  </nav>
-</div>
-
 <script>
-// ============ TAPDconnex — App Home / Router ============
-const STORAGE = {
-  ONBOARDING: 'tapd_onboarding_data',
-  PLAN: 'tapd_user_plan',
-  CAPTURES: 'tapd_captures'
-};
-
-function readJSON(key, fallback) {
-  try { return JSON.parse(localStorage.getItem(key)) || fallback; }
-  catch (e) { return fallback; }
-}
-
-function getState() {
-  const ob = readJSON(STORAGE.ONBOARDING, null);
-  const data = ob && ob.data ? ob.data : null;
-  const onboarded = !!(data && data.name);
-  const plan = localStorage.getItem(STORAGE.PLAN) || (data && data.plan) || 'starter';
-  const captures = readJSON(STORAGE.CAPTURES, []);
-  const activeCount = Array.isArray(captures) ? captures.filter(c => c.outcome === 'active').length : 0;
-  const needsName = Array.isArray(captures) ? captures.filter(c => c.outcome === 'active' && c.needsNameConfirmation).length : 0;
-  return { onboarded, name: data && data.name, plan, activeCount, needsName };
-}
-
-function card({ href, icon, title, desc, primary, extra }) {
-  return `
-    <a class="card ${primary ? 'primary' : ''}" href="${href}">
-      <div class="card-icon">${icon}</div>
-      <div class="card-body">
-        <div class="card-title">${title}${extra || ''}</div>
-        <div class="card-desc">${desc}</div>
-      </div>
-      <div class="card-arrow">&rarr;</div>
-    </a>
-  `;
-}
-
-function render() {
-  const s = getState();
-
-  // Plan chip
-  const chip = document.getElementById('planChip');
-  chip.textContent = s.plan === 'pro' ? 'Pro' : 'Starter';
-  chip.classList.toggle('pro', s.plan === 'pro');
-
-  const actions = document.getElementById('actions');
-
-  if (!s.onboarded) {
-    // First-time: point clearly at setup
-    document.getElementById('heroEyebrow').textContent = 'Welcome';
-    document.getElementById('heroHeadline').innerHTML = 'Turn conversations into <em>relationships</em>.';
-    document.getElementById('heroSub').textContent = 'Tap a card, capture the conversation, and TAPD writes the follow-up in your voice. Let\u2019s get you set up.';
-    actions.innerHTML = `
-      <div class="section-title">Start here</div>
-      ${card({ href: 'onboarding.html', icon: '1', title: 'Set up your profile & voice', desc: 'Two minutes. This is what makes every follow-up sound like you.', primary: true })}
-      ${card({ href: 'landing.html', icon: '?', title: 'See how it works first', desc: 'A quick look at what TAPDconnex does before you set up.' })}
-    `;
-    return;
-  }
-
-  // Returning user
-  const first = (s.name || '').split(' ')[0];
-  document.getElementById('heroEyebrow').textContent = 'Your home';
-  document.getElementById('heroHeadline').innerHTML = `Welcome back${first ? ', <em>' + escapeHtml(first) + '</em>' : ''}.`;
-  document.getElementById('heroSub').textContent = 'Capture a new conversation, or pick up the relationships worth your attention.';
-
-  const hubExtra = s.activeCount > 0 ? `<span class="count-pill">${s.activeCount} active</span>` : '';
-  const nameWarn = s.needsName > 0
-    ? `${s.needsName} ${s.needsName === 1 ? 'capture needs' : 'captures need'} a name \u00b7 `
-    : '';
-
-  actions.innerHTML = `
-    ${card({ href: 'capture.html', icon: '\u25CF', title: 'New capture', desc: 'Tap, record the conversation, get a structured follow-up.', primary: true })}
-    <div class="section-title">Pick up where you left off</div>
-    ${card({ href: 'relationship-hub.html', icon: '\u25C8', title: 'Relationship Hub', desc: nameWarn + 'The people worth following up with.', extra: hubExtra })}
-    ${card({ href: 'templates.html', icon: '\u25A4', title: 'Templates', desc: 'Tune what each conversation listens for.' })}
-    ${card({ href: 'onboarding.html?step=5', icon: '\u25CB', title: 'Profile & voice', desc: 'Update your style, see the live preview, then save.' })}
-  `;
-}
-
-function escapeHtml(s) {
-  return String(s == null ? '' : s)
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
-
-render();
+const ob=(()=>{try{return JSON.parse(localStorage.getItem('tapd_onboarding_data'))}catch(e){return null}})();
+const onboarded=!!(ob&&ob.data&&(ob.data.name||ob.data.firstName));
+if(onboarded){ location.replace('capture.html'); }
 </script>
-</body>
-</html>
+<div class="shell">
+<header class="top"><div class="brand"><div class="mark">T</div><div class="brand-name">TAPDconnex</div></div><div class="chip">Starter preview</div></header>
+<main class="hero">
+<section class="panel"><div class="eyebrow">Welcome</div><h1 class="headline">Turn conversations into <em>follow-up</em>.</h1><p class="sub">Set up your profile once, add it to your NFC tag, then capture the conversations worth remembering.</p><div class="actions"><a class="btn primary" href="onboarding.html">Set up your profile & voice <span>→</span></a><a class="btn" href="landing.html">See how TAPDconnex works <span>→</span></a></div></section>
+<section class="panel capture-preview"><div class="wave"></div><div class="gold-button">Capture<br>This Moment</div></section>
+</main><nav class="foot"><a href="privacy-policy.html">Privacy</a><a href="terms-of-use.html">Terms</a><a href="responsible-recording.html">Responsible recording</a><a href="contact.html">Contact</a></nav>
+</div>
+</body></html>
