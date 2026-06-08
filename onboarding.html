@@ -1057,7 +1057,7 @@ function calculateCompletionPercent() {
   const checkpoints = [15, 30, 45, 60, 75, 85, 95, 100];
   let pct = 0;
   groups.forEach((done, idx) => { if (done) pct = Math.max(pct, checkpoints[idx]); });
-  return pct || Math.round(((state.currentStep + 1) / TOTAL_STEPS) * 8);
+  return pct;
 }
 
 function render() {
@@ -1453,18 +1453,22 @@ function renderNFCStep() {
 function renderTemplatesStep() {
   return `
     <div class="step-eyebrow">Profile setup · Capture Templates</div>
-    <h1 class="step-headline">Your <em>capture</em> templates.</h1>
-    <p class="step-sub">Before every capture you’ll pick a template — it tells the AI what to listen for. Tap any template below to see what it captures and how to use it. Pro templates are coming soon.</p>
+    <h1 class="step-headline">See how <em>capture</em> templates work.</h1>
+    <p class="step-sub">This is only a preview. Opportunity is shown as the Starter example so people understand the flow. The other Starter and Pro templates are locked while we collect waitlist interest.</p>
 
     <div class="template-list" id="templateList">
-      ${TEMPLATES.map(t => `
-        <div class="template-card ${(t.pro && state.data.plan !== 'pro') ? 'pro-locked' : ''}" data-template="${t.id}">
+      ${TEMPLATES.map(t => {
+        const isExample = t.id === 'opportunity';
+        const badge = isExample ? 'Starter example' : (t.pro ? 'Pro waitlist' : 'Starter waitlist');
+        const lockedClass = isExample ? '' : 'pro-locked';
+        return `
+        <div class="template-card ${lockedClass}" data-template="${t.id}" data-locked="${isExample ? 'false' : 'true'}">
           <div class="template-head">
             <div class="template-info">
               <div class="template-name">${t.name}</div>
               <div class="template-tag">${t.tag}</div>
             </div>
-            ${t.pro ? '<div class="template-pro-badge">Pro</div>' : ''}
+            <div class="template-pro-badge">${badge}</div>
           </div>
           <div class="template-body">
             <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 0; line-height: 1.55;">${t.description}</p>
@@ -1476,13 +1480,18 @@ function renderTemplatesStep() {
             <ul class="template-cheat-list">
               ${t.cheatSheet.map(c => `<li>${c}</li>`).join('')}
             </ul>
+            ${isExample ? `
+              <p style="font-size: 13px; color: var(--success); margin-top: 16px; line-height: 1.5;">This Starter template is available as the example template during beta.</p>
+            ` : `
+              <p style="font-size: 13px; color: var(--pro); margin-top: 16px; line-height: 1.5;">Locked for now. People can see what this template does, but editing and active use will open through the waitlist / upgrade path.</p>
+            `}
           </div>
-        </div>
-      `).join('')}
+        </div>`;
+      }).join('')}
     </div>
 
     <p style="font-size: 13px; color: var(--text-muted); margin-top: 16px; line-height: 1.5;">
-      You can switch templates anytime during a capture. The AI re-interprets the conversation through whichever template you pick.
+      In the Hub, templates should be easy to select before capture. Editing locked templates should trigger the waitlist or upgrade path, not interrupt simple template selection.
     </p>
   `;
 }
@@ -1706,14 +1715,15 @@ function bindStepEvents() {
   if (step === 9) {
     document.querySelectorAll('.template-card').forEach(card => {
       card.addEventListener('click', () => {
-        if (card.classList.contains('pro-locked')) {
-          card.classList.toggle('expanded');
-          return;
+        const isLocked = card.dataset.locked === 'true';
+        document.querySelectorAll('.template-card').forEach(c => {
+          if (c !== card) c.classList.remove('expanded');
+        });
+        card.classList.toggle('expanded');
+        if (!isLocked) {
+          state.data.selectedTemplate = card.dataset.template;
+          save();
         }
-        document.querySelectorAll('.template-card').forEach(c => c.classList.remove('expanded'));
-        card.classList.add('expanded');
-        state.data.selectedTemplate = card.dataset.template;
-        save();
       });
     });
   }
@@ -1788,10 +1798,8 @@ function validateStep() {
   } else if (step === 4) {
     valid = !!(state.data.canYouRelate || []).some(p => String(p || '').trim().length > 0);
   } else if (step === 5) {
-    valid = !!(state.data.waysToWork && state.data.waysToWork[0]);
+    valid = !!(state.data.waysToWork && state.data.waysToWork.some(w => String(w || '').trim().length > 0) && state.data.topFocus);
   } else if (step === 6) {
-    valid = !!state.data.topFocus;
-  } else if (step === 7) {
     const ch = state.data.preferredChannel;
     const fieldFor = { whatsapp: 'whatsapp', email: 'email', linkedin: 'linkedin' };
     valid = !!(ch && fieldFor[ch] && state.data[fieldFor[ch]]);
@@ -1802,6 +1810,18 @@ function validateStep() {
   document.getElementById('nextBtn').disabled = !valid;
 }
 
+function markOnboardingComplete() {
+  state.currentStep = TOTAL_STEPS - 1;
+  save();
+  // Broad compatibility flags so the Hub/landing page does not show the one-time focus prompt again.
+  localStorage.setItem('tapd_onboarding_complete', 'true');
+  localStorage.setItem('tapd_profile_complete', 'true');
+  localStorage.setItem('tapd_owner_profile_complete', 'true');
+  localStorage.setItem('tapd_show_focus_prompt', 'false');
+  localStorage.setItem('tapd_focus_prompt_seen', 'true');
+  localStorage.setItem('tapd_waitlist_reserved', 'true');
+}
+
 // ============ NAVIGATION ============
 document.getElementById('nextBtn').addEventListener('click', () => {
   if (state.currentStep < TOTAL_STEPS - 1) {
@@ -1809,7 +1829,7 @@ document.getElementById('nextBtn').addEventListener('click', () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     render();
   } else {
-    save();
+    markOnboardingComplete();
     window.location.href = 'index.html';
   }
 });
