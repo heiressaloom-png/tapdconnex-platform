@@ -19,9 +19,17 @@
 </head>
 <body>
 <script>
-const ob=(()=>{try{return JSON.parse(localStorage.getItem('tapd_onboarding_data'))}catch(e){return null}})();
+const waitlistIdentity=(()=>{try{return JSON.parse(localStorage.getItem('tapd_waitlist_identity')||'null')}catch(e){return null}})();
+const ob=(()=>{try{return JSON.parse(localStorage.getItem('tapd_onboarding_data')||'null')}catch(e){return null}})();
 const onboarded=!!(ob&&ob.data&&(ob.data.name||ob.data.firstName));
-if(onboarded){ location.replace('capture.html'); }
+
+if(!waitlistIdentity){
+  location.replace('landing.html');
+}else if(!onboarded){
+  location.replace('onboarding.html');
+}else{
+  location.replace('capture.html');
+}
 </script>
 <div class="shell">
 <header class="top"><div class="brand"><div class="mark">T</div><div class="brand-name">TAPDconnex</div></div><div class="chip">Starter preview</div></header>
