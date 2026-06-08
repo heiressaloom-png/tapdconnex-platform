@@ -705,6 +705,187 @@
   @media (max-width: 500px) {
     .audience-grid { grid-template-columns: 1fr; }
   }
+
+  /* ============ TAPDCONNEX SHARE + CAPTURE VISUAL + PRO TEASER ============ */
+  .nav-secondary {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: var(--font-body);
+    cursor: pointer;
+    transition: color 0.15s ease;
+  }
+  .nav-secondary:hover { color: var(--text-primary); }
+
+  .hero-product-visual {
+    max-width: 460px;
+    margin: 0 auto 48px;
+    display: grid;
+    place-items: center;
+  }
+  .capture-medallion {
+    width: min(360px, 86vw);
+    height: 190px;
+    border-radius: 999px;
+    border: 1px solid rgba(216,166,55,.54);
+    background: linear-gradient(145deg,#171513 0%,#2a241b 48%,#11100e 100%);
+    box-shadow:
+      inset 0 2px 18px rgba(255,255,255,.08),
+      inset 0 -12px 28px rgba(0,0,0,.38),
+      0 24px 90px rgba(24,20,16,.22),
+      0 0 0 1px rgba(216,166,55,.18);
+    display: grid;
+    place-items: center;
+    position: relative;
+    animation: medallionBreath 4s ease-in-out infinite;
+  }
+  .capture-medallion:before,
+  .capture-medallion:after {
+    content: '';
+    position: absolute;
+    inset: -14px;
+    border-radius: 999px;
+    border: 1px solid rgba(216,166,55,.32);
+    animation: medallionRing 4s ease-out infinite;
+  }
+  .capture-medallion:after {
+    inset: -30px;
+    animation-delay: .8s;
+  }
+  .people-core {
+    width: 116px;
+    height: 116px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: radial-gradient(circle at 35% 22%,#FFEBA3 0%,#E7B948 46%,#B87A16 72%,#6F4510 100%);
+    box-shadow:
+      inset 0 3px 14px rgba(255,255,255,.45),
+      inset 0 -10px 18px rgba(72,43,7,.26),
+      0 12px 38px rgba(216,166,55,.34);
+    font-size: 46px;
+    color: #181410;
+    position: relative;
+    z-index: 1;
+  }
+  .capture-label {
+    position: absolute;
+    bottom: 28px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 24px;
+    color: #F6F2EA;
+    letter-spacing: -.02em;
+  }
+  @keyframes medallionBreath {
+    50% {
+      transform: scale(1.025);
+      box-shadow:
+        inset 0 2px 18px rgba(255,255,255,.10),
+        inset 0 -12px 28px rgba(0,0,0,.34),
+        0 28px 104px rgba(216,166,55,.26),
+        0 0 0 12px rgba(216,166,55,.08);
+    }
+  }
+  @keyframes medallionRing {
+    0% { transform: scale(.98); opacity: .58; }
+    75% { transform: scale(1.08); opacity: 0; }
+    100% { opacity: 0; }
+  }
+
+  .share-panel {
+    max-width: 480px;
+    margin: 18px auto 0;
+    display: none;
+    background: var(--surface);
+    border: 1px solid var(--border-soft);
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow: 0 8px 28px rgba(24,20,16,.06);
+  }
+  .share-panel.show { display: block; }
+  .share-panel-title {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .share-panel-copy {
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.55;
+    margin-bottom: 14px;
+  }
+  .share-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .share-btn {
+    border: 1px solid var(--border-medium);
+    background: var(--surface-warm);
+    color: var(--text-primary);
+    border-radius: 12px;
+    padding: 13px 14px;
+    font-family: var(--font-body);
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+  }
+  .share-btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  .pro-teaser {
+    background: var(--surface-warm);
+    border-top: 1px solid var(--border-soft);
+    border-bottom: 1px solid var(--border-soft);
+    padding: 90px 40px;
+  }
+  .pro-teaser-inner {
+    max-width: 980px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .pro-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 44px;
+  }
+  .pro-card {
+    background: var(--surface);
+    border: 1px solid var(--border-soft);
+    border-radius: 16px;
+    padding: 24px 20px;
+    text-align: left;
+  }
+  .pro-card-title {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .pro-card-body {
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 900px) {
+    .pro-grid { grid-template-columns: 1fr; }
+    .share-actions { grid-template-columns: 1fr; }
+  }
+
 </style>
 </head>
 <body>
@@ -718,7 +899,9 @@
   <div class="nav-links">
     <a href="#how" class="nav-link">How it works</a>
     <a href="#who" class="nav-link">Who it's for</a>
-    <a href="#waitlist" class="nav-cta">Join waitlist</a>
+    <button type="button" class="nav-secondary" id="shareNavBtn">Share TAPDconnex</button>
+    <a href="#waitlist" class="nav-cta" id="joinNavBtn">Join waitlist</a>
+    <a href="onboarding.html" class="nav-cta" id="prepareProfileNav" style="display:none;">Prepare profile</a>
   </div>
 </nav>
 
@@ -732,6 +915,22 @@
   <p class="hero-subhead">
     At every event, you meet people who could change your business. Then names slip, details blur, and the opportunity walks out the door. TAPDconnex captures the conversation so you can act on it before the moment is gone.
   </p>
+
+  <div class="hero-product-visual" aria-hidden="true">
+    <div class="capture-medallion">
+      <div class="people-core">👥</div>
+      <div class="capture-label">Capture This Moment</div>
+    </div>
+  </div>
+
+  <div class="share-panel" id="sharePanel">
+    <div class="share-panel-title">Share TAPDconnex</div>
+    <p class="share-panel-copy">Send this page to someone who networks at events, conferences, investor sessions, business mixers or founder communities.</p>
+    <div class="share-actions">
+      <button class="share-btn primary" id="copyShareLink">Copy TAPDconnex Link</button>
+      <button class="share-btn" id="nativeShareBtn">Share from device</button>
+    </div>
+  </div>
 
   <div class="waitlist" id="waitlist">
     <div class="waitlist-label">Limited early access</div>
@@ -834,6 +1033,43 @@
     </div>
     <div class="principles-quote">
       The opportunity is not lost because you failed to network. The opportunity is lost because important details were never captured.
+    </div>
+  </div>
+</section>
+
+
+<!-- ============ PRO INTELLIGENCE TEASER ============ -->
+<section class="pro-teaser" id="pro">
+  <div class="pro-teaser-inner">
+    <div class="section-eyebrow">Coming with Pro</div>
+    <h2 class="section-headline">From captured notes to <em>relationship intelligence</em>.</h2>
+    <p class="section-sub" style="margin-bottom:0;">Starter helps you remember the conversation. Pro helps you understand the signal, momentum, missing context and next step quality so the relationship is easier to move forward.</p>
+
+    <div class="pro-grid">
+      <div class="pro-card">
+        <div class="pro-card-title">Advanced Signal Capture</div>
+        <div class="pro-card-body">Identifies urgency, authority, budget, influence, partnership potential, hiring intent, buying intent and opportunity signals.</div>
+      </div>
+      <div class="pro-card">
+        <div class="pro-card-title">Advanced Momentum Detection</div>
+        <div class="pro-card-body">Understands whether a relationship is dormant, warm, active, advancing or becoming an opportunity.</div>
+      </div>
+      <div class="pro-card">
+        <div class="pro-card-title">Missing Context Detection</div>
+        <div class="pro-card-body">Shows important information not captured during the conversation, so you know what to clarify before following up.</div>
+      </div>
+      <div class="pro-card">
+        <div class="pro-card-title">Missing Next-Step Detection</div>
+        <div class="pro-card-body">Highlights vague follow-ups and prompts for clearer actions, timing, owner and channel.</div>
+      </div>
+      <div class="pro-card">
+        <div class="pro-card-title">Profile-Aware Records</div>
+        <div class="pro-card-body">Uses your profile, focus areas and networking goals to create more relevant relationship summaries.</div>
+      </div>
+      <div class="pro-card">
+        <div class="pro-card-title">Merge Recordings</div>
+        <div class="pro-card-body">Combines multiple recordings into one structured relationship record for richer context.</div>
+      </div>
     </div>
   </div>
 </section>
@@ -989,6 +1225,62 @@ if (finalCtaBtn) {
   });
 }
 
+
+function updateReturningUserNav() {
+  const returning = isOnList();
+  const prepare = document.getElementById('prepareProfileNav');
+  const join = document.getElementById('joinNavBtn');
+  if (prepare && returning) prepare.style.display = 'inline-block';
+  if (join && returning) join.style.display = 'none';
+}
+
+function showSharePanel() {
+  const panel = document.getElementById('sharePanel');
+  if (panel) {
+    panel.classList.toggle('show');
+    panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+function shareUrl() {
+  return window.location.origin + window.location.pathname;
+}
+
+const shareNavBtn = document.getElementById('shareNavBtn');
+if (shareNavBtn) shareNavBtn.addEventListener('click', showSharePanel);
+
+const copyShareLink = document.getElementById('copyShareLink');
+if (copyShareLink) {
+  copyShareLink.addEventListener('click', () => {
+    navigator.clipboard.writeText(shareUrl()).then(() => {
+      const toast = document.getElementById('toast');
+      toast.textContent = 'TAPDconnex link copied.';
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2400);
+    }).catch(() => {
+      window.prompt('Copy this TAPDconnex link:', shareUrl());
+    });
+  });
+}
+
+const nativeShareBtn = document.getElementById('nativeShareBtn');
+if (nativeShareBtn) {
+  nativeShareBtn.addEventListener('click', async () => {
+    const data = {
+      title: 'TAPDconnex',
+      text: 'TAPDconnex captures networking conversations and turns them into meaningful follow-up.',
+      url: shareUrl()
+    };
+    if (navigator.share) {
+      try { await navigator.share(data); } catch (e) {}
+    } else {
+      window.prompt('Copy this TAPDconnex link:', shareUrl());
+    }
+  });
+}
+
+updateReturningUserNav();
+
 // Smooth scroll for nav / in-page links
 document.querySelectorAll('a[href^="#"]').forEach(link => {
   link.addEventListener('click', (e) => {
@@ -1002,6 +1294,7 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
 
 // On load: if this device already joined, show confirmation immediately.
 if (isOnList()) renderConfirmation(true);
+updateReturningUserNav();
 </script>
 
 </body>
