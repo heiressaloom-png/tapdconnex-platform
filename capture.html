@@ -1,111 +1,1051 @@
-// ============================================================
-// /api/captures — persistence for the Relationship Hub.
-//
-//   GET    /api/captures?userId=...        -> { captures: [...] }
-//   POST   /api/captures                   -> upsert one capture   (body = capture object + userId)
-//   PATCH  /api/captures                   -> { id, userId, outcome?, name?, needsNameConfirmation? }
-//
-// MVP NOTE ON AUTH:
-// This uses the service-role client keyed by an explicit `userId` so the Hub
-// can move off localStorage immediately. That is fine for testing but is NOT
-// secure for production — any caller could pass any userId.
-// Production path: wire Supabase Auth, send the user's JWT in Authorization,
-// switch to userClient(jwt), and enable the RLS policies in supabase/schema.sql.
-// ============================================================
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="description" content="TAPDconnex Capture — record the conversation, get a structured follow-up.">
+<title>Capture — TAPDconnex</title>
 
-import { adminClient, supabaseConfigured } from './_supabase.js';
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
-const TABLE = 'captures';
-
-// Map our capture object <-> DB columns (snake_case).
-function toRow(c, userId) {
-  return {
-    id: c.id,
-    user_id: userId,
-    name: c.name ?? null,
-    company: c.company ?? null,
-    role: c.role ?? null,
-    signal: c.signal ?? null,
-    signal_label: c.signalLabel ?? null,
-    evidence: c.evidence ?? null,
-    secondary_thread: c.secondaryThread ?? null,
-    priority: c.priority ?? null,
-    action: c.action ?? null,
-    draft_message: c.draftMessage ?? null,
-    context: c.context ?? null,
-    captured_at: c.capturedAt ?? new Date().toISOString(),
-    event: c.event ?? null,
-    event_key: c.eventKey ?? null,
-    outcome: c.outcome ?? 'active',
-    template: c.template ?? null,
-    template_name: c.templateName ?? null,
-    needs_name_confirmation: !!c.needsNameConfirmation,
-    name_confidence: c.nameConfidence ?? null,
-    completeness: c.completeness ?? null,
-    channel_preference: c.channelPreference ?? null,
-    transcript_confidence: c.transcriptConfidence ?? null,
-    updated_at: new Date().toISOString()
-  };
-}
-
-function toCapture(r) {
-  return {
-    id: r.id, name: r.name, company: r.company, role: r.role,
-    signal: r.signal, signalLabel: r.signal_label, evidence: r.evidence,
-    secondaryThread: r.secondary_thread, priority: r.priority, action: r.action,
-    draftMessage: r.draft_message, context: r.context,
-    capturedAt: r.captured_at, event: r.event, eventKey: r.event_key,
-    outcome: r.outcome, template: r.template, templateName: r.template_name,
-    needsNameConfirmation: r.needs_name_confirmation, nameConfidence: r.name_confidence,
-    completeness: r.completeness, channelPreference: r.channel_preference,
-    transcriptConfidence: r.transcript_confidence,
-    capturedDaysAgo: r.captured_at
-      ? Math.floor((Date.now() - new Date(r.captured_at).getTime()) / 86400000)
-      : 0
-  };
-}
-
-export default async function handler(req, res) {
-  if (!supabaseConfigured()) {
-    return res.status(200).json({ status: 'placeholder', message: 'Supabase not configured.' });
+<style>
+  /* ============ DESIGN SYSTEM (matches Templates + Hub + Onboarding) ============ */
+  :root {
+    --bg: #F6F2EA;
+    --bg-paper: #F2EDE2;
+    --surface: #FFFFFF;
+    --surface-warm: #FBF8F2;
+    --text-primary: #181410;
+    --text-secondary: #5C5247;
+    --text-muted: #95887A;
+    --text-faint: #C2B7A8;
+    --border-soft: #EAE2D2;
+    --border-medium: #D9CDB6;
+    --accent: #1E4F5C;
+    --accent-hover: #14404C;
+    --accent-bg: #E8EFEF;
+    --warm-accent: #B8501E;
+    --warm-bg: #FBEDD9;
+    --pro: #7C2D3F;
+    --pro-bg: #F5E8EC;
+    --pro-soft: #FAF2F4;
+    --success: #2D6A4F;
+    --success-bg: #DCEFE3;
+    --recording: #C24545;
+    --recording-bg: #FBE5E5;
+    --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+    --space-5: 20px; --space-6: 24px; --space-7: 32px; --space-8: 40px; --space-9: 56px;
+    --radius-sm: 6px; --radius-md: 10px; --radius-lg: 14px;
+    --radius-xl: 20px; --radius-pill: 999px;
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-body: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+    --shadow-sm: 0 1px 2px rgba(24, 20, 16, 0.04);
+    --shadow-md: 0 2px 8px rgba(24, 20, 16, 0.06);
+    --shadow-lg: 0 8px 24px rgba(24, 20, 16, 0.08);
   }
-  const db = adminClient();
 
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    overscroll-behavior: none;
+  }
+
+  .shell { max-width: 680px; margin: 0 auto; min-height: 100vh; padding: 0 0 120px; position: relative; }
+
+  /* ============ HEADER ============ */
+  .top {
+    padding: var(--space-5) var(--space-5) var(--space-4);
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--bg); position: sticky; top: 0; z-index: 50;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand-mark {
+    width: 30px; height: 30px; background: var(--accent); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-family: var(--font-display); font-size: 15px; font-weight: 600;
+  }
+  .brand-name { font-family: var(--font-display); font-size: 16px; font-weight: 600; letter-spacing: -0.005em; }
+  .header-actions { display: flex; gap: 8px; align-items: center; }
+  .header-btn {
+    background: transparent; border: 1px solid var(--border-medium); color: var(--text-secondary);
+    font-family: var(--font-body); font-size: 13px; font-weight: 600;
+    padding: 8px 14px; border-radius: var(--radius-pill); cursor: pointer;
+    transition: all 0.15s ease; text-decoration: none;
+  }
+  .header-btn:hover { border-color: var(--text-secondary); color: var(--text-primary); }
+
+  /* ============ TYPOGRAPHY ============ */
+  .step-content { padding: 0 var(--space-5); }
+  .step-eyebrow {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--text-muted); margin-bottom: 14px; margin-top: var(--space-7);
+  }
+  .step-headline {
+    font-family: var(--font-display); font-size: clamp(28px, 5vw, 34px);
+    font-weight: 500; line-height: 1.2; letter-spacing: -0.02em; color: var(--text-primary); margin-bottom: 14px;
+  }
+  .step-headline em { font-style: italic; color: var(--accent); font-weight: 400; }
+  .step-sub { font-size: 15px; color: var(--text-secondary); line-height: 1.6; margin-bottom: var(--space-6); }
+
+  .section-title {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--text-muted); margin: var(--space-7) 0 var(--space-3);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border-soft); }
+
+  /* ============ EVENT CONTEXT CARD ============ */
+  .event-card {
+    background: var(--surface-warm); border: 1px solid var(--border-soft);
+    border-radius: var(--radius-lg); padding: 16px var(--space-5); margin-top: var(--space-3);
+  }
+  .event-card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .event-label {
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--warm-accent); font-weight: 600; display: flex; align-items: center; gap: 7px;
+  }
+  .event-label .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--warm-accent); }
+  .event-title { font-family: var(--font-display); font-size: 19px; font-weight: 600; margin-top: 8px; letter-spacing: -0.005em; }
+  .event-meta { font-size: 13px; color: var(--text-secondary); margin-top: 4px; line-height: 1.5; }
+  .event-meta span + span::before { content: ' · '; color: var(--text-faint); }
+  .event-empty { font-size: 14px; color: var(--text-muted); font-style: italic; }
+  .link-btn {
+    background: transparent; border: none; cursor: pointer; color: var(--accent);
+    font-family: var(--font-body); font-size: 13px; font-weight: 600; padding: 0;
+    border-bottom: 1px solid transparent; transition: border-color 0.15s ease; white-space: nowrap;
+  }
+  .link-btn:hover { border-bottom-color: var(--accent); }
+
+  /* ============ TEMPLATE BANNER ============ */
+  .template-banner {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    background: var(--accent-bg); border: 1px solid #D4E2E2;
+    border-radius: var(--radius-lg); padding: 14px var(--space-5); margin-top: var(--space-3);
+  }
+  .template-banner-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
+  .template-banner-name { font-family: var(--font-display); font-size: 18px; font-weight: 600; color: var(--text-primary); margin-top: 3px; }
+
+  /* ============ CHEAT SHEET ============ */
+  .cheat {
+    background: var(--surface); border: 1px solid var(--border-soft);
+    border-radius: var(--radius-lg); padding: var(--space-5); margin-top: var(--space-3);
+  }
+  .cheat-group + .cheat-group { margin-top: var(--space-5); padding-top: var(--space-5); border-top: 1px solid var(--border-soft); }
+  .cheat-h { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; }
+  .cheat-q { font-size: 14px; color: var(--text-secondary); line-height: 1.5; padding: 6px 0 6px 18px; position: relative; }
+  .cheat-q::before { content: '\2022'; position: absolute; left: 4px; color: var(--accent); }
+  .chiprow { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    display: inline-flex; align-items: center; font-size: 12.5px; font-weight: 600;
+    padding: 5px 10px; border-radius: var(--radius-pill);
+    background: var(--accent-bg); color: var(--accent);
+  }
+  .chip.offer { background: var(--success-bg); color: var(--success); }
+
+  /* ============ BIG CAPTURE BUTTON ============ */
+  .capture-zone { text-align: center; padding: var(--space-8) var(--space-5) var(--space-6); }
+  .capture-btn {
+    position: relative; width: 200px; height: 200px; border-radius: 50%;
+    border: none; cursor: pointer; background: var(--accent); color: #fff;
+    font-family: var(--font-display); font-size: 19px; font-weight: 600; line-height: 1.25;
+    display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+    box-shadow: 0 10px 30px rgba(30, 79, 92, 0.30); transition: transform 0.15s ease, box-shadow 0.2s ease;
+    animation: breathe 3.4s ease-in-out infinite;
+  }
+  .capture-btn .star { font-size: 34px; line-height: 1; }
+  .capture-btn:hover { transform: translateY(-2px); box-shadow: 0 14px 38px rgba(30, 79, 92, 0.38); }
+  .capture-btn:active { transform: scale(0.97); }
+  .capture-btn::after {
+    content: ''; position: absolute; inset: -10px; border-radius: 50%;
+    border: 2px solid var(--accent); opacity: 0; animation: pulse-ring 3.4s ease-out infinite;
+  }
+  @keyframes breathe { 0%,100% { box-shadow: 0 10px 30px rgba(30,79,92,0.30); } 50% { box-shadow: 0 10px 44px rgba(30,79,92,0.46); } }
+  @keyframes pulse-ring { 0% { transform: scale(0.92); opacity: 0.5; } 70% { transform: scale(1.18); opacity: 0; } 100% { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) {
+    .capture-btn { animation: none; }
+    .capture-btn::after { animation: none; }
+  }
+  .capture-hint { font-size: 13px; color: var(--text-muted); margin-top: var(--space-5); line-height: 1.5; }
+
+  /* ============ RECORDING STATE ============ */
+  .rec-zone { text-align: center; padding: var(--space-8) var(--space-5); }
+  .rec-badge {
+    display: inline-flex; align-items: center; gap: 9px; font-family: var(--font-mono);
+    font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600;
+    color: var(--recording); background: var(--recording-bg); padding: 8px 16px; border-radius: var(--radius-pill);
+  }
+  .rec-badge .live-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--recording); animation: blink 1.1s ease-in-out infinite; }
+  @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.25; } }
+  .rec-timer { font-family: var(--font-mono); font-size: 52px; font-weight: 500; color: var(--text-primary); margin: var(--space-6) 0 var(--space-2); letter-spacing: 0.02em; }
+  .rec-orb {
+    width: 168px; height: 168px; border-radius: 50%; margin: var(--space-5) auto;
+    background: radial-gradient(circle at 50% 45%, var(--recording-bg), #fff);
+    border: 2px solid var(--recording); display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .rec-orb::before, .rec-orb::after {
+    content: ''; position: absolute; inset: 0; border-radius: 50%; border: 2px solid var(--recording);
+    animation: rec-wave 2s ease-out infinite;
+  }
+  .rec-orb::after { animation-delay: 1s; }
+  @keyframes rec-wave { 0% { transform: scale(1); opacity: 0.4; } 100% { transform: scale(1.4); opacity: 0; } }
+  .rec-orb .mic { font-size: 46px; }
+  @media (prefers-reduced-motion: reduce) { .rec-orb::before, .rec-orb::after, .rec-badge .live-dot { animation: none; } }
+
+  /* ============ FORMS ============ */
+  .field-group { margin-bottom: var(--space-5); }
+  .field-label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; display: block; }
+  .field-hint { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 10px; }
+  .text-input, .text-area, select.text-input {
+    width: 100%; background: var(--surface); border: 1px solid var(--border-medium);
+    border-radius: var(--radius-md); padding: 12px 14px; font-family: var(--font-body);
+    font-size: 15px; color: var(--text-primary); transition: border-color 0.15s ease;
+  }
+  .text-input:focus, .text-area:focus { outline: none; border-color: var(--accent); }
+  .text-area { resize: vertical; min-height: 84px; line-height: 1.5; }
+  .field-row { display: flex; gap: 12px; }
+  .field-row > * { flex: 1; }
+
+  /* ============ NOTICE / AI PENDING ============ */
+  .notice {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--warm-bg); border: 1px solid #EFD9B6;
+    border-radius: var(--radius-md); padding: 14px 16px; margin: var(--space-3) 0 var(--space-5);
+  }
+  .notice .ico { flex-shrink: 0; font-size: 16px; line-height: 1.4; }
+  .notice-title { font-size: 13px; font-weight: 700; color: var(--warm-accent); }
+  .notice-body { font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-top: 2px; }
+  .pending-tag { font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600; color: var(--text-muted); background: var(--bg-paper); border: 1px solid var(--border-soft); padding: 3px 7px; border-radius: 5px; }
+
+  /* ============ AUDIO REVIEW ============ */
+  .audio-row {
+    display: flex; align-items: center; gap: 12px; background: var(--surface);
+    border: 1px solid var(--border-soft); border-radius: var(--radius-md); padding: 12px 14px; margin-bottom: var(--space-3);
+  }
+  .audio-row audio { width: 100%; height: 38px; }
+  .audio-meta { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); }
+
+  /* ============ SAVED STATE ============ */
+  .saved-zone { text-align: center; padding: var(--space-8) var(--space-5); }
+  .saved-check {
+    width: 72px; height: 72px; border-radius: 50%; margin: 0 auto var(--space-5);
+    background: var(--success-bg); color: var(--success);
+    display: flex; align-items: center; justify-content: center; font-size: 34px;
+  }
+  .saved-actions { display: flex; flex-direction: column; gap: 12px; max-width: 420px; margin: var(--space-6) auto 0; }
+
+  /* ============ BUTTONS / ACTION BAR ============ */
+  .action-bar {
+    position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg);
+    border-top: 1px solid var(--border-soft); padding: var(--space-3) var(--space-5); z-index: 30;
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  }
+  .action-bar-inner { max-width: 680px; margin: 0 auto; display: flex; gap: 12px; align-items: center; }
+  .btn {
+    border: none; cursor: pointer; font-family: var(--font-body); font-size: 15px; font-weight: 600;
+    padding: 14px 24px; border-radius: var(--radius-md); transition: all 0.15s ease;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px;
+  }
+  .btn-primary { background: var(--accent); color: white; flex: 1; }
+  .btn-primary:hover { background: var(--accent-hover); }
+  .btn-primary:disabled { background: var(--border-medium); color: var(--text-muted); cursor: not-allowed; }
+  .btn-secondary { background: var(--surface); color: var(--text-primary); border: 1px solid var(--border-medium); }
+  .btn-secondary:hover { border-color: var(--text-secondary); }
+  .btn-danger { background: var(--recording); color: #fff; }
+  .btn-danger:hover { background: #A93A3A; }
+  .btn-block { width: 100%; }
+  .btn-lg { min-height: 64px; font-size: 17px; }
+
+  /* ============ MODAL (template picker / event editor) ============ */
+  .overlay {
+    position: fixed; inset: 0; background: rgba(24, 20, 16, 0.42); z-index: 80;
+    display: none; align-items: flex-end; justify-content: center;
+  }
+  .overlay.show { display: flex; }
+  .sheet {
+    background: var(--bg); width: 100%; max-width: 680px; max-height: 86vh; overflow-y: auto;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0; padding: var(--space-6) var(--space-5) var(--space-8);
+    box-shadow: var(--shadow-lg); animation: sheet-up 0.22s ease-out;
+  }
+  @keyframes sheet-up { from { transform: translateY(24px); opacity: 0.6; } to { transform: translateY(0); opacity: 1; } }
+  .sheet-grip { width: 40px; height: 4px; border-radius: 2px; background: var(--border-medium); margin: 0 auto var(--space-5); }
+  .sheet-title { font-family: var(--font-display); font-size: 22px; font-weight: 600; margin-bottom: 4px; }
+  .sheet-sub { font-size: 14px; color: var(--text-secondary); margin-bottom: var(--space-5); }
+
+  .tpl-option {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%;
+    background: var(--surface); border: 1px solid var(--border-soft); border-radius: var(--radius-md);
+    padding: 14px 16px; margin-bottom: 10px; cursor: pointer; text-align: left;
+    font-family: var(--font-body); transition: all 0.15s ease;
+  }
+  .tpl-option:hover { border-color: var(--accent); }
+  .tpl-option.selected { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+  .tpl-option.locked { opacity: 0.55; }
+  .tpl-option-name { font-family: var(--font-display); font-size: 17px; font-weight: 600; }
+  .tpl-option-sum { font-size: 13px; color: var(--text-secondary); font-style: italic; margin-top: 3px; line-height: 1.4; }
+  .tpl-badge { font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600; padding: 3px 7px; border-radius: 5px; }
+  .tpl-badge.pro { color: var(--pro); background: var(--pro-bg); }
+  .tpl-badge.default { color: #8A6C1F; background: #FAF3DD; border: 1px solid #E8D8A8; }
+
+  .toast {
+    position: fixed; left: 50%; bottom: 96px; transform: translateX(-50%) translateY(20px);
+    background: var(--text-primary); color: var(--bg); padding: 12px 20px; border-radius: var(--radius-pill);
+    font-size: 14px; font-weight: 600; opacity: 0; pointer-events: none; transition: all 0.3s ease; z-index: 100; box-shadow: var(--shadow-lg);
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 480px) {
+    .top { padding: var(--space-4); }
+    .step-content { padding: 0 var(--space-4); }
+    .action-bar { padding: 10px var(--space-4); }
+    .btn { font-size: 14px; padding: 12px 18px; min-height: 48px; }
+    .capture-btn { width: 176px; height: 176px; font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+<script src="tapd-fab.js" defer></script>
+
+<div class="shell">
+  <header class="top">
+    <a href="index.html" style="text-decoration:none;color:inherit;"><div class="brand">
+      <div class="brand-mark">T</div>
+      <div class="brand-name">Capture</div>
+    </div></a>
+    <div class="header-actions">
+      <a href="templates.html" class="header-btn">Templates</a>
+      <a href="relationship-hub.html" class="header-btn">Hub &rarr;</a>
+    </div>
+  </header>
+
+  <div id="view"></div>
+</div>
+
+<div class="action-bar" id="actionBar" style="display:none;"></div>
+
+<!-- Template picker sheet -->
+<div class="overlay" id="tplOverlay">
+  <div class="sheet" id="tplSheet"></div>
+</div>
+
+<!-- Event context sheet -->
+<div class="overlay" id="eventOverlay">
+  <div class="sheet" id="eventSheet"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// TAPDconnex — Capture Mode (user-facing recording screen)
+//
+// Fixes the routing defect: the file at capture.html previously
+// shipped the /api/captures backend handler. This is the actual
+// Capture UI that index.html links to.
+//
+// No OpenAI / Whisper dependency. We record audio, build the blob,
+// and save a Hub-compatible capture record. Transcription, AI
+// structuring and AI drafting remain "Not Yet Testable" until
+// OPENAI_API_KEY is configured server-side.
+// ============================================================
+
+// ---------- Storage contract (shared with templates.html / hub / onboarding) ----------
+const STORAGE = {
+  PLAN: 'tapd_user_plan',
+  TEMPLATES_CUSTOM: 'tapd_templates_custom',
+  ONBOARDING: 'tapd_onboarding_data',
+  CAPTURES: 'tapd_captures',
+  EVENT: 'tapd_event_context',     // rich event context for "Capture Another Person At This Event"
+  USER_ID: 'tapd_user_id'          // device id used for best-effort /api/captures sync
+};
+
+// ---------- 10 TEMPLATES (source of truth — identical to templates.html) ----------
+const TEMPLATES = [
+  { id:'opportunity', name:'Opportunity', tier:'starter', summary:'Find out if there’s a real deal here and lock in the next step.', outcomeCategory:'Revenue',
+    questions:['What are you focused on at the moment?','What’s been taking up most of your time recently?','What’s working well and what’s proving challenging?','Is there anything you’re actively trying to improve?','Have you looked at other ways of solving that?','What would success look like for you?','What’s your timeline around this?','What’s the best next step from here?'],
+    signals:['Frustration','Urgency','Budget','Growth goals','Active projects','Buying intent'], whatToOffer:['Demo','Case study','Pilot','Introduction','Discovery call'] },
+  { id:'connector', name:'Connector', tier:'starter', summary:'Discover who they can introduce me to and how to make it happen.', outcomeCategory:'Access',
+    questions:['What kind of people do you enjoy connecting?','Who are you currently working with?','What communities are you involved in?','Who should I know in your world?','Who do you think would benefit from what I do?','What’s the best way to approach them?','Would you be comfortable introducing us?','What would make that introduction easier?'],
+    signals:['Name dropping','Community involvement','Referrals','Access to decision makers','Strong networks'], whatToOffer:['Intro paragraph','One-pager','LinkedIn profile','Mutual value'] },
+  { id:'stay_in_touch', name:'Stay in Touch', tier:'starter', summary:'Keep the door open without forcing anything.', outcomeCategory:'Partnerships',
+    questions:['What projects are exciting you right now?','Where do you see things heading?','What are you keeping an eye on?','What are you hoping to achieve this year?','Is there anything you’d like help with?','How can I support you?','What’s the best way to stay connected?','When should we reconnect?'],
+    signals:['Shared interests','Future goals','Personal chemistry','Long-term potential'], whatToOffer:['Useful article','Introduction','Resource','Event invite'] },
+  { id:'strategic_partnership', name:'Strategic Partnership', tier:'pro', summary:'Explore where our work could overlap and find one thing to do together.', outcomeCategory:'Partnerships',
+    questions:['What are you building at the moment?','Where do you see opportunities for collaboration?','What strengths does your organisation bring?','What’s missing today that would help you move faster?','What partnerships have worked well for you before?','What would success look like together?','Who else should be involved?','What should we explore next?'],
+    signals:['Shared audience','Complementary strengths','Mutual benefit','Resource gaps'], whatToOffer:['Partnership brief','Pilot collaboration','Joint event','Mutual intro'] },
+  { id:'speaking', name:'Speaking Opportunity', tier:'pro', summary:'Find the stage that fits and the angle that earns it.', outcomeCategory:'Visibility',
+    questions:['What events are you involved with?','What topics resonate most with your audience?','What challenges are people talking about?','What type of speakers do you usually look for?','What outcomes do you want attendees to leave with?','What events are coming up?','How do you select speakers?','What should happen next?'],
+    signals:['Upcoming events','Audience pain points','Speaker shortages','Community building'], whatToOffer:['Speaker reel','Topic outline','Mutual promotion','Free first session'] },
+  { id:'career', name:'Career Opportunity', tier:'pro', summary:'Surface the role, the timing, and the path in.', outcomeCategory:'Career',
+    questions:['What initiatives are you focused on?','What skills are hardest to find right now?','What types of people do well in your environment?','What projects are coming up?','Where are you looking for support?','What experience would be most valuable?','What would success look like?','What’s the next step?'],
+    signals:['Hiring','Capacity constraints','New projects','Team growth'], whatToOffer:['CV or portfolio','Case study','Reference','Short pilot project'] },
+  { id:'product_discovery', name:'Product Discovery', tier:'pro', summary:'Hear how they actually solve this today and what’s broken about it.', outcomeCategory:'Learning',
+    questions:['How are you currently solving that?','What’s frustrating about the current approach?','How often does this happen?','What impact does it have?','What have you already tried?','What would an ideal solution look like?','How would you know it worked?','Would you be open to testing something new?'],
+    signals:['Pain','Frequency','Cost','Workarounds','Frustration'], whatToOffer:['Early prototype','User research call','Beta access','Concept walkthrough'] },
+  { id:'pilot_beta', name:'Pilot / Beta Opportunity', tier:'pro', summary:'Test interest in trying something new and lock in what would make it worth it.', outcomeCategory:'Revenue',
+    questions:['Would you be open to testing something new?','What would make it worth trying?','Who would use it?','What would success look like?','What concerns would you have?','What support would you need?','How long would you want to test it?','What would happen if it worked?'],
+    signals:['Curiosity','Early adopter behaviour','Innovation mindset'], whatToOffer:['Pilot invite','Custom demo','Founder call','Free trial'] },
+  { id:'advisory', name:'Advisory / Mentor', tier:'pro', summary:'Learn from someone further down the road and earn the right to come back.', outcomeCategory:'Learning',
+    questions:['What trends are you seeing?','What lessons have shaped your career?','If you were starting today, what would you do differently?','What’s a mistake people commonly make?','What opportunities do you think are overlooked?','What would you focus on if you were in my position?','How can I learn more about this area?','Would you be open to continuing the conversation?'],
+    signals:['Experience','Pattern recognition','Generosity','Thought leadership'], whatToOffer:['Coffee chat','Update note','Useful intro back','Project update'] },
+  { id:'community_access', name:'Community Access', tier:'pro', summary:'Find the doorway in and the right way to walk through it.', outcomeCategory:'Access',
+    questions:['What communities are you involved in?','What makes that community valuable?','Who tends to thrive there?','How do people usually get involved?','What opportunities come from being part of it?','What do members contribute?','Do you think I’d be a good fit?','What would be the best way to get involved?'],
+    signals:['Gatekeepers','Communities','Ecosystems','Influence networks'], whatToOffer:['Bio summary','Joining note','Reciprocal intro','Contribution offer'] }
+];
+
+// ---------- helpers ----------
+function readJSON(key, fallback) { try { return JSON.parse(localStorage.getItem(key)) || fallback; } catch (e) { return fallback; } }
+function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function slug(s) { return String(s || '').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,''); }
+function uid() { return 'cap_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8); }
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._timer); t._timer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+function getUserId() {
+  let id = localStorage.getItem(STORAGE.USER_ID);
+  if (!id) { id = 'user_' + Math.random().toString(36).slice(2, 12); localStorage.setItem(STORAGE.USER_ID, id); }
+  return id;
+}
+function getPlan() {
+  const ob = readJSON(STORAGE.ONBOARDING, null);
+  return localStorage.getItem(STORAGE.PLAN) || (ob && ob.data && ob.data.plan) || 'starter';
+}
+
+// Merge built-in template with saved overrides (same contract as templates.html)
+function effectiveTemplate(base) {
+  const overrides = readJSON(STORAGE.TEMPLATES_CUSTOM, {});
+  const ov = overrides[base.id];
+  const merged = { ...base };
+  if (ov) {
+    if (ov.name) merged.name = ov.name;
+    if (ov.outcomeCategory) merged.outcomeCategory = ov.outcomeCategory;
+    if (Array.isArray(ov.questions)) merged.questions = ov.questions.slice();
+    if (Array.isArray(ov.signals)) merged.signals = ov.signals.slice();
+    if (Array.isArray(ov.whatToOffer)) merged.whatToOffer = ov.whatToOffer.slice();
+  }
+  return merged;
+}
+function canUse(base, plan) { return plan === 'pro' || base.tier === 'starter'; }
+function defaultTemplateId() {
+  const ob = readJSON(STORAGE.ONBOARDING, null);
+  return ob && ob.data && ob.data.selectedTemplate ? ob.data.selectedTemplate : null;
+}
+
+// ---------- app state ----------
+const app = {
+  screen: 'ready',            // 'ready' | 'recording' | 'review' | 'saved'
+  plan: getPlan(),
+  templateId: null,
+  event: readJSON(STORAGE.EVENT, null),   // { name, location, session, date, type, key }
+  // recording
+  mediaRecorder: null,
+  stream: null,
+  chunks: [],
+  audioBlob: null,
+  audioUrl: null,
+  durationMs: 0,
+  timerStart: 0,
+  timerInt: null,
+  // person review fields (reset on "Capture Another Person")
+  person: blankPerson(),
+  lastSavedName: ''
+};
+
+function blankPerson() {
+  return { name:'', company:'', role:'', summary:'', nextStep:'', signal:'', momentum:'' };
+}
+
+function pickInitialTemplate() {
+  const def = defaultTemplateId();
+  let base = def && TEMPLATES.find(t => t.id === def && canUse(t, app.plan));
+  if (!base) base = TEMPLATES.find(t => canUse(t, app.plan)) || TEMPLATES[0];
+  app.templateId = base.id;
+}
+
+function currentTemplate() {
+  const base = TEMPLATES.find(t => t.id === app.templateId) || TEMPLATES[0];
+  return effectiveTemplate(base);
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+function render() {
+  const v = document.getElementById('view');
+  if (app.screen === 'ready')      { v.innerHTML = renderReady();   bindReady(); }
+  else if (app.screen === 'recording') { v.innerHTML = renderRecording(); bindRecording(); }
+  else if (app.screen === 'review')    { v.innerHTML = renderReview();    bindReview(); }
+  else if (app.screen === 'saved')     { v.innerHTML = renderSaved();     bindSaved(); }
+  window.scrollTo(0, 0);
+}
+
+// ---------- READY ----------
+function renderReady() {
+  const t = currentTemplate();
+  const ev = app.event;
+  const eventBlock = ev && ev.name ? `
+    <div class="event-card">
+      <div class="event-card-head">
+        <div class="event-label"><span class="dot"></span> Event context</div>
+        <button class="link-btn" id="editEvent">Edit</button>
+      </div>
+      <div class="event-title">${esc(ev.name)}</div>
+      <div class="event-meta">
+        ${ev.location ? `<span>${esc(ev.location)}</span>` : ''}
+        ${ev.session ? `<span>${esc(ev.session)}</span>` : ''}
+        ${ev.date ? `<span>${esc(ev.date)}</span>` : ''}
+        ${ev.type ? `<span>${esc(ev.type)}</span>` : ''}
+      </div>
+    </div>` : `
+    <div class="event-card">
+      <div class="event-card-head">
+        <div class="event-empty">No event set &mdash; add one to group everyone you meet here.</div>
+        <button class="link-btn" id="editEvent">Add event</button>
+      </div>
+    </div>`;
+
+  const questions = (t.questions || []).slice(0, 6).map(q => `<div class="cheat-q">${esc(q)}</div>`).join('');
+  const signals = (t.signals || []).map(s => `<span class="chip">${esc(s)}</span>`).join('');
+  const offers = (t.whatToOffer || []).map(s => `<span class="chip offer">${esc(s)}</span>`).join('');
+
+  return `
+    <div class="step-content">
+      <div class="step-eyebrow">Capture mode</div>
+      <h1 class="step-headline">Capture this <em>moment</em>.</h1>
+      <p class="step-sub">Have the conversation. The second you walk away, tap the button and talk it through &mdash; TAPD keeps the memory so you can follow up.</p>
+      ${eventBlock}
+
+      <div class="template-banner">
+        <div>
+          <div class="template-banner-label">Using template</div>
+          <div class="template-banner-name">${esc(t.name)}</div>
+        </div>
+        <button class="link-btn" id="changeTpl">Change template</button>
+      </div>
+    </div>
+
+    <div class="capture-zone">
+      <button class="capture-btn" id="captureBtn" aria-label="Start recording this conversation">
+        <span class="star">&#10022;</span>
+        <span>Capture<br>This Moment</span>
+      </button>
+      <div class="capture-hint">Tap to start recording. You can stop any time.</div>
+    </div>
+
+    <div class="step-content">
+      <div class="section-title">Cheat sheet</div>
+      <div class="cheat">
+        <div class="cheat-group">
+          <div class="cheat-h">Questions worth asking</div>
+          ${questions}
+        </div>
+        <div class="cheat-group">
+          <div class="cheat-h">Signals to listen for</div>
+          <div class="chiprow">${signals}</div>
+        </div>
+        <div class="cheat-group">
+          <div class="cheat-h">What you can offer</div>
+          <div class="chiprow">${offers}</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+function bindReady() {
+  document.getElementById('actionBar').style.display = 'none';
+  document.getElementById('captureBtn').addEventListener('click', startRecording);
+  document.getElementById('changeTpl').addEventListener('click', openTemplatePicker);
+  const ee = document.getElementById('editEvent');
+  if (ee) ee.addEventListener('click', openEventEditor);
+}
+
+// ---------- RECORDING ----------
+function renderRecording() {
+  return `
+    <div class="rec-zone">
+      <div class="rec-badge"><span class="live-dot"></span> Recording…</div>
+      <div class="rec-timer" id="recTimer">0:00</div>
+      <div class="rec-orb"><span class="mic">&#127908;</span></div>
+      <p class="step-sub" style="text-align:center;max-width:42ch;margin:var(--space-5) auto 0;">
+        Talk through who you met, what they care about, and the next step. Speak naturally &mdash; nothing leaves your device until you save.
+      </p>
+    </div>
+  `;
+}
+function bindRecording() {
+  const bar = document.getElementById('actionBar');
+  bar.style.display = 'block';
+  bar.innerHTML = `
+    <div class="action-bar-inner">
+      <button class="btn btn-danger btn-lg btn-block" id="stopBtn">&#9632;&nbsp; Stop Recording</button>
+    </div>`;
+  document.getElementById('stopBtn').addEventListener('click', stopRecording);
+}
+
+// ---------- REVIEW ----------
+function renderReview() {
+  const t = currentTemplate();
+  const p = app.person;
+  const secs = Math.round(app.durationMs / 1000);
+  const dur = `${Math.floor(secs/60)}:${String(secs%60).padStart(2,'0')}`;
+  const sizeKb = app.audioBlob ? Math.max(1, Math.round(app.audioBlob.size / 1024)) : 0;
+  const signalOpts = (t.signals || []).map(s => `<option value="${esc(s)}" ${p.signal===s?'selected':''}>${esc(s)}</option>`).join('');
+
+  return `
+    <div class="step-content">
+      <div class="step-eyebrow">Review &amp; save</div>
+      <h1 class="step-headline">Lock in the <em>relationship</em>.</h1>
+      <p class="step-sub">Your recording is saved on this device. Add who this was so it lands in your Relationship Hub. AI structuring and the drafted follow-up arrive once OpenAI is connected.</p>
+
+      <div class="audio-row">
+        <span style="font-size:20px;">&#127911;</span>
+        <audio controls ${app.audioUrl ? `src="${app.audioUrl}"` : ''}></audio>
+      </div>
+      <div class="audio-meta" style="margin-bottom:var(--space-5);">Audio ready &middot; ${dur} &middot; ~${sizeKb} KB &middot; stored locally for processing</div>
+
+      <div class="notice">
+        <span class="ico">&#9888;&#65039;</span>
+        <div>
+          <div class="notice-title">AI features not yet active</div>
+          <div class="notice-body">Whisper transcription, conversation structuring and the drafted follow-up in your voice are <span class="pending-tag">Not Yet Testable</span> until <code>OPENAI_API_KEY</code> is configured. Your audio and the details below are saved now and will be enriched automatically once it is.</div>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Who did you meet?</label>
+          <input class="text-input" id="f-name" placeholder="Name" value="${esc(p.name)}">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Company</label>
+          <input class="text-input" id="f-company" placeholder="Company" value="${esc(p.company)}">
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Role / title <span style="text-transform:none;letter-spacing:0;color:var(--text-faint)">(optional)</span></label>
+        <input class="text-input" id="f-role" placeholder="e.g. Head of Partnerships" value="${esc(p.role)}">
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">What was discussed</label>
+        <div class="field-hint">A line or two while it’s fresh. (AI will expand this from your recording later.)</div>
+        <textarea class="text-area" id="f-summary" placeholder="What they’re working on, what mattered, why it’s worth following up…">${esc(p.summary)}</textarea>
+      </div>
+
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Signal</label>
+          <select class="text-input" id="f-signal">
+            <option value="">— none —</option>
+            ${signalOpts}
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Momentum</label>
+          <select class="text-input" id="f-momentum">
+            <option value="">— none —</option>
+            <option value="Act Soon" ${p.momentum==='Act Soon'?'selected':''}>Act Soon</option>
+            <option value="Keep Warm" ${p.momentum==='Keep Warm'?'selected':''}>Keep Warm</option>
+            <option value="Connector" ${p.momentum==='Connector'?'selected':''}>Connector</option>
+            <option value="Opportunity" ${p.momentum==='Opportunity'?'selected':''}>Opportunity</option>
+            <option value="Strategic Partner" ${p.momentum==='Strategic Partner'?'selected':''}>Strategic Partner</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Next step</label>
+        <input class="text-input" id="f-next" placeholder="e.g. Send the case study and book a call" value="${esc(p.nextStep)}">
+      </div>
+    </div>
+  `;
+}
+function bindReview() {
+  const bar = document.getElementById('actionBar');
+  bar.style.display = 'block';
+  bar.innerHTML = `
+    <div class="action-bar-inner">
+      <button class="btn btn-secondary" id="discardBtn">Discard</button>
+      <button class="btn btn-primary" id="saveBtn">Save to Relationship Hub</button>
+    </div>`;
+  document.getElementById('saveBtn').addEventListener('click', saveCapture);
+  document.getElementById('discardBtn').addEventListener('click', () => {
+    if (confirm('Discard this capture and its recording?')) { resetRecording(); app.person = blankPerson(); app.screen = 'ready'; render(); }
+  });
+}
+
+// ---------- SAVED ----------
+function renderSaved() {
+  const ev = app.event;
+  const name = app.lastSavedName || 'this person';
+  const eventLine = ev && ev.name
+    ? `Event context kept: <strong>${esc(ev.name)}</strong>${ev.session ? ' &middot; ' + esc(ev.session) : ''}. The next capture starts ready &mdash; just talk.`
+    : `Tip: add an event next time to group everyone you meet in one place.`;
+  return `
+    <div class="saved-zone">
+      <div class="saved-check">&#10003;</div>
+      <h1 class="step-headline" style="text-align:center;">Saved to your <em>Hub</em>.</h1>
+      <p class="step-sub" style="text-align:center;max-width:44ch;margin-left:auto;margin-right:auto;">
+        ${esc(name)} is in your Relationship Hub. ${eventLine}
+      </p>
+      <div class="saved-actions">
+        ${ev && ev.name
+          ? `<button class="btn btn-primary btn-lg btn-block" id="anotherBtn">&#10022;&nbsp; Capture Another Person At This Event</button>`
+          : `<button class="btn btn-primary btn-lg btn-block" id="anotherBtn">&#10022;&nbsp; Capture Another Person</button>`}
+        <a class="btn btn-secondary btn-block" href="relationship-hub.html">Go to Relationship Hub</a>
+        <a class="btn btn-secondary btn-block" href="index.html">Done for now</a>
+      </div>
+    </div>
+  `;
+}
+function bindSaved() {
+  document.getElementById('actionBar').style.display = 'none';
+  document.getElementById('anotherBtn').addEventListener('click', captureAnotherPerson);
+}
+
+// ============================================================
+// "Capture Another Person At This Event"
+// Keep: event name, location, session, date/time, event key, template.
+// Reset: person name, company, summary, signal/tags, next step,
+//        draft, follow-up, relationship card details, and the audio.
+// ============================================================
+function captureAnotherPerson() {
+  // event + template are intentionally preserved on `app` and in storage.
+  resetRecording();          // clears audio blob, url, chunks, duration
+  app.person = blankPerson();// clears all person-specific capture details
+  app.lastSavedName = '';
+  app.screen = 'ready';
+  render();
+  toast('Same event kept — new person');
+}
+
+// ============================================================
+// RECORDING ENGINE (MediaRecorder)
+// ============================================================
+async function startRecording() {
+  app.chunks = [];
+  // Capture any person edits already typed? No — ready screen has none. Go straight to mic.
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || typeof MediaRecorder === 'undefined') {
+    // Graceful fallback: no mic support in this browser/context.
+    toast('Recording not supported here');
+    enterReviewWithoutAudio();
+    return;
+  }
   try {
-    if (req.method === 'GET') {
-      const userId = req.query.userId;
-      if (!userId) return res.status(400).json({ error: 'Missing userId' });
-      const { data, error } = await db.from(TABLE).select('*')
-        .eq('user_id', userId).order('captured_at', { ascending: false });
-      if (error) throw error;
-      return res.status(200).json({ captures: (data || []).map(toCapture) });
-    }
-
-    if (req.method === 'POST') {
-      const { userId, ...capture } = req.body || {};
-      if (!userId || !capture.id) return res.status(400).json({ error: 'Missing userId or capture.id' });
-      const { error } = await db.from(TABLE).upsert(toRow(capture, userId), { onConflict: 'id' });
-      if (error) throw error;
-      return res.status(200).json({ ok: true, id: capture.id });
-    }
-
-    if (req.method === 'PATCH') {
-      const { id, userId, ...patch } = req.body || {};
-      if (!id || !userId) return res.status(400).json({ error: 'Missing id or userId' });
-      const allowed = {};
-      if (patch.outcome !== undefined) allowed.outcome = patch.outcome;
-      if (patch.name !== undefined) allowed.name = patch.name;
-      if (patch.needsNameConfirmation !== undefined) allowed.needs_name_confirmation = patch.needsNameConfirmation;
-      if (patch.nameConfidence !== undefined) allowed.name_confidence = patch.nameConfidence;
-      allowed.updated_at = new Date().toISOString();
-      const { error } = await db.from(TABLE).update(allowed).eq('id', id).eq('user_id', userId);
-      if (error) throw error;
-      return res.status(200).json({ ok: true });
-    }
-
-    return res.status(405).json({ error: 'Method not allowed' });
+    app.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
   } catch (err) {
-    console.error('[captures] error:', err);
-    return res.status(500).json({ error: 'Persistence failed', detail: String(err.message || err) });
+    console.warn('[capture] mic permission denied or unavailable:', err);
+    if (confirm('Microphone access was blocked. Continue without audio and add the details manually?')) {
+      enterReviewWithoutAudio();
+    }
+    return;
+  }
+  let mr;
+  try {
+    mr = pickRecorder(app.stream);
+  } catch (e) {
+    console.warn('[capture] MediaRecorder init failed:', e);
+    stopStream();
+    enterReviewWithoutAudio();
+    return;
+  }
+  app.mediaRecorder = mr;
+  app.chunks = [];
+  mr.ondataavailable = e => { if (e.data && e.data.size > 0) app.chunks.push(e.data); };
+  mr.onstop = finalizeRecording;
+  mr.start();
+  app.timerStart = Date.now();
+  app.screen = 'recording';
+  render();
+  startTimer();
+}
+
+function pickRecorder(stream) {
+  const types = ['audio/webm;codecs=opus','audio/webm','audio/mp4','audio/ogg'];
+  for (const ty of types) {
+    if (window.MediaRecorder && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(ty)) {
+      return new MediaRecorder(stream, { mimeType: ty });
+    }
+  }
+  return new MediaRecorder(stream); // browser default
+}
+
+function startTimer() {
+  const el = () => document.getElementById('recTimer');
+  app.timerInt = setInterval(() => {
+    const node = el(); if (!node) return;
+    const s = Math.floor((Date.now() - app.timerStart) / 1000);
+    node.textContent = `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
+  }, 250);
+}
+function stopTimer() { if (app.timerInt) { clearInterval(app.timerInt); app.timerInt = null; } }
+
+function stopRecording() {
+  stopTimer();
+  app.durationMs = Date.now() - app.timerStart;
+  if (app.mediaRecorder && app.mediaRecorder.state !== 'inactive') {
+    app.mediaRecorder.stop();   // triggers onstop -> finalizeRecording
+  } else {
+    finalizeRecording();
   }
 }
+
+// Build the audio file/blob after stop, then move to review.
+function finalizeRecording() {
+  try {
+    const type = (app.mediaRecorder && app.mediaRecorder.mimeType) || 'audio/webm';
+    if (app.chunks.length) {
+      app.audioBlob = new Blob(app.chunks, { type });
+      app.audioUrl = URL.createObjectURL(app.audioBlob);
+    }
+  } catch (e) {
+    console.warn('[capture] blob build failed:', e);
+  }
+  stopStream();
+  app.screen = 'review';
+  render();
+}
+
+function enterReviewWithoutAudio() {
+  app.audioBlob = null; app.audioUrl = null; app.durationMs = 0;
+  app.screen = 'review';
+  render();
+}
+
+function stopStream() {
+  if (app.stream) { app.stream.getTracks().forEach(tr => tr.stop()); app.stream = null; }
+}
+function resetRecording() {
+  stopTimer();
+  if (app.audioUrl) { try { URL.revokeObjectURL(app.audioUrl); } catch (e) {} }
+  stopStream();
+  app.mediaRecorder = null; app.chunks = []; app.audioBlob = null; app.audioUrl = null; app.durationMs = 0;
+}
+
+// ============================================================
+// SAVE — Hub-compatible capture record
+// Field shape mirrors api/captures.js toRow()/toCapture().
+// ============================================================
+function readPersonFromForm() {
+  const g = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+  app.person = {
+    name: g('f-name'), company: g('f-company'), role: g('f-role'),
+    summary: g('f-summary'), nextStep: g('f-next'),
+    signal: g('f-signal'), momentum: g('f-momentum')
+  };
+}
+
+function buildCapture() {
+  const t = currentTemplate();
+  const p = app.person;
+  const ev = app.event;
+  const eventDisplay = ev && ev.name
+    ? [ev.name, ev.session, ev.location].filter(Boolean).join(' · ')
+    : null;
+  const contextLine = ev && ev.name
+    ? `Met at ${[ev.name, ev.location, ev.date].filter(Boolean).join(', ')}`
+    : 'Captured conversation';
+
+  const filled = [p.name, p.company, p.summary, p.nextStep, p.signal].filter(Boolean).length;
+  const completeness = Math.round((filled / 5) * 100);
+
+  return {
+    id: uid(),
+    name: p.name || null,
+    company: p.company || null,
+    role: p.role || null,
+    signal: p.signal || null,
+    signalLabel: p.momentum || (p.signal ? p.signal : null),
+    evidence: p.summary || null,
+    secondaryThread: null,
+    priority: p.momentum || null,
+    action: p.nextStep || null,
+    draftMessage: null,                 // produced by AI once OpenAI is configured
+    context: contextLine,
+    capturedAt: new Date().toISOString(),
+    event: eventDisplay,
+    eventKey: ev && ev.key ? ev.key : null,
+    outcome: 'active',
+    template: t.id,
+    templateName: t.name,
+    needsNameConfirmation: !p.name,
+    nameConfidence: p.name ? 'confirmed' : null,
+    completeness: completeness,
+    channelPreference: null,
+    transcriptConfidence: null,
+    // local-only metadata (ignored by the API mapper, useful in the Hub/debug):
+    hasAudio: !!app.audioBlob,
+    audioDurationMs: app.durationMs || 0,
+    aiStatus: 'pending_openai'
+  };
+}
+
+function saveCapture() {
+  readPersonFromForm();
+  const cap = buildCapture();
+
+  // 1) Primary store the Hub reads from (newest first).
+  const list = readJSON(STORAGE.CAPTURES, []);
+  list.unshift(cap);
+  localStorage.setItem(STORAGE.CAPTURES, JSON.stringify(list));
+
+  app.lastSavedName = cap.name || 'Unnamed contact';
+
+  // 2) Best-effort server sync (no-op/placeholder until Supabase is configured).
+  try {
+    fetch('/api/captures', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: getUserId(), ...cap })
+    }).catch(() => {});
+  } catch (e) { /* offline / not deployed — local save already succeeded */ }
+
+  app.screen = 'saved';
+  render();
+}
+
+// ============================================================
+// TEMPLATE PICKER (Change template)
+// ============================================================
+function openTemplatePicker() {
+  const sheet = document.getElementById('tplSheet');
+  const def = defaultTemplateId();
+  const rows = TEMPLATES.map(base => {
+    const t = effectiveTemplate(base);
+    const usable = canUse(base, app.plan);
+    const selected = base.id === app.templateId;
+    const isDefault = base.id === def;
+    return `
+      <button class="tpl-option ${selected ? 'selected' : ''} ${usable ? '' : 'locked'}" data-id="${base.id}" ${usable ? '' : 'data-locked="1"'}>
+        <div>
+          <div class="tpl-option-name">${esc(t.name)}</div>
+          <div class="tpl-option-sum">${esc(t.summary)}</div>
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0;">
+          ${isDefault ? '<span class="tpl-badge default">Default</span>' : ''}
+          ${base.tier === 'pro' ? '<span class="tpl-badge pro">Pro</span>' : ''}
+        </div>
+      </button>`;
+  }).join('');
+  sheet.innerHTML = `
+    <div class="sheet-grip"></div>
+    <div class="sheet-title">Choose a template</div>
+    <div class="sheet-sub">This sets the questions to lean on and what the AI will listen for. ${app.plan === 'pro' ? '' : 'Pro templates unlock with TAPDconnex Pro.'}</div>
+    ${rows}
+  `;
+  sheet.querySelectorAll('.tpl-option').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (btn.dataset.locked) { toast('Pro template — upgrade to use'); return; }
+      app.templateId = btn.dataset.id;
+      closeOverlay('tplOverlay');
+      render();
+    });
+  });
+  showOverlay('tplOverlay');
+}
+
+// ============================================================
+// EVENT CONTEXT EDITOR
+// ============================================================
+function openEventEditor() {
+  const ev = app.event || {};
+  const sheet = document.getElementById('eventSheet');
+  sheet.innerHTML = `
+    <div class="sheet-grip"></div>
+    <div class="sheet-title">Event context</div>
+    <div class="sheet-sub">Set this once. Every person you capture here is grouped together &mdash; and you won’t re-enter it for the next conversation.</div>
+    <div class="field-group">
+      <label class="field-label">Event name</label>
+      <input class="text-input" id="ev-name" placeholder="e.g. SaaStr Annual 2026" value="${esc(ev.name || '')}">
+    </div>
+    <div class="field-row">
+      <div class="field-group">
+        <label class="field-label">Location</label>
+        <input class="text-input" id="ev-location" placeholder="e.g. San Mateo, Hall B" value="${esc(ev.location || '')}">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Session</label>
+        <input class="text-input" id="ev-session" placeholder="e.g. Founders mixer" value="${esc(ev.session || '')}">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field-group">
+        <label class="field-label">Date / time</label>
+        <input class="text-input" id="ev-date" placeholder="e.g. 12 Jun, evening" value="${esc(ev.date || '')}">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Environment</label>
+        <select class="text-input" id="ev-type">
+          ${['','Conference','Meetup','Networking mixer','Dinner','Workshop','Pitch event','1:1 coffee','Other']
+            .map(o => `<option value="${esc(o)}" ${ (ev.type||'')===o ? 'selected':''}>${o ? esc(o) : '— type —'}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div class="action-bar-inner" style="margin-top:var(--space-4);">
+      ${ev.name ? '<button class="btn btn-secondary" id="ev-clear">Clear event</button>' : ''}
+      <button class="btn btn-primary" id="ev-save">Save event context</button>
+    </div>
+  `;
+  sheet.querySelector('#ev-save').addEventListener('click', () => {
+    const g = id => { const el = sheet.querySelector('#'+id); return el ? el.value.trim() : ''; };
+    const name = g('ev-name');
+    if (!name) { toast('Give the event a name'); return; }
+    const date = g('ev-date');
+    const event = {
+      name, location: g('ev-location'), session: g('ev-session'),
+      date, type: g('ev-type'),
+      key: slug(name) + (date ? '-' + slug(date) : '')
+    };
+    app.event = event;
+    localStorage.setItem(STORAGE.EVENT, JSON.stringify(event));
+    closeOverlay('eventOverlay');
+    render();
+    toast('Event context saved');
+  });
+  const clearBtn = sheet.querySelector('#ev-clear');
+  if (clearBtn) clearBtn.addEventListener('click', () => {
+    app.event = null;
+    localStorage.removeItem(STORAGE.EVENT);
+    closeOverlay('eventOverlay');
+    render();
+    toast('Event cleared');
+  });
+  showOverlay('eventOverlay');
+}
+
+// ---------- overlay utils ----------
+function showOverlay(id) { document.getElementById(id).classList.add('show'); }
+function closeOverlay(id) { document.getElementById(id).classList.remove('show'); }
+['tplOverlay','eventOverlay'].forEach(id => {
+  document.getElementById(id).addEventListener('click', e => {
+    if (e.target.id === id) closeOverlay(id);
+  });
+});
+
+// ============================================================
+// INIT
+// ============================================================
+pickInitialTemplate();
+// Allow ?template=ID deep-link (e.g. from templates.html in future)
+try {
+  const qp = new URLSearchParams(location.search).get('template');
+  if (qp && TEMPLATES.find(t => t.id === qp && canUse(t, app.plan))) app.templateId = qp;
+} catch (e) {}
+render();
+</script>
+</body>
+</html>
