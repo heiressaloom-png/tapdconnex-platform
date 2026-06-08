@@ -837,12 +837,17 @@ let state = {
   data: {
     intentPrimary: null,
     intentSecondary: [],
+    networkingPrimary: null,
+    networkingSecondary: null,
     photo: null,
+    firstName: '',
+    surname: '',
     name: '',
     role: '',
     company: '',
     intro: '',
     whatYouDo: '',
+    canYouRelate: ['', '', '', '', ''],
     painPoints: ['', '', ''],
     waysToWork: [''],
     topFocus: '',
@@ -859,6 +864,7 @@ let state = {
     signOff: 'Kind regards,\n[My name]',
     voiceAvoid: '',
     voiceEmphasise: '',
+    voiceIntro: '',
     username: '',
     plan: 'starter',
     selectedTemplate: 'opportunity'
@@ -870,20 +876,88 @@ const saved = localStorage.getItem(STORAGE_KEY);
 if (saved) {
   try {
     const parsed = JSON.parse(saved);
-    state.data = { ...state.data, ...parsed.data };
+    state.data = { ...state.data, ...(parsed.data || {}) };
     state.currentStep = parsed.currentStep || 0;
+
+    // Backward compatibility with earlier single-name/pain-point version
+    if ((!state.data.firstName && !state.data.surname) && state.data.name) {
+      const parts = String(state.data.name).trim().split(/\s+/);
+      state.data.firstName = parts.shift() || '';
+      state.data.surname = parts.join(' ');
+    }
+    if ((!state.data.canYouRelate || !state.data.canYouRelate.some(Boolean)) && state.data.painPoints) {
+      state.data.canYouRelate = [
+        state.data.painPoints[0] || '',
+        state.data.painPoints[1] || '',
+        state.data.painPoints[2] || '',
+        '',
+        ''
+      ];
+    }
+    if (!state.data.networkingPrimary && state.data.intentPrimary) state.data.networkingPrimary = state.data.intentPrimary;
+    if (!state.data.networkingSecondary && Array.isArray(state.data.intentSecondary) && state.data.intentSecondary.length) {
+      state.data.networkingSecondary = state.data.intentSecondary[0];
+    }
   } catch(e) {}
 }
 
+function syncName() {
+  state.data.name = [state.data.firstName, state.data.surname].filter(Boolean).join(' ').trim();
+}
+
 function save() {
+  syncName();
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  // Keep the plan flag in sync so Capture + Templates read the right tier
   localStorage.setItem('tapd_user_plan', state.data.plan || 'starter');
+  try { if (window.TapdSync) TapdSync.pushProfile(state.data, state.data.plan); } catch (e) {}
 }
 
 // ============ STEP DEFINITIONS ============
 
-const TOTAL_STEPS = 9;
+const TOTAL_STEPS = 12;
+
+const NETWORKING_FOCUS = [
+  {
+    id: 'solve_problem',
+    label: 'Solve a business problem',
+    sub: 'Product strategy • Customer adoption • Revenue growth • AI & automation • Process improvement • Customer experience'
+  },
+  {
+    id: 'explore_service',
+    label: 'Explore a service or offering',
+    sub: 'Consulting • Coaching • Workshops • Guided experiences • Digital products • Implementation support'
+  },
+  {
+    id: 'partnership',
+    label: 'Build a partnership',
+    sub: 'Referral partnership • Channel partnership • Event collaboration • Content collaboration • Joint venture • Ecosystem partnership'
+  },
+  {
+    id: 'book_buy',
+    label: 'Book or buy something',
+    sub: 'Discovery call • Product purchase • Service package • Event ticket • Pre-order'
+  },
+  {
+    id: 'expert',
+    label: 'Find the right expert',
+    sub: 'Product expert • Technical expert • Business expert • Industry specialist'
+  },
+  {
+    id: 'funding',
+    label: 'Invest, sponsor or fund',
+    sub: 'Investor discussion • Sponsorship • Grant funding • Strategic backing'
+  },
+  {
+    id: 'hire',
+    label: 'Hire or contract me',
+    sub: 'Freelance support • Consulting support • Project delivery • Advisory role • Speaker booking'
+  },
+  {
+    id: 'connect',
+    label: 'Stay connected',
+    sub: 'Future opportunities • Keep warm • Professional network • Follow-up conversations'
+  }
+];
 
 const TEMPLATES = [
   { id: 'opportunity', name: 'Opportunity', tag: 'Revenue', pro: false,
@@ -930,36 +1004,52 @@ const TEMPLATES = [
 
 // ============ RENDER ============
 
-// Deep-link: ?step=N jumps to that step (used from the home "Profile & voice" card).
+// Deep-link: ?step=N jumps to that step.
 (function applyStepParam() {
   try {
     const n = parseInt(new URLSearchParams(location.search).get('step'), 10);
-    if (Number.isFinite(n) && n >= 0 && n <= 8) state.currentStep = n;
+    if (Number.isFinite(n) && n >= 0 && n <= TOTAL_STEPS - 1) state.currentStep = n;
   } catch (e) {}
 })();
+
+function calculateCompletionPercent() {
+  const d = state.data;
+  const groups = [
+    !!(d.firstName && d.surname && d.role && d.company && d.intro),              // 15
+    !!d.networkingPrimary,                                                       // 30
+    !!d.whatYouDo,                                                               // 45
+    !!(d.canYouRelate || []).some(v => String(v || '').trim().length > 0),        // 60
+    !!(d.waysToWork && d.waysToWork[0]),                                         // 75
+    !!d.topFocus,                                                                // 85
+    !!(d.preferredChannel && (d.whatsapp || d.email || d.linkedin || d.instagram || d.website)), // 95
+    !!(d.greeting && d.opening && d.conversationRef && d.nextStepStyle && d.signOff) // 100
+  ];
+  const checkpoints = [15, 30, 45, 60, 75, 85, 95, 100];
+  let pct = 0;
+  groups.forEach((done, idx) => { if (done) pct = Math.max(pct, checkpoints[idx]); });
+  return pct || Math.round(((state.currentStep + 1) / TOTAL_STEPS) * 8);
+}
 
 function render() {
   document.getElementById('currentStep').textContent = state.currentStep + 1;
   document.getElementById('totalSteps').textContent = TOTAL_STEPS;
-  document.getElementById('progressBar').style.width = `${((state.currentStep + 1) / TOTAL_STEPS) * 100}%`;
+  document.getElementById('progressBar').style.width = `${calculateCompletionPercent()}%`;
 
   const container = document.getElementById('stepContainer');
   container.innerHTML = renderStep(state.currentStep);
   container.style.animation = 'none';
-  container.offsetHeight; // trigger reflow
+  container.offsetHeight;
   container.style.animation = 'stepEnter 0.4s ease-out';
 
-  // Back button visibility
   document.getElementById('backBtn').style.display = state.currentStep > 0 ? 'inline-flex' : 'none';
 
-  // Next button label
   const nextBtn = document.getElementById('nextBtn');
   if (state.currentStep === 0) {
-    nextBtn.textContent = 'Got it \u2014 let\u2019s set up \u2192';
+    nextBtn.textContent = 'Got it — let’s set up →';
   } else if (state.currentStep === TOTAL_STEPS - 1) {
-    nextBtn.textContent = 'Open my Hub \u2192';
+    nextBtn.textContent = 'Open my Hub →';
   } else {
-    nextBtn.textContent = 'Continue \u2192';
+    nextBtn.textContent = 'Continue →';
   }
 
   bindStepEvents();
@@ -970,14 +1060,17 @@ function render() {
 function renderStep(step) {
   switch(step) {
     case 0: return renderTrustStep();
-    case 1: return renderIntentStep();
-    case 2: return renderWhoYouAreStep();
-    case 3: return renderHowYouHelpStep();
-    case 4: return renderReachStep();
-    case 5: return renderVoiceStep();
-    case 6: return renderNFCStep();
-    case 7: return renderTemplatesStep();
-    case 8: return renderCardLiveStep();
+    case 1: return renderIdentityStep();
+    case 2: return renderNetworkingFocusStep();
+    case 3: return renderWhatDoYouDoStep();
+    case 4: return renderCanYouRelateStep();
+    case 5: return renderWaysToWorkStep();
+    case 6: return renderTopFocusStep();
+    case 7: return renderReachStep();
+    case 8: return renderMessageStyleStep();
+    case 9: return renderNFCStep();
+    case 10: return renderTemplatesStep();
+    case 11: return renderCardLiveStep();
     default: return '';
   }
 }
@@ -987,34 +1080,34 @@ function renderTrustStep() {
   return `
     <div class="step-eyebrow">Welcome to TAPDconnex</div>
     <h1 class="step-headline">How TAPD works <em>with</em> you.</h1>
-    <p class="step-sub">A quick read before we set you up. This is the only screen like it \u2014 understanding this changes how the whole product feels.</p>
+    <p class="step-sub">A quick read before we set you up. This is the only screen like it — understanding this changes how the whole product feels.</p>
 
     <div class="trust-grid">
       <div class="trust-point">
         <div class="trust-icon">1</div>
         <div class="trust-text">
           <div class="trust-text-title">TAPD remembers what was said. You remember who said it.</div>
-          <div class="trust-text-body">We capture the substance of the conversation. The name is yours to confirm. At networking events, names move fast \u2014 that\u2019s the part only you can verify.</div>
+          <div class="trust-text-body">We capture the substance of the conversation. The name is yours to confirm. At networking events, names move fast — that’s the part only you can verify.</div>
         </div>
       </div>
       <div class="trust-point">
         <div class="trust-icon">2</div>
         <div class="trust-text">
-          <div class="trust-text-title">When we\u2019re unsure, we ask. We don\u2019t guess.</div>
-          <div class="trust-text-body">If a name wasn\u2019t clearly captured, we won\u2019t invent one. Your reputation is too important. We\u2019ll flag it in &ldquo;Needs a name&rdquo; until you confirm.</div>
+          <div class="trust-text-title">When we’re unsure, we ask. We don’t guess.</div>
+          <div class="trust-text-body">If a name wasn’t clearly captured, we won’t invent one. Your reputation is too important. We’ll flag it in “Needs a name” until you confirm.</div>
         </div>
       </div>
       <div class="trust-point">
         <div class="trust-icon">3</div>
         <div class="trust-text">
-          <div class="trust-text-title">We don\u2019t push volume. We help you preserve quality.</div>
+          <div class="trust-text-title">We don’t push volume. We help you preserve quality.</div>
           <div class="trust-text-body">You may meet 40 people at an event. The Hub will surface the 3 or 4 that deserve your attention. The rest can sit quietly. We respect that you have a real life outside the app.</div>
         </div>
       </div>
     </div>
 
     <div class="field" style="margin-top:var(--space-6)">
-      <div class="field-label">Plan <span style="color:var(--text-faint);font-weight:500;text-transform:none;letter-spacing:0;">preview \u2014 you can change this anytime</span></div>
+      <div class="field-label">Plan <span style="color:var(--text-faint);font-weight:500;text-transform:none;letter-spacing:0;">preview — you can change this anytime</span></div>
       <div id="planToggle" style="display:inline-flex;border:1px solid var(--border-medium);border-radius:999px;overflow:hidden;">
         <button type="button" data-plan="starter" style="border:none;cursor:pointer;font-family:var(--font-mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;font-weight:600;padding:9px 16px;background:${state.data.plan==='starter'?'var(--accent)':'transparent'};color:${state.data.plan==='starter'?'#fff':'var(--text-muted)'};">Starter</button>
         <button type="button" data-plan="pro" style="border:none;cursor:pointer;font-family:var(--font-mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;font-weight:600;padding:9px 16px;background:${state.data.plan==='pro'?'var(--pro)':'transparent'};color:${state.data.plan==='pro'?'#fff':'var(--text-muted)'};">Pro</button>
@@ -1023,26 +1116,62 @@ function renderTrustStep() {
   `;
 }
 
-// ===== STEP 1: INTENT =====
-function renderIntentStep() {
-  const intents = [
-    { id: 'customers', label: 'Find customers or clients', sub: 'Commercial opportunities, sales, pilots' },
-    { id: 'investors', label: 'Find investors or funding', sub: 'Capital, advisors, strategic backers' },
-    { id: 'collaborators', label: 'Find collaborators or partners', sub: 'Joint ventures, co-creation, alliances' },
-    { id: 'presence', label: 'Build my industry presence', sub: 'Visibility, speaking, network warmth' },
-    { id: 'other', label: 'Something else', sub: 'You can describe it later' }
-  ];
-
+// ===== STEP 1: IDENTITY & PROFILE =====
+function renderIdentityStep() {
+  const initials = (state.data.name || state.data.firstName || '?').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
   return `
-    <div class="step-eyebrow">What you\u2019re hoping to get</div>
-    <h1 class="step-headline">What are you hoping to get out of your <em>networking</em> right now?</h1>
-    <p class="step-sub">This helps the Hub surface what matters for you. You can update it anytime from your profile.</p>
+    <div class="step-eyebrow">Step 1 · Identity & Profile</div>
+    <h1 class="step-headline">Who <em>are</em> you?</h1>
+    <p class="step-sub">Introduce yourself in one sentence. This appears at the top of your profile and helps people quickly understand who you are.</p>
+
+    <div class="photo-upload">
+      <div class="photo-preview" id="photoPreview" ${state.data.photo ? `style="background-image: url(${state.data.photo})"` : ''}>${!state.data.photo ? initials : ''}</div>
+      <div class="photo-upload-text">
+        <button class="photo-upload-btn" id="photoUploadBtn">Upload a photo</button>
+        <div class="photo-upload-sub">Optional. If empty, your initials are shown.</div>
+        <input type="file" id="photoInput" accept="image/*" style="display: none;">
+      </div>
+    </div>
 
     <div class="field">
-      <div class="field-label">Your primary goal <span class="field-required">REQUIRED</span></div>
-      <div class="option-list" id="intentPrimaryList">
-        ${intents.map(i => `
-          <button class="option ${state.data.intentPrimary === i.id ? 'selected' : ''}" data-intent="${i.id}">
+      <div class="field-label">First name <span class="field-required">REQUIRED</span></div>
+      <input type="text" class="input" id="firstName" value="${escapeHtml(state.data.firstName)}" placeholder="e.g. Sarah">
+    </div>
+
+    <div class="field">
+      <div class="field-label">Surname <span class="field-required">REQUIRED</span></div>
+      <input type="text" class="input" id="surname" value="${escapeHtml(state.data.surname)}" placeholder="e.g. Chen">
+    </div>
+
+    <div class="field">
+      <div class="field-label">Role / title <span class="field-required">REQUIRED</span></div>
+      <input type="text" class="input" id="role" value="${escapeHtml(state.data.role)}" placeholder="e.g. Principal at ABC Ventures">
+    </div>
+
+    <div class="field">
+      <div class="field-label">Brand / company <span class="field-required">REQUIRED</span></div>
+      <input type="text" class="input" id="company" value="${escapeHtml(state.data.company)}" placeholder="e.g. ABC Ventures">
+    </div>
+
+    <div class="field">
+      <div class="field-label">Short introduction <span class="field-required">REQUIRED</span></div>
+      <input type="text" class="input" id="intro" value="${escapeHtml(state.data.intro)}" placeholder="The first thing someone reads on your card">
+    </div>
+  `;
+}
+
+// ===== STEP 2: NETWORKING FOCUS AREAS =====
+function renderNetworkingFocusStep() {
+  return `
+    <div class="step-eyebrow">Step 2 · Networking Focus Areas</div>
+    <h1 class="step-headline">What are you looking for through <em>networking</em>?</h1>
+    <p class="step-sub">Choose your primary and secondary networking focus. This helps people quickly understand what conversations are most valuable to you.</p>
+
+    <div class="field">
+      <div class="field-label">Primary networking focus <span class="field-required">REQUIRED</span></div>
+      <div class="option-list" id="networkingPrimaryList">
+        ${NETWORKING_FOCUS.map(i => `
+          <button class="option ${state.data.networkingPrimary === i.id ? 'selected' : ''}" data-primary-focus="${i.id}">
             <div class="option-text">
               <span class="option-text-strong">${i.label}</span>
               <span class="option-text-sub">${i.sub}</span>
@@ -1055,12 +1184,12 @@ function renderIntentStep() {
 
     <div class="field">
       <div class="field-label">
-        Also open to
-        <span class="field-hint">Optional \u00b7 pick any that apply</span>
+        Secondary networking focus
+        <span class="field-hint">Optional · main category only</span>
       </div>
-      <div class="pill-list" id="intentSecondaryList">
-        ${intents.filter(i => i.id !== 'other').map(i => `
-          <button class="pill ${state.data.intentSecondary.includes(i.id) ? 'selected' : ''}" data-intent="${i.id}">
+      <div class="pill-list" id="networkingSecondaryList">
+        ${NETWORKING_FOCUS.map(i => `
+          <button class="pill ${state.data.networkingSecondary === i.id ? 'selected' : ''}" data-secondary-focus="${i.id}">
             ${i.label}
           </button>
         `).join('')}
@@ -1069,82 +1198,77 @@ function renderIntentStep() {
   `;
 }
 
-// ===== STEP 2: WHO YOU ARE =====
-function renderWhoYouAreStep() {
-  const initials = (state.data.name || '?').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+// ===== STEP 3: WHAT DO YOU DO =====
+function renderWhatDoYouDoStep() {
   return `
-    <div class="step-eyebrow">Step 1 of 6 \u00b7 Profile setup</div>
-    <h1 class="step-headline">Who <em>are</em> you?</h1>
-    <p class="step-sub">This is what people see when they tap your NFC card. Make it specific.</p>
-
-    <div class="photo-upload">
-      <div class="photo-preview" id="photoPreview" ${state.data.photo ? `style="background-image: url(${state.data.photo})"` : ''}>${!state.data.photo ? initials : ''}</div>
-      <div class="photo-upload-text">
-        <button class="photo-upload-btn" id="photoUploadBtn">Upload a photo</button>
-        <div class="photo-upload-sub">Optional. If empty, your initials are shown.</div>
-        <input type="file" id="photoInput" accept="image/*" style="display: none;">
-      </div>
-    </div>
-
-    <div class="field">
-      <div class="field-label">Your name <span class="field-required">REQUIRED</span></div>
-      <input type="text" class="input" id="name" value="${escapeHtml(state.data.name)}" placeholder="e.g. Sarah Chen">
-    </div>
-
-    <div class="field">
-      <div class="field-label">Role / title <span class="field-required">REQUIRED</span></div>
-      <input type="text" class="input" id="role" value="${escapeHtml(state.data.role)}" placeholder="e.g. Principal at ABC Ventures">
-    </div>
-
-    <div class="field">
-      <div class="field-label">Brand / company <span class="field-hint">Optional</span></div>
-      <input type="text" class="input" id="company" value="${escapeHtml(state.data.company)}" placeholder="e.g. ABC Ventures">
-    </div>
-
-    <div class="field">
-      <div class="field-label">One-line intro <span class="field-hint">Optional \u00b7 shown on your public card</span></div>
-      <input type="text" class="input" id="intro" value="${escapeHtml(state.data.intro)}" placeholder="The first thing someone reads on your card">
-    </div>
-  `;
-}
-
-// ===== STEP 3: HOW YOU HELP =====
-function renderHowYouHelpStep() {
-  return `
-    <div class="step-eyebrow">Step 2 of 6 \u00b7 Profile setup</div>
-    <h1 class="step-headline">How do you <em>help</em>?</h1>
-    <p class="step-sub">What you offer and who it\u2019s for. This is what makes someone think &ldquo;that\u2019s me.&rdquo;</p>
+    <div class="step-eyebrow">Step 3 · What Do You Do?</div>
+    <h1 class="step-headline">What do you <em>do</em>?</h1>
+    <p class="step-sub">Describe what you do in one or two sentences. This helps visitors understand how you create value.</p>
 
     <div class="field">
       <div class="field-label">What you do, in one sentence <span class="field-required">REQUIRED</span></div>
-      <textarea class="textarea" id="whatYouDo" placeholder="A clear, specific sentence about what you do and who you do it for.">${escapeHtml(state.data.whatYouDo)}</textarea>
-    </div>
-
-    <div class="field">
-      <div class="field-label">
-        Pain points you solve
-        <span class="field-hint">At least 1 \u00b7 these are what stop people scrolling</span>
-      </div>
-      <div style="display: flex; flex-direction: column; gap: 8px;">
-        ${[0, 1, 2].map(i => `
-          <input type="text" class="input pain-input" data-idx="${i}" value="${escapeHtml(state.data.painPoints[i] || '')}" placeholder="Pain point ${i + 1}">
-        `).join('')}
-      </div>
-    </div>
-
-    <div class="field">
-      <div class="field-label">Ways to work together <span class="field-required">REQUIRED</span></div>
-      <input type="text" class="input" id="waysToWork" value="${escapeHtml(state.data.waysToWork[0] || '')}" placeholder="e.g. Consulting, workshops, advisory">
-    </div>
-
-    <div class="field">
-      <div class="field-label">Top focus right now <span class="field-hint">Optional</span></div>
-      <input type="text" class="input" id="topFocus" value="${escapeHtml(state.data.topFocus)}" placeholder="Your current initiative or offer">
+      <textarea class="textarea" id="whatYouDo" placeholder="e.g. I help organisations improve product adoption, customer engagement and revenue growth through product strategy and AI-enabled solutions.">${escapeHtml(state.data.whatYouDo)}</textarea>
     </div>
   `;
 }
 
-// ===== STEP 4: HOW TO REACH YOU =====
+// ===== STEP 4: CAN YOU RELATE TO THIS =====
+function renderCanYouRelateStep() {
+  const placeholders = [
+    'I meet great people but struggle to follow up consistently.',
+    'I have too many priorities competing for my attention.',
+    'I know I need to leverage AI, but I don’t know where to start.',
+    'We are investing in new initiatives, but adoption remains low.',
+    'We have plenty of ideas but struggle to turn them into action.'
+  ];
+  return `
+    <div class="step-eyebrow">Step 4 · Can You Relate To This?</div>
+    <h1 class="step-headline">Can you relate to <em>this</em>?</h1>
+    <p class="step-sub">Describe the challenges your audience commonly experiences. Write each one as a recognition hook that feels familiar and relatable, as if the visitor is thinking: “That’s exactly my situation.”</p>
+
+    <div class="field">
+      <div class="field-label">
+        Recognition hooks
+        <span class="field-hint">At least 1 · 3–5 recommended</span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        ${[0, 1, 2, 3, 4].map(i => `
+          <input type="text" class="input relate-input" data-idx="${i}" value="${escapeHtml((state.data.canYouRelate || [])[i] || '')}" placeholder="${escapeHtml(placeholders[i])}">
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// ===== STEP 5: WAYS WE COULD WORK TOGETHER =====
+function renderWaysToWorkStep() {
+  return `
+    <div class="step-eyebrow">Step 5 · Ways We Could Work Together</div>
+    <h1 class="step-headline">Ways we could <em>work together</em>.</h1>
+    <p class="step-sub">List the products, services, experiences or opportunities people can engage with.</p>
+
+    <div class="field">
+      <div class="field-label">Ways we could work together <span class="field-required">REQUIRED</span></div>
+      <input type="text" class="input" id="waysToWork" value="${escapeHtml(state.data.waysToWork[0] || '')}" placeholder="e.g. Product Strategy Consulting, AI Opportunity Workshops, Speaking Engagements">
+    </div>
+  `;
+}
+
+// ===== STEP 6: TOP FOCUS RIGHT NOW =====
+function renderTopFocusStep() {
+  return `
+    <div class="step-eyebrow">Step 6 · Top Focus Right Now</div>
+    <h1 class="step-headline">Top focus <em>right now</em>.</h1>
+    <p class="step-sub">What would you like people viewing your profile to know about your current priority?</p>
+
+    <div class="field">
+      <div class="field-label">Top focus right now <span class="field-required">REQUIRED</span></div>
+      <input type="text" class="input" id="topFocus" value="${escapeHtml(state.data.topFocus)}" placeholder="e.g. Currently looking for pilot customers for TAPDconnex and strategic event partnerships.">
+    </div>
+  `;
+}
+
+// ===== STEP 7: HOW SHOULD WE REACH YOU =====
 function renderReachStep() {
   const channels = [
     { id: 'whatsapp', label: 'WhatsApp' },
@@ -1153,7 +1277,7 @@ function renderReachStep() {
   ];
 
   return `
-    <div class="step-eyebrow">Step 3 of 6 \u00b7 Profile setup</div>
+    <div class="step-eyebrow">Step 7 · How Should We Reach You?</div>
     <h1 class="step-headline">How should people <em>reach</em> you?</h1>
     <p class="step-sub">Your preferred follow-up channel is where TAPD prepares messages first. The others stay available on your card.</p>
 
@@ -1170,12 +1294,7 @@ function renderReachStep() {
 
     <div class="field">
       <div class="field-label">WhatsApp number <span class="field-hint">Used for the Continue on WhatsApp button</span></div>
-      <input type="tel" class="input" id="whatsapp" value="${escapeHtml(state.data.whatsapp)}" placeholder="+44 7XXX XXX XXX">
-    </div>
-
-    <div class="field">
-      <div class="field-label">Email <span class="field-hint">Optional</span></div>
-      <input type="email" class="input" id="email" value="${escapeHtml(state.data.email)}" placeholder="hello@yourdomain.com">
+      <input type="tel" class="input" id="whatsapp" value="${escapeHtml(state.data.whatsapp)}" placeholder="+27 7X XXX XXXX">
     </div>
 
     <div class="field">
@@ -1187,15 +1306,25 @@ function renderReachStep() {
       <div class="field-label">Instagram <span class="field-hint">Optional</span></div>
       <input type="text" class="input" id="instagram" value="${escapeHtml(state.data.instagram)}" placeholder="@yourhandle">
     </div>
+
+    <div class="field">
+      <div class="field-label">Website <span class="field-hint">Optional</span></div>
+      <input type="url" class="input" id="website" value="${escapeHtml(state.data.website)}" placeholder="https://yourwebsite.com">
+    </div>
+
+    <div class="field">
+      <div class="field-label">Email <span class="field-hint">Optional</span></div>
+      <input type="email" class="input" id="email" value="${escapeHtml(state.data.email)}" placeholder="hello@yourdomain.com">
+    </div>
   `;
 }
 
-// ===== STEP 5: OWNER STYLE =====
-function renderVoiceStep() {
+// ===== STEP 8: MESSAGE STYLE & VOICE INTRODUCTION =====
+function renderMessageStyleStep() {
   return `
-    <div class="step-eyebrow">Step 4 of 6 \u00b7 Profile setup</div>
+    <div class="step-eyebrow">Step 8 · Message Style & Voice Introduction</div>
     <h1 class="step-headline">Your follow-up <em>voice</em>.</h1>
-    <p class="step-sub">Set this once. TAPD uses it every time it prepares a message after a capture. The bracketed parts like <code>[First name]</code> are filled in automatically \u2014 don\u2019t change them. Everything else is your voice.</p>
+    <p class="step-sub">Set this once. TAPD uses it every time it prepares a message after a capture. The bracketed parts like <code>[First name]</code> are filled in automatically — don’t change them. Everything else is your voice.</p>
 
     <div class="field">
       <div class="field-label">Greeting</div>
@@ -1232,6 +1361,11 @@ function renderVoiceStep() {
       <textarea class="textarea voice-input" data-field="voiceAvoid" placeholder="e.g. No hard selling. Never sound like a template. Avoid exclamation marks and hype.">${escapeHtml(state.data.voiceAvoid)}</textarea>
     </div>
 
+    <div class="field">
+      <div class="field-label">Voice introduction <span class="field-hint">Optional · 30–60 seconds later</span></div>
+      <textarea class="textarea" id="voiceIntro" placeholder="Record a short introduction so people can remember who they met. For now, you can write the script here.">${escapeHtml(state.data.voiceIntro)}</textarea>
+    </div>
+
     <div class="style-preview">
       <div class="style-preview-label">Live preview with sample details</div>
       <div class="style-preview-message" id="voicePreview"></div>
@@ -1239,11 +1373,11 @@ function renderVoiceStep() {
   `;
 }
 
-// ===== STEP 6: NFC SETUP =====
+// ===== STEP 9: NFC SETUP =====
 function renderNFCStep() {
   const username = state.data.username || (state.data.name || '').toLowerCase().replace(/[^a-z]/g, '');
   return `
-    <div class="step-eyebrow">Step 5 of 6 \u00b7 Profile setup</div>
+    <div class="step-eyebrow">Step 9 · Set Up Your NFC</div>
     <h1 class="step-headline">Set up your <em>NFC</em> card.</h1>
     <p class="step-sub">Your physical card carries the link to your TAPD profile. Anyone who taps it sees your page.</p>
 
@@ -1266,26 +1400,26 @@ function renderNFCStep() {
     <div class="nfc-steps">
       <div class="nfc-step">
         <div class="nfc-step-num">1</div>
-        <div class="nfc-step-text"><strong>Download NFC Tools</strong> \u2014 free on iOS &amp; Android. Search &ldquo;NFC Tools&rdquo; by wakdev.</div>
+        <div class="nfc-step-text"><strong>Download NFC Tools</strong> — free on iOS &amp; Android. Search “NFC Tools” by wakdev.</div>
       </div>
       <div class="nfc-step">
         <div class="nfc-step-num">2</div>
-        <div class="nfc-step-text"><strong>Write your URL to the card</strong> \u2014 In NFC Tools: tap Write \u2192 Add a record \u2192 URL/URI \u2192 paste your profile link \u2192 Write/OK \u2192 hold phone to the card.</div>
+        <div class="nfc-step-text"><strong>Write your URL to the card</strong> — In NFC Tools: tap Write → Add a record → URL/URI → paste your profile link → Write/OK → hold phone to the card.</div>
       </div>
       <div class="nfc-step">
         <div class="nfc-step-num">3</div>
-        <div class="nfc-step-text"><strong>Test it</strong> \u2014 Lock your phone and hold it near the card. Your profile should open instantly.</div>
+        <div class="nfc-step-text"><strong>Test it</strong> — Lock your phone and hold it near the card. Your profile should open instantly.</div>
       </div>
     </div>
   `;
 }
 
-// ===== STEP 7: TEMPLATES =====
+// ===== STEP 10: TEMPLATES =====
 function renderTemplatesStep() {
   return `
-    <div class="step-eyebrow">Step 6 of 6 \u00b7 Profile setup</div>
+    <div class="step-eyebrow">Step 10 · Capture Templates</div>
     <h1 class="step-headline">Your <em>capture</em> templates.</h1>
-    <p class="step-sub">Before every capture you\u2019ll pick a template \u2014 it tells the AI what to listen for. Tap any template below to see what it captures and how to use it. Pro templates are coming soon.</p>
+    <p class="step-sub">Before every capture you’ll pick a template — it tells the AI what to listen for. Tap any template below to see what it captures and how to use it. Pro templates are coming soon.</p>
 
     <div class="template-list" id="templateList">
       ${TEMPLATES.map(t => `
@@ -1303,7 +1437,7 @@ function renderTemplatesStep() {
             <div class="template-fields">
               ${t.fields.map(f => `<span class="template-field">${f}</span>`).join('')}
             </div>
-            <div class="template-section-label">Cheat sheet \u2014 what to capture during the conversation</div>
+            <div class="template-section-label">Cheat sheet — what to capture during the conversation</div>
             <ul class="template-cheat-list">
               ${t.cheatSheet.map(c => `<li>${c}</li>`).join('')}
             </ul>
@@ -1318,14 +1452,14 @@ function renderTemplatesStep() {
   `;
 }
 
-// ===== STEP 8: CARD LIVE =====
+// ===== STEP 11: CARD LIVE =====
 function renderCardLiveStep() {
   const username = state.data.username || (state.data.name || 'you').toLowerCase().replace(/[^a-z]/g, '');
   return `
     <div class="live-celebration">
-      <div class="live-mark">\u2713</div>
-      <h1 class="step-headline">Your card is <em>live</em>.</h1>
-      <p class="step-sub" style="max-width: 480px; margin-left: auto; margin-right: auto;">Program the URL below onto your physical NFC card. Every tap opens your profile. You\u2019re ready to capture your first conversation.</p>
+      <div class="live-mark">✓</div>
+      <h1 class="step-headline">Your profile is <em>ready</em>.</h1>
+      <p class="step-sub" style="max-width: 480px; margin-left: auto; margin-right: auto;">Copy your profile URL, write it to your NFC tag, then test it by tapping your tag.</p>
 
       <div class="profile-link-box">
         <div class="profile-link-info">
@@ -1335,7 +1469,26 @@ function renderCardLiveStep() {
         <button class="copy-btn" id="copyFinalBtn">Copy</button>
       </div>
 
-      <button class="skip-link" id="viewAsVisitor">Preview my card as a visitor &rarr;</button>
+      <div class="nfc-steps">
+        <div class="nfc-step">
+          <div class="nfc-step-num">1</div>
+          <div class="nfc-step-text">Copy your profile URL.</div>
+        </div>
+        <div class="nfc-step">
+          <div class="nfc-step-num">2</div>
+          <div class="nfc-step-text">Open NFC Tools.</div>
+        </div>
+        <div class="nfc-step">
+          <div class="nfc-step-num">3</div>
+          <div class="nfc-step-text">Add Record → URL/URI → paste your profile URL → write to NFC tag.</div>
+        </div>
+        <div class="nfc-step">
+          <div class="nfc-step-num">4</div>
+          <div class="nfc-step-text">Test by tapping your tag.</div>
+        </div>
+      </div>
+
+      <button class="skip-link" id="viewAsVisitor">Preview my card as a visitor →</button>
     </div>
   `;
 }
@@ -1344,7 +1497,6 @@ function renderCardLiveStep() {
 function bindStepEvents() {
   const step = state.currentStep;
 
-  // Step 0: Plan toggle (preview)
   if (step === 0) {
     const pt = document.getElementById('planToggle');
     if (pt) pt.addEventListener('click', (e) => {
@@ -1352,41 +1504,16 @@ function bindStepEvents() {
       if (!btn) return;
       state.data.plan = btn.dataset.plan;
       save();
-      try { if (window.TapdSync) TapdSync.pushProfile(state.data, state.data.plan); } catch (e) {}
       render();
     });
   }
 
-  // Step 1: Intent
   if (step === 1) {
-    document.querySelectorAll('[data-intent]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const intent = btn.dataset.intent;
-        if (btn.classList.contains('option')) {
-          state.data.intentPrimary = intent;
-          document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
-          btn.classList.add('selected');
-        } else {
-          if (state.data.intentSecondary.includes(intent)) {
-            state.data.intentSecondary = state.data.intentSecondary.filter(i => i !== intent);
-            btn.classList.remove('selected');
-          } else {
-            state.data.intentSecondary.push(intent);
-            btn.classList.add('selected');
-          }
-        }
-        validateStep();
-        save();
-      });
-    });
-  }
+    const uploadBtn = document.getElementById('photoUploadBtn');
+    if (uploadBtn) uploadBtn.addEventListener('click', () => document.getElementById('photoInput').click());
 
-  // Step 2: Who you are
-  if (step === 2) {
-    document.getElementById('photoUploadBtn').addEventListener('click', () => {
-      document.getElementById('photoInput').click();
-    });
-    document.getElementById('photoInput').addEventListener('change', (e) => {
+    const photoInput = document.getElementById('photoInput');
+    if (photoInput) photoInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (!file) return;
       const reader = new FileReader();
@@ -1399,76 +1526,128 @@ function bindStepEvents() {
       };
       reader.readAsDataURL(file);
     });
-    ['name', 'role', 'company', 'intro'].forEach(field => {
+
+    ['firstName', 'surname', 'role', 'company', 'intro'].forEach(field => {
       const el = document.getElementById(field);
       if (el) el.addEventListener('input', () => {
         state.data[field] = el.value;
+        syncName();
         validateStep();
+        updateProgressOnly();
         save();
       });
     });
   }
 
-  // Step 3: How you help
+  if (step === 2) {
+    document.querySelectorAll('[data-primary-focus]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.data.networkingPrimary = btn.dataset.primaryFocus;
+        state.data.intentPrimary = btn.dataset.primaryFocus;
+        document.querySelectorAll('[data-primary-focus]').forEach(o => o.classList.remove('selected'));
+        btn.classList.add('selected');
+        validateStep();
+        updateProgressOnly();
+        save();
+      });
+    });
+    document.querySelectorAll('[data-secondary-focus]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const selected = btn.dataset.secondaryFocus;
+        state.data.networkingSecondary = state.data.networkingSecondary === selected ? null : selected;
+        state.data.intentSecondary = state.data.networkingSecondary ? [state.data.networkingSecondary] : [];
+        document.querySelectorAll('[data-secondary-focus]').forEach(o => o.classList.remove('selected'));
+        if (state.data.networkingSecondary) btn.classList.add('selected');
+        updateProgressOnly();
+        save();
+      });
+    });
+  }
+
   if (step === 3) {
-    document.getElementById('whatYouDo').addEventListener('input', (e) => {
+    const el = document.getElementById('whatYouDo');
+    if (el) el.addEventListener('input', (e) => {
       state.data.whatYouDo = e.target.value;
       validateStep();
-      save();
-    });
-    document.querySelectorAll('.pain-input').forEach(input => {
-      input.addEventListener('input', (e) => {
-        state.data.painPoints[e.target.dataset.idx] = e.target.value;
-        validateStep();
-        save();
-      });
-    });
-    document.getElementById('waysToWork').addEventListener('input', (e) => {
-      state.data.waysToWork[0] = e.target.value;
-      validateStep();
-      save();
-    });
-    document.getElementById('topFocus').addEventListener('input', (e) => {
-      state.data.topFocus = e.target.value;
+      updateProgressOnly();
       save();
     });
   }
 
-  // Step 4: How to reach
   if (step === 4) {
+    document.querySelectorAll('.relate-input').forEach(input => {
+      input.addEventListener('input', (e) => {
+        const idx = Number(e.target.dataset.idx);
+        state.data.canYouRelate[idx] = e.target.value;
+        state.data.painPoints = state.data.canYouRelate.slice(0, 3);
+        validateStep();
+        updateProgressOnly();
+        save();
+      });
+    });
+  }
+
+  if (step === 5) {
+    const el = document.getElementById('waysToWork');
+    if (el) el.addEventListener('input', (e) => {
+      state.data.waysToWork[0] = e.target.value;
+      validateStep();
+      updateProgressOnly();
+      save();
+    });
+  }
+
+  if (step === 6) {
+    const el = document.getElementById('topFocus');
+    if (el) el.addEventListener('input', (e) => {
+      state.data.topFocus = e.target.value;
+      validateStep();
+      updateProgressOnly();
+      save();
+    });
+  }
+
+  if (step === 7) {
     document.querySelectorAll('[data-channel]').forEach(btn => {
       btn.addEventListener('click', () => {
         state.data.preferredChannel = btn.dataset.channel;
         document.querySelectorAll('[data-channel]').forEach(b => b.classList.remove('selected'));
         btn.classList.add('selected');
         validateStep();
+        updateProgressOnly();
         save();
       });
     });
-    ['whatsapp', 'email', 'linkedin', 'instagram'].forEach(field => {
+    ['whatsapp', 'email', 'linkedin', 'instagram', 'website'].forEach(field => {
       const el = document.getElementById(field);
       if (el) el.addEventListener('input', () => {
         state.data[field] = el.value;
         validateStep();
+        updateProgressOnly();
         save();
       });
     });
   }
 
-  // Step 5: Voice + live preview
-  if (step === 5) {
+  if (step === 8) {
     document.querySelectorAll('.voice-input').forEach(input => {
       input.addEventListener('input', (e) => {
         state.data[e.target.dataset.field] = e.target.value;
         renderVoicePreview();
+        validateStep();
+        updateProgressOnly();
         save();
       });
+    });
+    const voiceIntro = document.getElementById('voiceIntro');
+    if (voiceIntro) voiceIntro.addEventListener('input', (e) => {
+      state.data.voiceIntro = e.target.value;
+      save();
     });
     renderVoicePreview();
   }
 
-  // Step 6: NFC
-  if (step === 6) {
+  if (step === 9) {
     document.getElementById('username').addEventListener('input', (e) => {
       const clean = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
       e.target.value = clean;
@@ -1484,8 +1663,7 @@ function bindStepEvents() {
     });
   }
 
-  // Step 7: Templates
-  if (step === 7) {
+  if (step === 10) {
     document.querySelectorAll('.template-card').forEach(card => {
       card.addEventListener('click', () => {
         if (card.classList.contains('pro-locked')) {
@@ -1500,8 +1678,7 @@ function bindStepEvents() {
     });
   }
 
-  // Step 8: Card live
-  if (step === 8) {
+  if (step === 11) {
     const copyBtn = document.getElementById('copyFinalBtn');
     if (copyBtn) {
       copyBtn.addEventListener('click', () => {
@@ -1520,20 +1697,23 @@ function bindStepEvents() {
   }
 }
 
+function updateProgressOnly() {
+  const bar = document.getElementById('progressBar');
+  if (bar) bar.style.width = `${calculateCompletionPercent()}%`;
+}
+
 function renderVoicePreview() {
   const sample = {
-    '[First name]': 'Sarah',
+    '[First name]': state.data.firstName || 'Sarah',
     '[Where we met]': 'the SaaS Summit',
     '[What we discussed]': 'how AI is reshaping early-stage operations',
-    '[Next step]': 'I\u2019ll send the deck on Monday and we can lock in a 30-min call.',
+    '[Next step]': 'I’ll send the deck on Monday and we can lock in a 30-min call.',
     '[My name]': state.data.name || 'You'
   };
 
   const fill = (text) => {
-    let out = text;
-    Object.keys(sample).forEach(k => {
-      out = out.replaceAll(k, sample[k]);
-    });
+    let out = text || '';
+    Object.keys(sample).forEach(k => { out = out.replaceAll(k, sample[k]); });
     return out;
   };
 
@@ -1558,15 +1738,23 @@ function validateStep() {
   let valid = true;
 
   if (step === 1) {
-    valid = !!state.data.intentPrimary;
+    valid = !!(state.data.firstName && state.data.surname && state.data.role && state.data.company && state.data.intro);
   } else if (step === 2) {
-    valid = !!(state.data.name && state.data.role);
+    valid = !!state.data.networkingPrimary;
   } else if (step === 3) {
-    valid = !!(state.data.whatYouDo && state.data.painPoints.some(p => p.length > 0) && state.data.waysToWork[0]);
+    valid = !!state.data.whatYouDo;
   } else if (step === 4) {
+    valid = !!(state.data.canYouRelate || []).some(p => String(p || '').trim().length > 0);
+  } else if (step === 5) {
+    valid = !!(state.data.waysToWork && state.data.waysToWork[0]);
+  } else if (step === 6) {
+    valid = !!state.data.topFocus;
+  } else if (step === 7) {
     const ch = state.data.preferredChannel;
     const fieldFor = { whatsapp: 'whatsapp', email: 'email', linkedin: 'linkedin' };
     valid = !!(ch && fieldFor[ch] && state.data[fieldFor[ch]]);
+  } else if (step === 8) {
+    valid = !!(state.data.greeting && state.data.opening && state.data.conversationRef && state.data.nextStepStyle && state.data.signOff);
   }
 
   document.getElementById('nextBtn').disabled = !valid;
@@ -1579,9 +1767,7 @@ document.getElementById('nextBtn').addEventListener('click', () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     render();
   } else {
-    // Final step \u2014 hand off to Hub
     save();
-    try { if (window.TapdSync) TapdSync.pushProfile(state.data, state.data.plan); } catch (e) {}
     window.location.href = 'index.html';
   }
 });
