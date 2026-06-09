@@ -1239,249 +1239,6 @@
 
   .hub-nav-link { font-size:13px; color:var(--text-secondary); text-decoration:none; padding:6px 12px; border-radius:999px; border:1px solid var(--border-soft); transition:all 0.15s; }
   .hub-nav-link:hover { color:var(--accent); border-color:var(--accent); }
-
-  /* ============ PRO UPGRADE / RELATIONSHIP INTELLIGENCE ============ */
-  .pro-intelligence {
-    margin: 0 var(--space-5) var(--space-5);
-    background: linear-gradient(135deg, rgba(255,255,255,.92), rgba(251,248,242,.96));
-    border: 1px solid var(--border-soft);
-    border-radius: var(--radius-xl);
-    padding: var(--space-5);
-    box-shadow: var(--shadow-sm);
-  }
-  .pro-intelligence-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: var(--space-4);
-    margin-bottom: var(--space-4);
-  }
-  .pro-kicker {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 6px;
-    font-weight: 700;
-  }
-  .pro-intelligence-title {
-    font-family: var(--font-display);
-    font-size: 22px;
-    font-weight: 600;
-    letter-spacing: -.01em;
-    line-height: 1.2;
-  }
-  .pro-intelligence-title em {
-    color: var(--accent);
-    font-style: italic;
-    font-weight: 400;
-  }
-  .pro-lock-pill {
-    flex-shrink: 0;
-    border: 1px solid #E7CED6;
-    background: #F8EAF0;
-    color: #7C2D3F;
-    border-radius: var(--radius-pill);
-    padding: 7px 11px;
-    font-family: var(--font-mono);
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: .08em;
-    font-weight: 700;
-  }
-  .pro-intelligence-copy {
-    color: var(--text-secondary);
-    font-size: 14px;
-    line-height: 1.55;
-    margin-bottom: var(--space-4);
-  }
-  .pro-intelligence-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0,1fr));
-    gap: var(--space-3);
-    margin-bottom: var(--space-4);
-  }
-  .pro-mini-card {
-    background: var(--surface);
-    border: 1px solid var(--border-soft);
-    border-radius: var(--radius-md);
-    padding: var(--space-4);
-  }
-  .pro-mini-label {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 6px;
-  }
-  .pro-mini-value {
-    font-family: var(--font-display);
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--text-primary);
-  }
-  .pro-locked-action {
-    width: 100%;
-    min-height: 48px;
-    border: 1px solid #D8B7C2;
-    background: #7C2D3F;
-    color: #fff;
-    border-radius: var(--radius-md);
-    font-family: var(--font-body);
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-  }
-  .pro-locked-action:hover { filter: brightness(.96); }
-
-  .card-intel-lock {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-2);
-    margin: 0 0 var(--space-4);
-  }
-  .intel-lock-btn {
-    border: 1px solid var(--border-soft);
-    background: var(--surface-warm);
-    color: var(--text-secondary);
-    border-radius: var(--radius-md);
-    padding: 10px 12px;
-    cursor: pointer;
-    text-align: left;
-    transition: all .15s ease;
-  }
-  .intel-lock-btn:hover {
-    border-color: #7C2D3F;
-    color: #7C2D3F;
-    background: #FAF2F4;
-  }
-  .intel-lock-label {
-    display: block;
-    font-family: var(--font-mono);
-    font-size: 9px;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 4px;
-  }
-  .intel-lock-value {
-    font-size: 13px;
-    font-weight: 700;
-  }
-
-  .upgrade-modal .modal { max-width: 760px; }
-  .upgrade-table {
-    width: 100%;
-    border-collapse: collapse;
-    overflow: hidden;
-    border: 1px solid var(--border-soft);
-    border-radius: var(--radius-md);
-    margin: var(--space-4) 0;
-    background: var(--surface);
-  }
-  .upgrade-table th, .upgrade-table td {
-    padding: 11px 10px;
-    border-bottom: 1px solid var(--border-soft);
-    font-size: 12px;
-    text-align: left;
-    vertical-align: top;
-  }
-  .upgrade-table th {
-    background: var(--surface-warm);
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-  }
-  .upgrade-table tr:last-child td { border-bottom: none; }
-  .upgrade-table td:nth-child(3) { color: #7C2D3F; font-weight: 700; }
-  .feature-explain {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--space-2);
-    margin-top: var(--space-4);
-  }
-  .feature-row {
-    background: var(--surface-warm);
-    border: 1px solid var(--border-soft);
-    border-radius: var(--radius-md);
-    padding: var(--space-3);
-  }
-  .feature-row strong {
-    display: block;
-    font-size: 13px;
-    margin-bottom: 3px;
-    color: var(--text-primary);
-  }
-  .feature-row span {
-    display: block;
-    font-size: 12px;
-    color: var(--text-secondary);
-    line-height: 1.45;
-  }
-  .upgrade-actions {
-    display: flex;
-    gap: var(--space-3);
-    margin-top: var(--space-5);
-    flex-wrap: wrap;
-  }
-
-  .tapd-capture-fab {
-    position: fixed;
-    right: 18px;
-    bottom: 20px;
-    width: 74px;
-    height: 74px;
-    border-radius: 50%;
-    border: 1px solid rgba(216,166,55,.62);
-    background: radial-gradient(circle at 35% 22%, #FFEBA3 0%, #E7B948 46%, #B87A16 72%, #6F4510 100%);
-    box-shadow: inset 0 3px 12px rgba(255,255,255,.46), inset 0 -8px 16px rgba(72,43,7,.28), 0 12px 34px rgba(216,166,55,.34);
-    color: #181410;
-    display: grid;
-    place-items: center;
-    text-decoration: none;
-    font-size: 30px;
-    z-index: 75;
-    animation: captureFabBreath 4s ease-in-out infinite;
-  }
-  .tapd-capture-fab:before {
-    content: '';
-    position: absolute;
-    inset: -9px;
-    border-radius: 50%;
-    border: 1px solid rgba(216,166,55,.34);
-    animation: captureFabRing 4s ease-out infinite;
-  }
-  .tapd-capture-fab span {
-    position: absolute;
-    right: 82px;
-    white-space: nowrap;
-    background: var(--text-primary);
-    color: var(--bg);
-    border-radius: var(--radius-pill);
-    padding: 9px 12px;
-    font-size: 12px;
-    font-weight: 800;
-    box-shadow: var(--shadow-lg);
-  }
-  @keyframes captureFabBreath {
-    50% { transform: scale(1.035); box-shadow: inset 0 3px 12px rgba(255,255,255,.56), inset 0 -8px 16px rgba(72,43,7,.22), 0 14px 42px rgba(216,166,55,.48); }
-  }
-  @keyframes captureFabRing {
-    0% { transform: scale(.94); opacity: .6; }
-    78% { transform: scale(1.22); opacity: 0; }
-    100% { opacity: 0; }
-  }
-
-  @media (max-width: 640px) {
-    .pro-intelligence-grid { grid-template-columns: 1fr; }
-    .card-intel-lock { grid-template-columns: 1fr; }
-    .tapd-capture-fab span { display:none; }
-  }
-
 </style>
 </head>
 <body>
@@ -1500,9 +1257,8 @@
       </div>
     </div></a>
     <div style="display:flex;align-items:center;gap:10px;">
-      <a href="onboarding.html?step=8" class="hub-nav-link">Profile</a>
+      <a href="capture.html" class="hub-nav-link">Capture</a>
       <a href="templates.html" class="hub-nav-link">Templates</a>
-      <a href="landing.html" class="hub-nav-link">Share</a>
       <button class="profile-button" id="profileButton">
         <span class="profile-dot"></span>
         <span>Profile</span>
@@ -1523,27 +1279,6 @@
 
   <!-- ============ NEEDS A NAME BANNER ============ -->
   <div id="needsNameBanner"></div>
-
-  <!-- ============ RELATIONSHIP INTELLIGENCE (PRO) ============ -->
-  <section class="pro-intelligence">
-    <div class="pro-intelligence-head">
-      <div>
-        <div class="pro-kicker">Pro intelligence</div>
-        <div class="pro-intelligence-title">Unlock deeper <em>relationship intelligence</em>.</div>
-      </div>
-      <div class="pro-lock-pill">Starter view</div>
-    </div>
-    <p class="pro-intelligence-copy">
-      Starter shows the relationship record and next step. Pro adds signal strength, momentum, missing context, missing next-step detection and profile-aware relationship records.
-    </p>
-    <div class="pro-intelligence-grid">
-      <div class="pro-mini-card"><div class="pro-mini-label">Signal Strength</div><div class="pro-mini-value">Locked</div></div>
-      <div class="pro-mini-card"><div class="pro-mini-label">Momentum</div><div class="pro-mini-value">Locked</div></div>
-      <div class="pro-mini-card"><div class="pro-mini-label">Missing Context</div><div class="pro-mini-value">Locked</div></div>
-      <div class="pro-mini-card"><div class="pro-mini-label">Next-Step Quality</div><div class="pro-mini-value">Locked</div></div>
-    </div>
-    <button class="pro-locked-action" data-action="open-upgrade">Unlock Relationship Intelligence</button>
-  </section>
 
   <!-- ============ EVENT FILTER ============ -->
   <div class="filter-row" id="filterRow">
@@ -1579,12 +1314,7 @@
 
 </div>
 
-<a class="tapd-capture-fab" href="capture.html" aria-label="Capture this moment">
-  👥
-  <span>Capture This Moment</span>
-</a>
-
-<!-- ============ INTENT MODAL (Removed from flow, kept hidden for compatibility) ============ -->
+<!-- ============ INTENT MODAL (Onboarding) ============ -->
 <div class="modal-backdrop" id="intentModal">
   <div class="modal">
     <div class="modal-head">
@@ -1760,55 +1490,6 @@
       <div class="confidence-actions">
         <button class="btn-confirm-no" id="confirmNo">Wrong person</button>
         <button class="btn-confirm-yes" id="confirmYes">Yes &mdash; send</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-<!-- ============ STARTER VS PRO UPGRADE MODAL ============ -->
-<div class="modal-backdrop upgrade-modal" id="upgradeModal">
-  <div class="modal">
-    <div class="modal-head">
-      <div>
-        <div class="modal-title">Unlock TAPDconnex Pro</div>
-        <div class="modal-subtitle">Starter helps you remember the conversation. Pro helps you understand which relationships deserve attention and what to do next.</div>
-      </div>
-      <button class="modal-close" data-close-modal="upgradeModal">&times;</button>
-    </div>
-    <div class="modal-body">
-      <table class="upgrade-table">
-        <thead><tr><th>Feature</th><th>Starter</th><th>Pro</th></tr></thead>
-        <tbody>
-          <tr><td>Recording length</td><td>5 min</td><td>10 min</td></tr>
-          <tr><td>Continuation recording</td><td>&mdash;</td><td>Additional 5 min</td></tr>
-          <tr><td>Merge recordings into one outcome</td><td>&mdash;</td><td>Yes</td></tr>
-          <tr><td>Opportunity template</td><td>Yes</td><td>Yes</td></tr>
-          <tr><td>Pro networking templates</td><td>View only</td><td>Yes</td></tr>
-          <tr><td>Edit templates</td><td>1 Starter template</td><td>All templates</td></tr>
-          <tr><td>Save to Relationship Hub</td><td>Yes</td><td>Yes</td></tr>
-          <tr><td>Signal capture</td><td>Basic</td><td>Advanced</td></tr>
-          <tr><td>Momentum detection</td><td>Basic</td><td>Advanced</td></tr>
-          <tr><td>Missing context detection</td><td>&mdash;</td><td>Yes</td></tr>
-          <tr><td>Missing next-step detection</td><td>&mdash;</td><td>Yes</td></tr>
-          <tr><td>Profile-aware relationship records</td><td>Basic</td><td>Enhanced</td></tr>
-          <tr><td>AI structured outcomes</td><td>Basic</td><td>Enhanced</td></tr>
-          <tr><td>Relationship intelligence</td><td>&mdash;</td><td>Yes</td></tr>
-        </tbody>
-      </table>
-
-      <div class="feature-explain">
-        <div class="feature-row"><strong>Advanced Signal Capture</strong><span>Identifies urgency, authority, budget, influence, partnership potential, hiring intent, buying intent, and opportunity signals.</span></div>
-        <div class="feature-row"><strong>Advanced Momentum Detection</strong><span>Understands whether the relationship is dormant, warm, active, advancing, or becoming an opportunity.</span></div>
-        <div class="feature-row"><strong>Missing Context Detection</strong><span>Shows important information not captured during the conversation.</span></div>
-        <div class="feature-row"><strong>Missing Next-Step Detection</strong><span>Highlights vague follow-ups and prompts for clearer actions.</span></div>
-        <div class="feature-row"><strong>Profile-Aware Records</strong><span>Uses your profile, focus areas, and networking goals to create more relevant relationship summaries.</span></div>
-        <div class="feature-row"><strong>Merge Recordings</strong><span>Combine multiple recordings into a single relationship record for richer context.</span></div>
-      </div>
-
-      <div class="upgrade-actions">
-        <button class="btn btn-modal btn-primary" id="upgradeToProBtn">Upgrade to Pro</button>
-        <button class="btn btn-modal btn-secondary" data-close-modal="upgradeModal">Continue with Starter</button>
       </div>
     </div>
   </div>
@@ -2075,8 +1756,7 @@ function saveCaptures() {
 // INTENT MODAL
 // ============================================================
 function showIntentModal() {
-  // Networking intent is now captured during onboarding, so the Hub must not ask again.
-  return;
+  document.getElementById('intentModal').classList.add('active');
 }
 function hideIntentModal() {
   document.getElementById('intentModal').classList.remove('active');
@@ -2286,16 +1966,6 @@ function renderCard(c) {
       ${c.secondaryThread ? `<div class="card-secondary" style="font-size:13px;color:var(--text-muted);margin-top:6px;font-style:italic;">${escapeHtml(c.secondaryThread)}</div>` : ''}
       <div class="card-priority" data-priority="${c.priority}">${priorityLabels[c.priority]}</div>
       <div class="card-action">${escapeHtml(c.action)}</div>
-      <div class="card-intel-lock">
-        <button class="intel-lock-btn" data-action="open-upgrade" data-id="${c.id}">
-          <span class="intel-lock-label">Signal Strength</span>
-          <span class="intel-lock-value">Locked 🔒</span>
-        </button>
-        <button class="intel-lock-btn" data-action="open-upgrade" data-id="${c.id}">
-          <span class="intel-lock-label">Momentum</span>
-          <span class="intel-lock-value">Locked 🔒</span>
-        </button>
-      </div>
       <div class="card-footer">
         <div class="card-meta">
           <div class="card-meta-time">${daysText}</div>
@@ -2355,12 +2025,6 @@ function bindCardEvents() {
     btn.addEventListener('click', e => {
       e.stopPropagation();
       openPicker(btn.dataset.id);
-    });
-  });
-  document.querySelectorAll('[data-action="open-upgrade"]').forEach(btn => {
-    btn.addEventListener('click', e => {
-      e.stopPropagation();
-      openUpgradeModal();
     });
   });
 }
@@ -2605,20 +2269,6 @@ function closeProfilePanel() {
 }
 
 // ============================================================
-// STARTER / PRO UPGRADE
-// ============================================================
-function openUpgradeModal() {
-  const modal = document.getElementById('upgradeModal');
-  if (modal) modal.classList.add('active');
-}
-function upgradeToProPreview() {
-  localStorage.setItem('tapd_user_plan', 'pro');
-  showToast('Pro preview unlocked on this device', '\u2713');
-  const modal = document.getElementById('upgradeModal');
-  if (modal) modal.classList.remove('active');
-}
-
-// ============================================================
 // HELPERS
 // ============================================================
 function escapeHtml(s) {
@@ -2698,13 +2348,6 @@ function bindEvents() {
   document.querySelectorAll('.success-option').forEach(btn => {
     btn.addEventListener('click', () => recordSuccessResponse(btn.dataset.success));
   });
-
-  // Upgrade triggers
-  document.querySelectorAll('[data-action="open-upgrade"]').forEach(btn => {
-    btn.addEventListener('click', openUpgradeModal);
-  });
-  const upgradeBtn = document.getElementById('upgradeToProBtn');
-  if (upgradeBtn) upgradeBtn.addEventListener('click', upgradeToProPreview);
 
   // Profile
   document.getElementById('profileButton').addEventListener('click', openProfilePanel);
