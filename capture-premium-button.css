@@ -1,105 +1,230 @@
-/* TAPDconnex Capture Bar v1 — premium relationship capture control */
+/* TAPDconnex Capture Bar v2 — premium relationship capture control
+   Visual source of truth: long black capsule + raised champagne-gold relationship medallion.
+   Meaning: capture a relationship moment, not an audio/media control. */
+
 .capture-btn,
 .capture-cta{
+  --tapd-bar-w: min(520px, 88vw);
+  --tapd-bar-h: 70px;
+  --tapd-medallion: 108px;
   position:relative!important;
-  width:min(520px,88vw)!important;
-  height:64px!important;
-  min-height:64px!important;
+  width:var(--tapd-bar-w)!important;
+  height:var(--tapd-bar-h)!important;
   min-width:0!important;
+  min-height:var(--tapd-bar-h)!important;
   padding:0!important;
   border-radius:999px!important;
-  border:1.5px solid #C9A35B!important;
-  background:linear-gradient(180deg,#1B1B1B 0%,#101010 100%)!important;
-  backdrop-filter:blur(20px)!important;
-  box-shadow:0 10px 30px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.05)!important;
+  border:2px solid #CBA64E!important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,221,139,.07) 0 18%, transparent 42%),
+    linear-gradient(90deg, rgba(255,255,255,.025), transparent 12%, rgba(255,255,255,.035) 50%, transparent 88%, rgba(255,255,255,.025)),
+    linear-gradient(180deg,#1B1813 0%,#080807 52%,#14120F 100%)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.08),
+    inset 0 -14px 26px rgba(0,0,0,.48),
+    0 16px 34px rgba(24,20,16,.18),
+    0 12px 42px rgba(119,79,17,.16),
+    0 0 0 1px rgba(91,62,18,.28)!important;
   display:block!important;
   overflow:visible!important;
   cursor:pointer!important;
-  animation:tapdBarFloat 4s ease-in-out infinite!important;
+  isolation:isolate!important;
+  animation:tapdBarBreathe 5.2s ease-in-out infinite!important;
 }
-.capture-btn:before,
-.capture-cta:before{
-  content:''!important;
-  position:absolute!important;
-  left:14%!important;
-  right:14%!important;
-  top:50%!important;
-  height:1px!important;
-  transform:translateY(-50%)!important;
-  border:0!important;
-  border-radius:0!important;
-  background:linear-gradient(90deg,transparent,rgba(201,163,91,.12),rgba(244,212,140,.72),rgba(201,163,91,.12),transparent)!important;
-  box-shadow:0 0 16px rgba(217,182,108,.34),0 0 3px rgba(244,212,140,.9)!important;
-  opacity:.72!important;
-  animation:tapdParticleDrift 4.8s ease-in-out infinite!important;
-  pointer-events:none!important;
-}
+
+/* Inner luxury edge */
 .capture-btn:after,
 .capture-cta:after{
   content:''!important;
   position:absolute!important;
-  inset:-7px!important;
+  inset:5px!important;
   border-radius:999px!important;
-  border:1px solid rgba(201,163,91,.16)!important;
-  opacity:.46!important;
-  animation:tapdHaloRing 4s ease-in-out infinite!important;
+  border:1px solid rgba(255,215,126,.16)!important;
+  box-shadow:inset 0 0 22px rgba(255,221,139,.035)!important;
   pointer-events:none!important;
+  z-index:1!important;
 }
+
+/* Relationship signal pulse — not an audio waveform */
+.capture-btn:before,
+.capture-cta:before{
+  content:''!important;
+  position:absolute!important;
+  left:18%!important;
+  right:18%!important;
+  top:50%!important;
+  height:3px!important;
+  transform:translateY(-50%)!important;
+  border-radius:999px!important;
+  background:
+    linear-gradient(90deg,
+      transparent 0%,
+      rgba(214,169,72,.08) 14%,
+      rgba(244,211,128,.42) 32%,
+      rgba(255,229,153,.86) 50%,
+      rgba(244,211,128,.42) 68%,
+      rgba(214,169,72,.08) 86%,
+      transparent 100%)!important;
+  filter:blur(.1px)!important;
+  box-shadow:
+    0 0 9px rgba(255,217,132,.48),
+    0 0 22px rgba(201,151,46,.22)!important;
+  opacity:.68!important;
+  pointer-events:none!important;
+  z-index:2!important;
+  animation:tapdSignalPulse 4.6s ease-in-out infinite!important;
+}
+
 .capture-btn .people,
 .capture-cta .people-chip{
   position:absolute!important;
   left:50%!important;
-  top:-14px!important;
-  transform:translateX(-50%)!important;
-  width:92px!important;
-  height:92px!important;
+  top:50%!important;
+  width:var(--tapd-medallion)!important;
+  height:var(--tapd-medallion)!important;
+  transform:translate(-50%,-50%)!important;
   border-radius:50%!important;
   display:block!important;
   font-size:0!important;
+  line-height:0!important;
   color:transparent!important;
   background:
-    linear-gradient(90deg,rgba(255,255,255,.08),transparent 18%,rgba(255,255,255,.08) 36%,transparent 52%,rgba(0,0,0,.06) 70%,transparent),
-    radial-gradient(circle at 30% 30%,#F4D48C,#D9B66C 45%,#B98A42 100%)!important;
-  background-size:9px 100%,100% 100%!important;
-  border:2px solid #E0C17B!important;
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.15),inset 0 3px 12px rgba(255,255,255,.28),inset 0 -10px 18px rgba(82,49,8,.22),0 0 12px rgba(217,182,108,.2),0 14px 28px rgba(0,0,0,.35)!important;
-  z-index:4!important;
-  animation:tapdButtonBreathe 4s ease-in-out infinite!important;
+    repeating-linear-gradient(90deg,rgba(255,255,255,.08) 0 2px,rgba(255,255,255,0) 2px 7px),
+    radial-gradient(circle at 32% 24%,#FFF1B8 0%,#E6C066 32%,#C29338 62%,#8A5B18 100%)!important;
+  border:2px solid #E6C56C!important;
+  box-shadow:
+    inset 0 2px 7px rgba(255,255,255,.42),
+    inset 0 -14px 22px rgba(85,52,8,.34),
+    0 0 0 5px rgba(64,42,12,.58),
+    0 0 0 7px rgba(231,191,89,.30),
+    0 10px 24px rgba(0,0,0,.34),
+    0 0 42px rgba(221,166,55,.32)!important;
+  z-index:5!important;
+  animation:tapdMedallionGlow 5.2s ease-in-out infinite!important;
 }
+
+/* Embossed two-person relationship icon */
 .capture-btn .people:before,
 .capture-cta .people-chip:before{
-  content:'';
-  position:absolute;
-  width:16px;
-  height:16px;
-  border-radius:50%;
-  left:28px;
-  top:28px;
-  background:linear-gradient(180deg,#FFF0B6,#7A531C);
-  box-shadow:20px 0 0 #B98A42;
-  opacity:.92;
+  content:''!important;
+  position:absolute!important;
+  width:18px!important;
+  height:18px!important;
+  left:32px!important;
+  top:32px!important;
+  border-radius:50%!important;
+  background:linear-gradient(180deg,#F9E29A 0%,#7A4F14 100%)!important;
+  box-shadow:
+    26px 0 0 #B9822A,
+    inset 0 2px 3px rgba(255,255,255,.45),
+    26px 1px 2px rgba(63,39,8,.18)!important;
+  opacity:.98!important;
 }
+
 .capture-btn .people:after,
 .capture-cta .people-chip:after{
-  content:'';
-  position:absolute;
-  left:24px;
-  top:48px;
-  width:44px;
-  height:22px;
-  background:radial-gradient(ellipse at 27% 100%,#7A531C 0 47%,transparent 49%),radial-gradient(ellipse at 73% 100%,#7A531C 0 47%,transparent 49%);
-  opacity:.9;
+  content:''!important;
+  position:absolute!important;
+  left:30px!important;
+  top:59px!important;
+  width:50px!important;
+  height:19px!important;
+  border-radius:18px 18px 5px 5px!important;
+  background:
+    radial-gradient(ellipse at 28% 100%,#7A4F14 0 48%,transparent 50%),
+    radial-gradient(ellipse at 72% 100%,#8E5D18 0 48%,transparent 50%)!important;
+  filter:drop-shadow(0 1px 1px rgba(255,255,255,.18))!important;
+  opacity:.96!important;
 }
+
 .capture-btn span:not(.people),
-.capture-cta .capture-copy{display:none!important;}
+.capture-cta .capture-copy{
+  position:absolute!important;
+  width:1px!important;
+  height:1px!important;
+  overflow:hidden!important;
+  clip:rect(0 0 0 0)!important;
+  white-space:nowrap!important;
+}
+
 .capture-btn:active .people,
-.capture-cta:active .people-chip{transform:translateX(-50%) scale(.95)!important;}
-@keyframes tapdBarFloat{50%{box-shadow:0 12px 34px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.07)}}
-@keyframes tapdButtonBreathe{0%,100%{box-shadow:inset 0 0 0 1px rgba(255,255,255,.15),inset 0 3px 12px rgba(255,255,255,.28),inset 0 -10px 18px rgba(82,49,8,.22),0 0 12px rgba(217,182,108,.2),0 14px 28px rgba(0,0,0,.35)}50%{box-shadow:inset 0 0 0 1px rgba(255,255,255,.18),inset 0 3px 12px rgba(255,255,255,.34),inset 0 -10px 18px rgba(82,49,8,.2),0 0 24px rgba(217,182,108,.45),0 18px 34px rgba(0,0,0,.38)}}
-@keyframes tapdHaloRing{50%{opacity:.16;transform:scale(1.035)}}
-@keyframes tapdParticleDrift{0%,100%{background-position:0 0;opacity:.45}50%{background-position:28px 0;opacity:.86}}
+.capture-cta:active .people-chip{
+  transform:translate(-50%,-50%) scale(.97)!important;
+}
+
 .capture-btn.is-recording,
-.capture-cta.is-recording{border-color:#D9A642!important;}
-.capture-btn.is-recording .people,
-.capture-cta.is-recording .people-chip{background:radial-gradient(circle at 30% 30%,#FFD99A,#D9A642 46%,#A76521 100%)!important;}
-@media(max-width:560px){.capture-btn,.capture-cta{width:min(360px,88vw)!important;height:58px!important;min-height:58px!important}.capture-btn .people,.capture-cta .people-chip{width:82px!important;height:82px!important;top:-12px!important}.capture-btn .people:before,.capture-cta .people-chip:before{left:24px;top:25px}.capture-btn .people:after,.capture-cta .people-chip:after{left:20px;top:43px}}
+.capture-cta.is-recording{
+  border-color:#D9A642!important;
+}
+
+/* Capture page placement: keep the control visible higher in the card */
+.capture-stage{
+  min-height:340px!important;
+  padding:104px 24px 64px!important;
+  justify-content:flex-start!important;
+  overflow:visible!important;
+}
+.capture-stage .soundwave{
+  display:none!important;
+}
+.capture-stage .capture-hint{
+  margin-top:76px!important;
+}
+.capture-stage .trust-row{
+  margin-top:24px!important;
+}
+
+/* Landing page hero placement */
+.visual .capture-cta{
+  margin-top:18px!important;
+}
+.visual .wave{
+  display:none!important;
+}
+
+@keyframes tapdBarBreathe{
+  0%,100%{box-shadow:inset 0 1px 0 rgba(255,255,255,.08),inset 0 -14px 26px rgba(0,0,0,.48),0 16px 34px rgba(24,20,16,.18),0 12px 42px rgba(119,79,17,.16),0 0 0 1px rgba(91,62,18,.28)}
+  50%{box-shadow:inset 0 1px 0 rgba(255,255,255,.10),inset 0 -14px 26px rgba(0,0,0,.44),0 18px 38px rgba(24,20,16,.20),0 14px 50px rgba(201,151,46,.22),0 0 0 1px rgba(136,92,25,.34)}
+}
+@keyframes tapdSignalPulse{
+  0%,100%{opacity:.48;transform:translateY(-50%) scaleX(.84)}
+  50%{opacity:.88;transform:translateY(-50%) scaleX(1.04)}
+}
+@keyframes tapdMedallionGlow{
+  0%,100%{filter:saturate(.96) brightness(.98)}
+  50%{filter:saturate(1.03) brightness(1.04)}
+}
+
+@media(max-width:700px){
+  .capture-btn,
+  .capture-cta{
+    --tapd-bar-w:min(430px,90vw);
+    --tapd-bar-h:64px;
+    --tapd-medallion:96px;
+  }
+  .capture-stage{
+    min-height:315px!important;
+    padding-top:96px!important;
+  }
+  .capture-stage .capture-hint{margin-top:68px!important;}
+  .capture-btn .people:before,
+  .capture-cta .people-chip:before{left:28px!important;top:28px!important;width:16px!important;height:16px!important;box-shadow:23px 0 0 #B9822A,inset 0 2px 3px rgba(255,255,255,.45),23px 1px 2px rgba(63,39,8,.18)!important;}
+  .capture-btn .people:after,
+  .capture-cta .people-chip:after{left:26px!important;top:52px!important;width:45px!important;height:18px!important;}
+}
+
+@media(max-width:420px){
+  .capture-btn,
+  .capture-cta{
+    --tapd-bar-w:min(340px,88vw);
+    --tapd-bar-h:58px;
+    --tapd-medallion:86px;
+  }
+  .capture-stage{min-height:292px!important;padding-top:88px!important;}
+  .capture-stage .capture-hint{margin-top:62px!important;}
+  .capture-stage .trust-row{font-size:13px!important;gap:12px!important;}
+  .capture-btn .people:before,
+  .capture-cta .people-chip:before{left:25px!important;top:25px!important;width:14px!important;height:14px!important;box-shadow:20px 0 0 #B9822A,inset 0 2px 3px rgba(255,255,255,.45),20px 1px 2px rgba(63,39,8,.18)!important;}
+  .capture-btn .people:after,
+  .capture-cta .people-chip:after{left:23px!important;top:47px!important;width:40px!important;height:16px!important;}
+}
