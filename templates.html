@@ -3,34 +3,942 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="description" content="TAPDconnex Templates — tune what each conversation listens for">
 <title>Templates — TAPDconnex</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
 <style>
-:root{--bg:#F6F2EA;--surface:#fff;--warm:#FBF8F2;--text:#181410;--muted:#5C5247;--faint:#95887A;--soft:#EAE2D2;--medium:#D9CDB6;--accent:#1E4F5C;--accent-hover:#14404C;--accent-bg:#E8EFEF;--gold:#D8A637;--pro:#7C2D3F;--pro-bg:#F5E8EC;--font-display:'Fraunces',Georgia,serif;--font-body:'Manrope',sans-serif;--font-mono:'JetBrains Mono',monospace;--shadow:0 18px 60px rgba(24,20,16,.1)}*{box-sizing:border-box;margin:0;padding:0}body{min-height:100vh;background:var(--bg);color:var(--text);font-family:var(--font-body);background-image:radial-gradient(circle at 10% 0%,rgba(30,79,92,.04),transparent 38%),radial-gradient(circle at 88% 80%,rgba(216,166,55,.08),transparent 42%)}a{color:inherit}.top{position:sticky;top:0;z-index:20;background:rgba(246,242,234,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--soft);padding:16px 24px}.top-inner{max-width:1220px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:18px}.brand{display:flex;align-items:center;gap:12px;text-decoration:none}.brand-mark{width:38px;height:38px;border-radius:10px;background:var(--accent);color:#fff;display:grid;place-items:center;font-family:var(--font-display);font-weight:700}.brand-name{font-family:var(--font-display);font-size:25px;font-weight:700}.tabs{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.62);border:1px solid var(--soft);border-radius:18px;padding:6px}.tab{border:0;background:transparent;border-radius:14px;padding:13px 18px;min-height:48px;font-weight:800;text-decoration:none;display:inline-flex;align-items:center;gap:10px;cursor:pointer}.tab.active{background:var(--accent);color:#fff}.exit{border:1px solid var(--medium);background:var(--surface);border-radius:16px;padding:13px 18px;text-decoration:none;font-weight:800}.wrap{max-width:1220px;margin:0 auto;padding:34px 24px 70px}.hero{background:rgba(255,255,255,.78);border:1px solid var(--soft);border-radius:24px;padding:30px;box-shadow:0 2px 12px rgba(24,20,16,.05);display:flex;align-items:flex-end;justify-content:space-between;gap:22px;margin-bottom:24px}.eyebrow{font-family:var(--font-mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);font-weight:700;margin-bottom:10px}.hero h1{font-family:var(--font-display);font-size:42px;line-height:1.05;letter-spacing:-.03em}.hero p{color:var(--muted);font-size:17px;line-height:1.55;margin-top:12px;max-width:720px}.btn{border:0;border-radius:14px;padding:14px 18px;min-height:50px;font:900 14px var(--font-body);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px}.btn-primary{background:var(--accent);color:#fff}.btn-secondary{background:var(--surface);border:1px solid var(--medium);color:var(--text)}.section-title{display:flex;align-items:center;justify-content:space-between;margin:26px 0 12px}.section-title h2{font-family:var(--font-display);font-size:28px}.template-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.card{background:rgba(255,255,255,.78);border:1px solid var(--soft);border-radius:20px;padding:20px;box-shadow:0 2px 10px rgba(24,20,16,.04);display:grid;gap:12px}.card.locked{background:rgba(251,248,242,.78)}.card h3{font-family:var(--font-display);font-size:24px;line-height:1.1}.card p{color:var(--muted);font-size:14px;line-height:1.5}.badge{display:inline-flex;width:max-content;padding:4px 10px;border-radius:999px;background:var(--accent-bg);color:var(--accent);font-size:12px;font-weight:900}.badge.pro{background:var(--pro-bg);color:var(--pro)}.questions{margin-top:2px;display:grid;gap:7px;color:var(--muted);font-size:13px}.questions li{margin-left:16px}.card-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:auto}.modal-backdrop{position:fixed;inset:0;background:rgba(24,20,16,.45);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:20px;z-index:50}.modal-backdrop.show{display:flex}.modal{background:var(--bg);border:1px solid var(--soft);border-radius:24px;width:min(820px,100%);max-height:88vh;overflow:auto;box-shadow:var(--shadow)}.modal-head{padding:24px 26px;border-bottom:1px solid var(--soft);display:flex;justify-content:space-between;gap:16px}.modal h2{font-family:var(--font-display);font-size:30px}.modal-body{padding:22px 26px}.compare{width:100%;border-collapse:collapse;background:var(--surface);border-radius:16px;overflow:hidden}.compare th,.compare td{text-align:left;border-bottom:1px solid var(--soft);padding:14px 16px}.compare th{font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);background:var(--warm)}.compare td:nth-child(2),.compare td:nth-child(3){font-weight:800;color:var(--accent)}.close{border:1px solid var(--medium);background:var(--surface);width:36px;height:36px;border-radius:50%;font-size:20px;cursor:pointer}.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--text);color:var(--bg);border-radius:999px;padding:12px 18px;font-weight:800;opacity:0;transition:.2s}.toast.show{opacity:1;transform:translateX(-50%)}@media(max-width:900px){.template-grid{grid-template-columns:1fr}.hero{display:block}.hero .btn{margin-top:18px}.top-inner{flex-wrap:wrap}.tabs{overflow:auto;max-width:100%}.exit{display:none}}
+  /* ============ DESIGN SYSTEM (matches Capture + Hub + Onboarding) ============ */
+  :root {
+    --bg: #F6F2EA;
+    --bg-paper: #F2EDE2;
+    --surface: #FFFFFF;
+    --surface-warm: #FBF8F2;
+    --text-primary: #181410;
+    --text-secondary: #5C5247;
+    --text-muted: #95887A;
+    --text-faint: #C2B7A8;
+    --border-soft: #EAE2D2;
+    --border-medium: #D9CDB6;
+    --accent: #1E4F5C;
+    --accent-hover: #14404C;
+    --accent-bg: #E8EFEF;
+    --warm-accent: #B8501E;
+    --warm-bg: #FBEDD9;
+    --pro: #7C2D3F;
+    --pro-bg: #F5E8EC;
+    --pro-soft: #FAF2F4;
+    --success: #2D6A4F;
+    --success-bg: #DCEFE3;
+    --recording: #C24545;
+    --recording-bg: #FBE5E5;
+    --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+    --space-5: 20px; --space-6: 24px; --space-7: 32px; --space-8: 40px; --space-9: 56px;
+    --radius-sm: 6px; --radius-md: 10px; --radius-lg: 14px;
+    --radius-xl: 20px; --radius-pill: 999px;
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-body: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+    --shadow-sm: 0 1px 2px rgba(24, 20, 16, 0.04);
+    --shadow-md: 0 2px 8px rgba(24, 20, 16, 0.06);
+    --shadow-lg: 0 8px 24px rgba(24, 20, 16, 0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    overscroll-behavior: none;
+  }
+
+  .shell {
+    max-width: 680px;
+    margin: 0 auto;
+    min-height: 100vh;
+    padding: 0 0 120px;
+    position: relative;
+  }
+
+  /* ============ HEADER ============ */
+  .top {
+    padding: var(--space-5) var(--space-5) var(--space-4);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand-mark {
+    width: 30px; height: 30px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    color: white;
+    font-family: var(--font-display);
+    font-size: 15px; font-weight: 600;
+  }
+  .brand-name {
+    font-family: var(--font-display);
+    font-size: 16px; font-weight: 600;
+    letter-spacing: -0.005em;
+  }
+  .header-actions { display: flex; gap: 8px; align-items: center; }
+  .header-btn {
+    background: transparent;
+    border: 1px solid var(--border-medium);
+    color: var(--text-secondary);
+    font-family: var(--font-body);
+    font-size: 13px; font-weight: 600;
+    padding: 8px 14px;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .header-btn:hover { border-color: var(--text-secondary); color: var(--text-primary); }
+
+  /* Plan toggle (preview/testing control) */
+  .plan-toggle {
+    display: inline-flex;
+    background: var(--surface);
+    border: 1px solid var(--border-medium);
+    border-radius: var(--radius-pill);
+    overflow: hidden;
+  }
+  .plan-toggle button {
+    border: none; background: transparent; cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+    font-weight: 600; color: var(--text-muted);
+    padding: 7px 12px;
+    transition: all 0.15s ease;
+  }
+  .plan-toggle button.active { background: var(--accent); color: white; }
+  .plan-toggle button.active.pro { background: var(--pro); }
+
+  /* ============ STEP TYPOGRAPHY ============ */
+  .step-content { padding: 0 var(--space-5); }
+  .step-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 14px; margin-top: var(--space-7);
+  }
+  .step-headline {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 5vw, 34px);
+    font-weight: 500; line-height: 1.2; letter-spacing: -0.02em;
+    color: var(--text-primary);
+    margin-bottom: 14px;
+  }
+  .step-headline em { font-style: italic; color: var(--accent); font-weight: 400; }
+  .step-sub {
+    font-size: 15px; color: var(--text-secondary);
+    line-height: 1.6; margin-bottom: var(--space-7);
+  }
+
+  /* ============ TEMPLATE LIST ============ */
+  .template-section-title {
+    font-family: var(--font-mono);
+    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--text-muted);
+    margin: var(--space-7) 0 var(--space-3);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .template-section-title::after {
+    content: ''; flex: 1; height: 1px; background: var(--border-soft);
+  }
+  .template-grid { display: flex; flex-direction: column; gap: 12px; }
+
+  .template-card {
+    background: var(--surface);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-lg);
+    padding: 18px var(--space-5);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+    text-align: left;
+    width: 100%;
+    font-family: var(--font-body);
+  }
+  .template-card:hover:not(.locked) {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+  .template-card.locked { background: var(--pro-soft); cursor: pointer; }
+  .template-card.locked:hover { border-color: var(--pro); }
+  .template-card-head {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    gap: 12px; margin-bottom: 8px;
+  }
+  .template-card-name {
+    font-family: var(--font-display);
+    font-size: 19px; font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.005em; line-height: 1.2;
+  }
+  .template-card.locked .template-card-name { color: var(--text-secondary); }
+  .template-card-summary {
+    font-family: var(--font-display);
+    font-size: 14px; font-style: italic;
+    color: var(--text-secondary);
+    line-height: 1.45; margin-bottom: 12px;
+  }
+  .template-card-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .outcome-badge {
+    font-family: var(--font-mono);
+    font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--accent); background: var(--accent-bg);
+    padding: 4px 8px; border-radius: 5px; font-weight: 600;
+  }
+  .pro-badge {
+    font-family: var(--font-mono);
+    font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--pro); background: var(--pro-bg);
+    padding: 4px 8px; border-radius: 5px; font-weight: 600;
+  }
+  .edit-badge {
+    font-family: var(--font-mono);
+    font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--success); background: var(--success-bg);
+    padding: 4px 8px; border-radius: 5px; font-weight: 600;
+  }
+  .lock-note {
+    font-family: var(--font-mono);
+    font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--text-muted);
+    margin-top: 10px;
+  }
+
+  /* ============ EDITOR ============ */
+  .editor-back {
+    background: transparent; border: none; cursor: pointer;
+    color: var(--text-secondary);
+    font-family: var(--font-body); font-size: 14px; font-weight: 600;
+    padding: 0; margin-top: var(--space-6); margin-bottom: 4px;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .editor-back:hover { color: var(--text-primary); }
+
+  .field-group { margin-bottom: var(--space-6); }
+  .field-label {
+    font-family: var(--font-mono);
+    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px; display: block;
+  }
+  .field-hint {
+    font-size: 13px; color: var(--text-muted);
+    line-height: 1.5; margin-bottom: 10px;
+  }
+  .text-input, .text-area {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border-medium);
+    border-radius: var(--radius-md);
+    padding: 12px 14px;
+    font-family: var(--font-body);
+    font-size: 15px; color: var(--text-primary);
+    transition: border-color 0.15s ease;
+  }
+  .text-input:focus, .text-area:focus { outline: none; border-color: var(--accent); }
+  .text-area { resize: vertical; min-height: 60px; line-height: 1.5; }
+
+  /* List editor (questions) */
+  .list-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: flex-start; }
+  .list-row .text-area { flex: 1; min-height: 44px; }
+  .row-remove {
+    background: transparent;
+    border: 1px solid var(--border-medium);
+    color: var(--text-muted);
+    border-radius: var(--radius-md);
+    width: 44px; min-height: 44px; cursor: pointer;
+    font-size: 18px; line-height: 1; flex-shrink: 0;
+    transition: all 0.15s ease;
+  }
+  .row-remove:hover { border-color: var(--recording); color: var(--recording); }
+  .add-row {
+    background: transparent;
+    border: 1px dashed var(--border-medium);
+    color: var(--accent);
+    border-radius: var(--radius-md);
+    padding: 10px 14px; width: 100%; cursor: pointer;
+    font-family: var(--font-body); font-size: 14px; font-weight: 600;
+    transition: all 0.15s ease;
+  }
+  .add-row:hover { border-color: var(--accent); background: var(--accent-bg); }
+  .add-row:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* Tag editor (signals / offers / ai listening) */
+  .tag-wrap {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    padding: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border-medium);
+    border-radius: var(--radius-md);
+  }
+  .tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--accent-bg); color: var(--accent);
+    font-size: 13px; font-weight: 600;
+    padding: 6px 10px; border-radius: var(--radius-pill);
+  }
+  .tag.ai { background: var(--warm-bg); color: var(--warm-accent); }
+  .tag.offer { background: var(--success-bg); color: var(--success); }
+  .tag button {
+    background: transparent; border: none; cursor: pointer;
+    color: inherit; opacity: 0.6; font-size: 14px; line-height: 1; padding: 0;
+  }
+  .tag button:hover { opacity: 1; }
+  .tag-input {
+    border: none; background: transparent; outline: none;
+    font-family: var(--font-body); font-size: 13px;
+    color: var(--text-primary); min-width: 120px; flex: 1; padding: 6px 4px;
+  }
+
+  .field-count { font-family: var(--font-mono); font-size: 10px; color: var(--text-faint); margin-top: 6px; }
+
+  .locked-editor {
+    background: var(--pro-soft);
+    border: 1px solid var(--pro-bg);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    text-align: center;
+    margin-top: var(--space-6);
+  }
+  .locked-editor h3 { font-family: var(--font-display); font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+  .locked-editor p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 16px; }
+
+  /* ============ ACTION BAR ============ */
+  .action-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--bg);
+    border-top: 1px solid var(--border-soft);
+    padding: var(--space-3) var(--space-5);
+    z-index: 30;
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  }
+  .action-bar-inner { max-width: 680px; margin: 0 auto; display: flex; gap: 12px; align-items: center; }
+  .btn {
+    border: none; cursor: pointer;
+    font-family: var(--font-body); font-size: 15px; font-weight: 600;
+    padding: 14px 24px; border-radius: var(--radius-md);
+    transition: all 0.15s ease;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: 52px;
+  }
+  .btn-primary { background: var(--accent); color: white; flex: 1; }
+  .btn-primary:hover { background: var(--accent-hover); }
+  .btn-primary:disabled { background: var(--border-medium); color: var(--text-muted); cursor: not-allowed; }
+  .btn-secondary { background: var(--surface); color: var(--text-primary); border: 1px solid var(--border-medium); }
+  .btn-secondary:hover { border-color: var(--text-secondary); }
+
+  /* ============ TOAST ============ */
+  .toast {
+    position: fixed; left: 50%; bottom: 96px; transform: translateX(-50%) translateY(20px);
+    background: var(--text-primary); color: var(--bg);
+    padding: 12px 20px; border-radius: var(--radius-pill);
+    font-size: 14px; font-weight: 600;
+    opacity: 0; pointer-events: none; transition: all 0.3s ease; z-index: 100;
+    box-shadow: var(--shadow-lg);
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 480px) {
+    .top { padding: var(--space-4); }
+    .action-bar { padding: 10px var(--space-4); }
+    .btn { font-size: 14px; padding: 12px 18px; min-height: 48px; }
+    .header-btn { padding: 7px 11px; font-size: 12px; }
+  }
+
+  .template-card { position: relative; }
+  .template-card.is-default { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+  .default-star {
+    position: absolute; top: 12px; right: 12px;
+    width: 32px; height: 32px; border-radius: 50%;
+    background: transparent; border: 1px solid var(--border-soft);
+    color: var(--text-faint); cursor: pointer;
+    font-size: 18px; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s ease; z-index: 2;
+  }
+  .default-star:hover { color: #B89540; border-color: #B89540; }
+  .default-star.active { color: #B89540; border-color: #B89540; background: #FAF3DD; }
+  .default-badge {
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em;
+    text-transform: uppercase; font-weight: 600;
+    padding: 2px 8px; border-radius: 999px;
+    color: #8A6C1F; background: #FAF3DD; border: 1px solid #E8D8A8;
+  }
 </style>
 </head>
 <body>
-<header class="top"><div class="top-inner"><a class="brand" href="capture.html"><div class="brand-mark">T</div><div class="brand-name">TAPDconnex</div></a><nav class="tabs"><a class="tab" href="capture.html">● Capture</a><a class="tab active" href="templates.html">▤ Templates</a><a class="tab" href="relationship-hub.html">♢ Relationship Hub</a><a class="tab" href="onboarding.html?step=8">○ Profile</a><a class="tab" href="landing.html">↗ Share TAPDconnex</a></nav><a class="exit" href="index.html">Exit →</a></div></header>
-<main class="wrap"><section class="hero"><div><div class="eyebrow">Conversation templates</div><h1>Choose the conversation you want to capture.</h1><p>The templates are now first. Starter vs Pro is available when you need it, and it opens as a comparison popup instead of blocking the page.</p></div><button class="btn btn-secondary" id="compareTop">Compare Starter vs Pro</button></section><section><div class="section-title"><h2>Starter</h2><span class="badge">Included</span></div><div class="template-grid" id="starterGrid"></div></section><section><div class="section-title"><h2>Pro</h2><span class="badge pro">Locked until Pro</span></div><div class="template-grid" id="proGrid"></div></section></main>
-<div class="modal-backdrop" id="compareModal"><div class="modal"><div class="modal-head"><div><h2>Starter vs Pro</h2><p style="color:var(--muted);margin-top:6px">The deeper engine works quietly underneath. Upgrade prompts appear only when someone touches a Pro value moment.</p></div><button class="close" id="closeModal">×</button></div><div class="modal-body"><table class="compare"><thead><tr><th>Capability</th><th>Starter</th><th>Pro</th></tr></thead><tbody><tr><td>Core conversation capture</td><td>Included</td><td>Included</td></tr><tr><td>Starter templates</td><td>3 flows</td><td>All included</td></tr><tr><td>Advanced templates</td><td>Locked</td><td>Unlocked</td></tr><tr><td>Template editing</td><td>Edit 1 template</td><td>Edit all templates</td></tr><tr><td>Recording length</td><td>5 minutes</td><td>10 minutes + completion window</td></tr><tr><td>Relationship signal readout</td><td>Basic</td><td>Advanced</td></tr><tr><td>Missing context / PROBE</td><td>Locked</td><td>Included</td></tr><tr><td>Complete Capture</td><td>Locked</td><td>Included</td></tr></tbody></table></div></div></div><div class="toast" id="toast"></div>
+<script src="tapd-fab.js" defer></script>
+
+<div class="shell">
+  <header class="top">
+    <a href="index.html" style="text-decoration:none;color:inherit;"><div class="brand">
+      <div class="brand-mark">T</div>
+      <div class="brand-name">Templates</div>
+    </div></a>
+    <div class="header-actions">
+      <div class="plan-toggle" id="planToggle" title="Preview as Starter or Pro">
+        <button data-plan="starter" id="planStarter">Starter</button>
+        <button data-plan="pro" id="planPro" class="pro">Pro</button>
+      </div>
+      <button class="header-btn" id="navCapture">Capture →</button>
+      <a href="relationship-hub.html" class="header-btn">Hub →</a>
+    </div>
+  </header>
+
+  <div id="viewContainer"></div>
+</div>
+
+<div class="action-bar" id="actionBar" style="display:none;"></div>
+<div class="toast" id="toast"></div>
+
 <script>
-const STORAGE={SELECTED_TEMPLATE:'tapd_selected_template'};
-const templates=[
-{id:'opportunity',name:'Opportunity',tier:'starter',summary:'Find out if there is a real deal here and lock in the next step.',q:['What are you focused on at the moment?','What would success look like?','What is the best next step from here?']},
-{id:'connector',name:'Connector',tier:'starter',summary:'Discover who they can introduce me to and how to make it happen.',q:['Who should I know in your world?','Would you be comfortable introducing us?','What would make that introduction easier?']},
-{id:'stay_in_touch',name:'Stay in Touch',tier:'starter',summary:'Keep the door open without forcing anything.',q:['What projects are exciting you right now?','How can I support you?','When should we reconnect?']},
-{id:'strategic_partnership',name:'Strategic Partnership',tier:'pro',summary:'Explore where work could overlap and find one thing to do together.',q:['Where do you see opportunities for collaboration?','Who else should be involved?','What should we explore next?']},
-{id:'speaking',name:'Speaking Opportunity',tier:'pro',summary:'Find the stage that fits and the angle that earns it.',q:['What events are you involved with?','What topics resonate most with your audience?','How do you select speakers?']},
-{id:'career',name:'Career Opportunity',tier:'pro',summary:'Surface the role, the timing, and the path in.',q:['What skills are hardest to find right now?','Where are you looking for support?','What is the next step?']},
-{id:'product_discovery',name:'Product Discovery',tier:'pro',summary:'Hear how they solve this today and what is broken about it.',q:['How are you currently solving that?','What impact does it have?','Would you be open to testing something new?']},
-{id:'pilot_beta',name:'Pilot / Beta Opportunity',tier:'pro',summary:'Test interest and what would make it worth trying.',q:['Would you be open to testing something new?','Who would use it?','What would happen if it worked?']},
-{id:'advisory',name:'Advisory / Mentor',tier:'pro',summary:'Learn from someone further down the road and earn the right to come back.',q:['What trends are you seeing?','What would you focus on if you were in my position?','Would you be open to continuing the conversation?']},
-{id:'community_access',name:'Community Access',tier:'pro',summary:'Find the doorway in and the right way to walk through it.',q:['What communities are you involved in?','Do you think I would be a good fit?','What would be the best way to get involved?']}
+// ============================================================
+// TAPDconnex — Templates Management (MVP1)
+// Saves to localStorage only. No Supabase yet.
+// ============================================================
+
+// ============ STORAGE KEYS (shared contract with capture.html / hub) ============
+const STORAGE = {
+  PLAN: 'tapd_user_plan',
+  TEMPLATES_CUSTOM: 'tapd_templates_custom'
+};
+
+// Which single template a Starter user is allowed to edit.
+const STARTER_EDITABLE_ID = 'opportunity';
+
+// Cap on editable list/tag fields (keeps templates focused)
+const MAX_QUESTIONS = 8;
+const MAX_TAGS = 8;
+
+// ============ 10 TEMPLATES (Source of Truth — identical to capture.html) ============
+const TEMPLATES = [
+  {
+    id: 'opportunity', name: 'Opportunity', tier: 'starter',
+    summary: 'Find out if there\u2019s a real deal here and lock in the next step.',
+    outcomeCategory: 'Revenue',
+    questions: ['What are you focused on at the moment?','What\u2019s been taking up most of your time recently?','What\u2019s working well and what\u2019s proving challenging?','Is there anything you\u2019re actively trying to improve?','Have you looked at other ways of solving that?','What would success look like for you?','What\u2019s your timeline around this?','What\u2019s the best next step from here?'],
+    signals: ['Frustration','Urgency','Budget','Growth goals','Active projects','Buying intent'],
+    whatToOffer: ['Demo','Case study','Pilot','Introduction','Discovery call']
+  },
+  {
+    id: 'connector', name: 'Connector', tier: 'starter',
+    summary: 'Discover who they can introduce me to and how to make it happen.',
+    outcomeCategory: 'Access',
+    questions: ['What kind of people do you enjoy connecting?','Who are you currently working with?','What communities are you involved in?','Who should I know in your world?','Who do you think would benefit from what I do?','What\u2019s the best way to approach them?','Would you be comfortable introducing us?','What would make that introduction easier?'],
+    signals: ['Name dropping','Community involvement','Referrals','Access to decision makers','Strong networks'],
+    whatToOffer: ['Intro paragraph','One-pager','LinkedIn profile','Mutual value']
+  },
+  {
+    id: 'stay_in_touch', name: 'Stay in Touch', tier: 'starter',
+    summary: 'Keep the door open without forcing anything.',
+    outcomeCategory: 'Partnerships',
+    questions: ['What projects are exciting you right now?','Where do you see things heading?','What are you keeping an eye on?','What are you hoping to achieve this year?','Is there anything you\u2019d like help with?','How can I support you?','What\u2019s the best way to stay connected?','When should we reconnect?'],
+    signals: ['Shared interests','Future goals','Personal chemistry','Long-term potential'],
+    whatToOffer: ['Useful article','Introduction','Resource','Event invite']
+  },
+  {
+    id: 'strategic_partnership', name: 'Strategic Partnership', tier: 'pro',
+    summary: 'Explore where our work could overlap and find one thing to do together.',
+    outcomeCategory: 'Partnerships',
+    questions: ['What are you building at the moment?','Where do you see opportunities for collaboration?','What strengths does your organisation bring?','What\u2019s missing today that would help you move faster?','What partnerships have worked well for you before?','What would success look like together?','Who else should be involved?','What should we explore next?'],
+    signals: ['Shared audience','Complementary strengths','Mutual benefit','Resource gaps'],
+    whatToOffer: ['Partnership brief','Pilot collaboration','Joint event','Mutual intro']
+  },
+  {
+    id: 'speaking', name: 'Speaking Opportunity', tier: 'pro',
+    summary: 'Find the stage that fits and the angle that earns it.',
+    outcomeCategory: 'Visibility',
+    questions: ['What events are you involved with?','What topics resonate most with your audience?','What challenges are people talking about?','What type of speakers do you usually look for?','What outcomes do you want attendees to leave with?','What events are coming up?','How do you select speakers?','What should happen next?'],
+    signals: ['Upcoming events','Audience pain points','Speaker shortages','Community building'],
+    whatToOffer: ['Speaker reel','Topic outline','Mutual promotion','Free first session']
+  },
+  {
+    id: 'career', name: 'Career Opportunity', tier: 'pro',
+    summary: 'Surface the role, the timing, and the path in.',
+    outcomeCategory: 'Career',
+    questions: ['What initiatives are you focused on?','What skills are hardest to find right now?','What types of people do well in your environment?','What projects are coming up?','Where are you looking for support?','What experience would be most valuable?','What would success look like?','What\u2019s the next step?'],
+    signals: ['Hiring','Capacity constraints','New projects','Team growth'],
+    whatToOffer: ['CV or portfolio','Case study','Reference','Short pilot project']
+  },
+  {
+    id: 'product_discovery', name: 'Product Discovery', tier: 'pro',
+    summary: 'Hear how they actually solve this today and what\u2019s broken about it.',
+    outcomeCategory: 'Learning',
+    questions: ['How are you currently solving that?','What\u2019s frustrating about the current approach?','How often does this happen?','What impact does it have?','What have you already tried?','What would an ideal solution look like?','How would you know it worked?','Would you be open to testing something new?'],
+    signals: ['Pain','Frequency','Cost','Workarounds','Frustration'],
+    whatToOffer: ['Early prototype','User research call','Beta access','Concept walkthrough']
+  },
+  {
+    id: 'pilot_beta', name: 'Pilot / Beta Opportunity', tier: 'pro',
+    summary: 'Test interest in trying something new and lock in what would make it worth it.',
+    outcomeCategory: 'Revenue',
+    questions: ['Would you be open to testing something new?','What would make it worth trying?','Who would use it?','What would success look like?','What concerns would you have?','What support would you need?','How long would you want to test it?','What would happen if it worked?'],
+    signals: ['Curiosity','Early adopter behaviour','Innovation mindset'],
+    whatToOffer: ['Pilot invite','Custom demo','Founder call','Free trial']
+  },
+  {
+    id: 'advisory', name: 'Advisory / Mentor', tier: 'pro',
+    summary: 'Learn from someone further down the road and earn the right to come back.',
+    outcomeCategory: 'Learning',
+    questions: ['What trends are you seeing?','What lessons have shaped your career?','If you were starting today, what would you do differently?','What\u2019s a mistake people commonly make?','What opportunities do you think are overlooked?','What would you focus on if you were in my position?','How can I learn more about this area?','Would you be open to continuing the conversation?'],
+    signals: ['Experience','Pattern recognition','Generosity','Thought leadership'],
+    whatToOffer: ['Coffee chat','Update note','Useful intro back','Project update']
+  },
+  {
+    id: 'community_access', name: 'Community Access', tier: 'pro',
+    summary: 'Find the doorway in and the right way to walk through it.',
+    outcomeCategory: 'Access',
+    questions: ['What communities are you involved in?','What makes that community valuable?','Who tends to thrive there?','How do people usually get involved?','What opportunities come from being part of it?','What do members contribute?','Do you think I\u2019d be a good fit?','What would be the best way to get involved?'],
+    signals: ['Gatekeepers','Communities','Ecosystems','Influence networks'],
+    whatToOffer: ['Bio summary','Joining note','Reciprocal intro','Contribution offer']
+  }
 ];
-function card(t){return `<article class="card ${t.tier==='pro'?'locked':''}"><span class="badge ${t.tier==='pro'?'pro':''}">${t.tier==='pro'?'Pro':'Starter'}</span><h3>${t.name}</h3><p>${t.summary}</p><ol class="questions">${t.q.map(x=>`<li>${x}</li>`).join('')}</ol><div class="card-actions"><button class="btn ${t.tier==='pro'?'btn-secondary':'btn-primary'}" data-id="${t.id}" data-tier="${t.tier}">${t.tier==='pro'?'Unlock / compare':'Use this template'}</button></div></article>`}
-function render(){document.getElementById('starterGrid').innerHTML=templates.filter(t=>t.tier==='starter').map(card).join('');document.getElementById('proGrid').innerHTML=templates.filter(t=>t.tier==='pro').map(card).join('');document.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{if(b.dataset.tier==='pro'){openModal();return}localStorage.setItem(STORAGE.SELECTED_TEMPLATE,b.dataset.id);toast('Template selected');setTimeout(()=>location.href='capture.html',450)})}function openModal(){document.getElementById('compareModal').classList.add('show')}function closeModal(){document.getElementById('compareModal').classList.remove('show')}function toast(m){let t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}document.getElementById('compareTop').onclick=openModal;document.getElementById('closeModal').onclick=closeModal;document.getElementById('compareModal').onclick=e=>{if(e.target.id==='compareModal')closeModal()};render();
+
+// ============ STATE ============
+let state = {
+  plan: localStorage.getItem(STORAGE.PLAN) || 'starter',
+  view: 'list',          // 'list' | 'editor'
+  editingId: null,
+  draft: null,           // working copy of the template being edited
+  dirty: false
+};
+
+// ============ CUSTOM OVERRIDES (what we read/write) ============
+// Shape: { [templateId]: { name, outcomeCategory, questions[], signals[], whatToOffer[], aiListening[] } }
+function loadOverrides() {
+  try { return JSON.parse(localStorage.getItem(STORAGE.TEMPLATES_CUSTOM)) || {}; }
+  catch (e) { return {}; }
+}
+function saveOverrides(obj) {
+  localStorage.setItem(STORAGE.TEMPLATES_CUSTOM, JSON.stringify(obj));
+}
+
+// Merge a built-in template with any saved override → the effective template.
+function effectiveTemplate(base) {
+  const ov = loadOverrides()[base.id];
+  const merged = {
+    ...base,
+    aiListening: base.signals.slice() // sensible default: AI listens for the same signals
+  };
+  if (ov) {
+    if (ov.name) merged.name = ov.name;
+    if (ov.outcomeCategory) merged.outcomeCategory = ov.outcomeCategory;
+    if (Array.isArray(ov.questions)) merged.questions = ov.questions.slice();
+    if (Array.isArray(ov.signals)) merged.signals = ov.signals.slice();
+    if (Array.isArray(ov.whatToOffer)) merged.whatToOffer = ov.whatToOffer.slice();
+    if (Array.isArray(ov.aiListening)) merged.aiListening = ov.aiListening.slice();
+  }
+  return merged;
+}
+
+function isEdited(id) { return !!loadOverrides()[id]; }
+
+// Can the current plan edit this template?
+function canEdit(tpl) {
+  if (state.plan === 'pro') return true;
+  // Starter: exactly one editable template
+  return tpl.tier === 'starter' && tpl.id === STARTER_EDITABLE_ID;
+}
+
+// ============ HELPERS ============
+function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ============ RENDER ============
+function render() {
+  syncPlanToggle();
+  const c = document.getElementById('viewContainer');
+  if (state.view === 'list') { c.innerHTML = renderList(); bindList(); document.getElementById('actionBar').style.display = 'none'; }
+  else { c.innerHTML = renderEditor(); bindEditor(); }
+  window.scrollTo(0, 0);
+}
+
+function syncPlanToggle() {
+  document.getElementById('planStarter').classList.toggle('active', state.plan === 'starter');
+  document.getElementById('planPro').classList.toggle('active', state.plan === 'pro');
+}
+
+// ---------- LIST VIEW ----------
+function renderList() {
+  const starter = TEMPLATES.filter(t => t.tier === 'starter');
+  const pro = TEMPLATES.filter(t => t.tier === 'pro');
+  return `
+    <div class="step-content">
+      <div class="step-eyebrow">Templates</div>
+      <h1 class="step-headline">Tune what each <em>conversation</em> listens for</h1>
+      <p class="step-sub">Each template gives you questions to ask in the moment and tells the AI what to listen for afterwards. ${state.plan === 'pro' ? 'You can edit any template.' : 'On Starter you can edit one template \u2014 upgrade to Pro to edit them all.'}</p>
+
+      <div class="template-section-title">Your templates</div>
+      <div class="template-grid">
+        ${starter.map(t => renderCard(t)).join('')}
+      </div>
+
+      <div class="template-section-title">Pro templates</div>
+      <div class="template-grid">
+        ${pro.map(t => renderCard(t)).join('')}
+      </div>
+    </div>
+  `;
+}
+
+
+// ============ DEFAULT TEMPLATE (selectedTemplate on the profile) ============
+function currentDefaultId() {
+  try {
+    const ob = JSON.parse(localStorage.getItem('tapd_onboarding_data') || 'null');
+    return ob && ob.data && ob.data.selectedTemplate ? ob.data.selectedTemplate : null;
+  } catch (e) { return null; }
+}
+function setDefaultId(id) {
+  try {
+    const ob = JSON.parse(localStorage.getItem('tapd_onboarding_data') || 'null') || { data: {} };
+    ob.data = ob.data || {};
+    ob.data.selectedTemplate = id;
+    localStorage.setItem('tapd_onboarding_data', JSON.stringify(ob));
+    if (window.TapdSync) { try { TapdSync.pushProfile(ob.data, ob.data.plan || state.plan); } catch (e) {} }
+  } catch (e) {}
+}
+
+function renderCard(base) {
+  const t = effectiveTemplate(base);
+  const editable = canEdit(base);
+  const locked = !editable;
+  const edited = isEdited(base.id);
+  const isDefault = (currentDefaultId() === base.id);
+  // A user can pick any template they could actually use in capture.
+  // Starter user gets starter templates; Pro gets all.
+  const canPickAsDefault = (state.plan === 'pro') || (base.tier === 'starter');
+  return `
+    <div class="template-card ${locked ? 'locked' : ''} ${isDefault ? 'is-default' : ''}" data-id="${base.id}" role="button" tabindex="0">
+      ${canPickAsDefault
+        ? `<button class="default-star ${isDefault ? 'active' : ''}" data-default="${base.id}" title="${isDefault ? 'Your default template' : 'Make this your default'}" aria-label="${isDefault ? 'Default template' : 'Make default'}">${isDefault ? '\u2605' : '\u2606'}</button>`
+        : ''}
+      <div class="template-card-head">
+        <div class="template-card-name">${esc(t.name)}</div>
+        ${base.tier === 'pro' ? '<span class="pro-badge">Pro</span>' : ''}
+        ${isDefault ? '<span class="default-badge">Default</span>' : ''}
+      </div>
+      <div class="template-card-summary">${esc(t.summary)}</div>
+      <div class="template-card-meta">
+        <span class="outcome-badge">${esc(t.outcomeCategory)}</span>
+        ${edited ? '<span class="edit-badge">Edited</span>' : ''}
+      </div>
+      ${locked
+        ? `<div class="lock-note">${base.tier === 'pro' ? 'Upgrade to Pro to edit' : 'Upgrade to edit more templates'}</div>`
+        : `<div class="lock-note" style="color:var(--accent)">Tap to edit \u2192</div>`}
+    </div>
+  `;
+}
+
+function bindList() {
+  document.querySelectorAll('.template-card').forEach(card => {
+    card.addEventListener('click', () => openEditor(card.dataset.id));
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openEditor(card.dataset.id); }
+    });
+  });
+  document.querySelectorAll('.default-star').forEach(star => {
+    star.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setDefaultId(star.dataset.default);
+      render();
+    });
+  });
+}
+
+// ---------- EDITOR VIEW ----------
+function openEditor(id) {
+  const base = TEMPLATES.find(t => t.id === id);
+  if (!base) return;
+  if (!canEdit(base)) {
+    state.view = 'editor'; state.editingId = id; state.draft = null; state.dirty = false;
+    render();
+    return;
+  }
+  const t = effectiveTemplate(base);
+  state.draft = {
+    id: t.id,
+    name: t.name,
+    outcomeCategory: t.outcomeCategory,
+    questions: t.questions.slice(),
+    signals: t.signals.slice(),
+    whatToOffer: t.whatToOffer.slice(),
+    aiListening: t.aiListening.slice()
+  };
+  state.view = 'editor'; state.editingId = id; state.dirty = false;
+  render();
+}
+
+function renderEditor() {
+  const base = TEMPLATES.find(t => t.id === state.editingId);
+
+  if (!canEdit(base)) {
+    return `
+      <div class="step-content">
+        <button class="editor-back" id="backBtn">\u2190 All templates</button>
+        <div class="step-eyebrow" style="margin-top:var(--space-5)">${esc(base.name)}</div>
+        <div class="locked-editor">
+          <h3>This template is a Pro feature</h3>
+          <p>${base.tier === 'pro'
+              ? 'Editing the Pro templates \u2014 and customising what the AI listens for \u2014 is part of TAPDconnex Pro.'
+              : 'On Starter you can edit one template. Upgrade to Pro to edit every template.'}</p>
+          <button class="btn btn-primary" id="previewProBtn" style="flex:none;display:inline-flex;">Preview as Pro</button>
+        </div>
+      </div>
+    `;
+  }
+
+  const d = state.draft;
+  return `
+    <div class="step-content">
+      <button class="editor-back" id="backBtn">\u2190 All templates</button>
+      <div class="step-eyebrow" style="margin-top:var(--space-5)">Editing template${base.tier === 'pro' ? ' \u00b7 Pro' : ''}</div>
+      <h1 class="step-headline" style="font-size:clamp(24px,5vw,30px)">${esc(d.name)}</h1>
+
+      <div class="field-group">
+        <label class="field-label">Template name</label>
+        <input class="text-input" id="f-name" value="${esc(d.name)}" maxlength="60">
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Outcome category</label>
+        <div class="field-hint">The kind of result this conversation is aiming for.</div>
+        <input class="text-input" id="f-outcome" value="${esc(d.outcomeCategory)}" maxlength="40">
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Questions to ask</label>
+        <div class="field-hint">Prompts you can lean on during the conversation.</div>
+        <div id="questionsList">${d.questions.map((q, i) => questionRow(q, i)).join('')}</div>
+        <button class="add-row" id="addQuestion" ${d.questions.length >= MAX_QUESTIONS ? 'disabled' : ''}>+ Add question</button>
+        <div class="field-count">${d.questions.length} / ${MAX_QUESTIONS}</div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Signals to listen for</label>
+        <div class="field-hint">Cues that tell you this conversation is going somewhere.</div>
+        ${tagEditor('signals', d.signals, 'signal')}
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">What to offer</label>
+        <div class="field-hint">Things you can put on the table as a next step.</div>
+        ${tagEditor('whatToOffer', d.whatToOffer, 'offer')}
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">AI listening fields</label>
+        <div class="field-hint">What the AI should specifically pull out of the recording for this template. These stay private \u2014 they describe the interaction, never judge the person.</div>
+        ${tagEditor('aiListening', d.aiListening, 'ai')}
+      </div>
+    </div>
+  `;
+}
+
+function questionRow(q, i) {
+  return `
+    <div class="list-row" data-i="${i}">
+      <textarea class="text-area q-input" rows="1" maxlength="160">${esc(q)}</textarea>
+      <button class="row-remove" data-i="${i}" title="Remove">\u00d7</button>
+    </div>
+  `;
+}
+
+function tagEditor(key, arr, variant) {
+  return `
+    <div class="tag-wrap" data-key="${key}">
+      ${arr.map((tag, i) => `
+        <span class="tag ${variant}">${esc(tag)}<button data-key="${key}" data-i="${i}" title="Remove">\u00d7</button></span>
+      `).join('')}
+      <input class="tag-input" data-key="${key}" placeholder="${arr.length >= MAX_TAGS ? 'Limit reached' : 'Add\u2026'}" ${arr.length >= MAX_TAGS ? 'disabled' : ''}>
+    </div>
+  `;
+}
+
+function bindEditor() {
+  const back = document.getElementById('backBtn');
+  if (back) back.addEventListener('click', goBack);
+
+  const previewPro = document.getElementById('previewProBtn');
+  if (previewPro) { previewPro.addEventListener('click', () => { setPlan('pro'); openEditor(state.editingId); }); return; }
+
+  if (!state.draft) return;
+
+  // Name + outcome
+  const nameEl = document.getElementById('f-name');
+  nameEl.addEventListener('input', e => { state.draft.name = e.target.value; state.dirty = true; });
+  document.getElementById('f-outcome').addEventListener('input', e => { state.draft.outcomeCategory = e.target.value; state.dirty = true; });
+
+  // Questions
+  bindQuestionInputs();
+  document.getElementById('addQuestion').addEventListener('click', () => {
+    if (state.draft.questions.length >= MAX_QUESTIONS) return;
+    state.draft.questions.push(''); state.dirty = true; rerenderQuestions();
+  });
+
+  // Tag editors
+  bindTagEditors();
+
+  renderActionBar();
+}
+
+function bindQuestionInputs() {
+  document.querySelectorAll('.q-input').forEach(el => {
+    const i = parseInt(el.closest('.list-row').dataset.i, 10);
+    el.addEventListener('input', e => { state.draft.questions[i] = e.target.value; state.dirty = true; });
+  });
+  document.querySelectorAll('.row-remove').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const i = parseInt(btn.dataset.i, 10);
+      state.draft.questions.splice(i, 1); state.dirty = true; rerenderQuestions();
+    });
+  });
+}
+function rerenderQuestions() {
+  const wrap = document.getElementById('questionsList');
+  wrap.innerHTML = state.draft.questions.map((q, i) => questionRow(q, i)).join('');
+  const addBtn = document.getElementById('addQuestion');
+  addBtn.disabled = state.draft.questions.length >= MAX_QUESTIONS;
+  wrap.parentElement.querySelector('.field-count').textContent = `${state.draft.questions.length} / ${MAX_QUESTIONS}`;
+  bindQuestionInputs();
+}
+
+function bindTagEditors() {
+  // _wired guard prevents the same element being bound twice when one group re-renders
+  document.querySelectorAll('.tag-wrap .tag button').forEach(btn => {
+    if (btn.dataset.wired) return;
+    btn.dataset.wired = '1';
+    btn.addEventListener('click', () => {
+      const key = btn.dataset.key, i = parseInt(btn.dataset.i, 10);
+      state.draft[key].splice(i, 1); state.dirty = true; rerenderTags(key);
+    });
+  });
+  document.querySelectorAll('.tag-input').forEach(input => {
+    if (input.dataset.wired) return;
+    input.dataset.wired = '1';
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && e.target.value.trim()) {
+        e.preventDefault();
+        const key = e.target.dataset.key;
+        if (state.draft[key].length >= MAX_TAGS) return;
+        state.draft[key].push(e.target.value.trim()); state.dirty = true; rerenderTags(key);
+      }
+    });
+  });
+}
+function rerenderTags(key) {
+  const variant = key === 'aiListening' ? 'ai' : (key === 'whatToOffer' ? 'offer' : 'signal');
+  const wrap = document.querySelector(`.tag-wrap[data-key="${key}"]`);
+  wrap.outerHTML = tagEditor(key, state.draft[key], variant);
+  bindTagEditors();
+  const fresh = document.querySelector(`.tag-input[data-key="${key}"]`);
+  if (fresh && !fresh.disabled) fresh.focus();
+}
+
+function renderActionBar() {
+  const bar = document.getElementById('actionBar');
+  bar.style.display = 'block';
+  bar.innerHTML = `
+    <div class="action-bar-inner">
+      <button class="btn btn-secondary" id="restoreBtn">Restore default</button>
+      <button class="btn btn-primary" id="saveBtn">Save template changes</button>
+    </div>
+  `;
+  document.getElementById('saveBtn').addEventListener('click', saveTemplate);
+  document.getElementById('restoreBtn').addEventListener('click', restoreDefault);
+}
+
+// ============ SAVE / RESTORE ============
+function saveTemplate() {
+  const d = state.draft;
+  d.name = (d.name || '').trim();
+  d.outcomeCategory = (d.outcomeCategory || '').trim();
+  d.questions = d.questions.map(q => q.trim()).filter(Boolean);
+
+  if (!d.name) { toast('Template needs a name'); return; }
+  if (d.questions.length === 0) { toast('Add at least one question'); return; }
+
+  const overrides = loadOverrides();
+  overrides[d.id] = {
+    name: d.name,
+    outcomeCategory: d.outcomeCategory,
+    questions: d.questions,
+    signals: d.signals,
+    whatToOffer: d.whatToOffer,
+    aiListening: d.aiListening,
+    updatedAt: new Date().toISOString()
+  };
+  saveOverrides(overrides);
+  state.dirty = false;
+  toast('Saved');
+  setTimeout(goBack, 600);
+}
+
+function restoreDefault() {
+  const base = TEMPLATES.find(t => t.id === state.editingId);
+  if (!confirm(`Restore "${base.name}" to its original questions, signals and offers? Your edits to this template will be removed.`)) return;
+  const overrides = loadOverrides();
+  delete overrides[base.id];
+  saveOverrides(overrides);
+  toast('Restored to default');
+  openEditor(base.id); // reload with built-in values
+}
+
+function goBack() {
+  if (state.dirty && !confirm('Leave without saving your changes?')) return;
+  state.view = 'list'; state.editingId = null; state.draft = null; state.dirty = false;
+  render();
+}
+
+// ============ PLAN TOGGLE (preview/testing) ============
+function setPlan(plan) {
+  state.plan = plan;
+  localStorage.setItem(STORAGE.PLAN, plan);
+  syncPlanToggle();
+}
+document.getElementById('planToggle').addEventListener('click', e => {
+  const btn = e.target.closest('button[data-plan]');
+  if (!btn) return;
+  setPlan(btn.dataset.plan);
+  // If currently editing something the new plan can't edit, bounce to list
+  if (state.view === 'editor') {
+    const base = TEMPLATES.find(t => t.id === state.editingId);
+    if (base && canEdit(base)) { openEditor(state.editingId); }
+    else { state.view = 'list'; }
+  }
+  render();
+});
+
+document.getElementById('navCapture').addEventListener('click', () => { window.location.href = 'capture.html'; });
+
+// ============ INIT ============
+render();
 </script>
 </body>
 </html>
