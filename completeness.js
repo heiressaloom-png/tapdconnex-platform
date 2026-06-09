@@ -1,110 +1,227 @@
-/* TAPDconnex Completeness Engine
-   Sits on top of Layer 8 Missing Context + Layer 9 Missing Next Steps.
-   Computes Engagement Completeness, gaps, Complete Now, Ask Next Time, and Pro eligibility.
+/*
+  TAPDconnex Completeness Engine
+  Browser-safe root file.
+  Version: 1.4.0
+
+  Purpose:
+  - Identify what is captured, what is missing, what can be completed now, and what should be asked next time.
+  - User-supplied data may improve completeness, but must never inflate score, confidence, authority, urgency, resource, or opportunity strength.
 */
-(function(){
+(function () {
   'use strict';
-  const F = window.TAPD_INTELLIGENCE || {};
-  const {
-    SIGNAL_CATEGORY = {}, MISSING_CONTEXT = {}, NEXT_STEP_COMPONENT = {}, TIER = {},
-    SIGNAL_FIELD_REQUIREMENTS = {}, FIELD_FILLABILITY = {}, TEMPLATE_QUESTIONS = {}
-  } = F;
 
-  function computeCompleteness(analysis, options){
-    options = options || {};
-    const tier = options.tier || TIER.PRO || 'pro';
-    const guided = !!options.guided;
-    const askedQuestionIndices = options.askedQuestionIndices || [];
-    const capturedFields = options.capturedFields || {};
-    const categories = new Set((analysis && analysis._presentCategories) || []);
+  const I = window.TAPD_INTELLIGENCE || {};
 
-    const required = new Set();
-    categories.forEach(cat => (SIGNAL_FIELD_REQUIREMENTS[cat] || []).forEach(f => required.add(f)));
+  const PROVENANCE = I.PROVENANCE || Object.freeze({
+    CONTACT_STATED: 'CONTACT_STATED',
+    USER_SUPPLIED: 'USER_SUPPLIED',
+    SYSTEM_DERIVED: 'SYSTEM_DERIVED'
+  });
 
-    const gaps = [];
-    required.forEach(field => {
-      if (capturedFields[field]) return;
-      const fillability = FIELD_FILLABILITY[field] || 'either';
-      const type = fillability === 'contact' ? 'carry_forward' : 'self_fillable';
-      gaps.push({
-        field,
-        type,
-        prompt: guided ? questionForField(field, analysis && analysis.primaryTemplate, askedQuestionIndices) : signalPhrasingForField(field),
-        source: guided ? 'template' : 'signal',
-        fillability
-      });
+  const COMPLETENESS_VERSION = '1.4.0';
+
+  const DEFAULT_FIELD_RECOVERY = Object.freeze({
+    Owner: 'Who owns this next step?',
+    Action: 'What exactly needs to happen next?',
+    Date: 'When should this happen?',
+    Channel: 'Where should this happen — email, LinkedIn, call, or another channel?',
+    'Decision maker': 'Who else would need to be involved in a decision like this?',
+    'Budget owner': 'How are decisions like this usually funded?',
+    Timeline: "What's your timeline around this?",
+    'Success criteria': 'What would success look like for you?',
+    'Preferred channel': "What's the best way to stay in touch?",
+    'Implementation owner': 'Who would actually run this on your side?'
+  });
+
+  function unique(arr) {
+    return Array.from(new Set((arr || []).filter(Boolean)));
+  }
+
+  function normaliseFieldName(field) {
+    if (!field) return null;
+    const s = String(field).trim();
+    const map = {
+      owner: 'Owner',
+      action: 'Action',
+      date: 'Date',
+      channel: 'Channel',
+      decisionMaker: 'Decision maker',
+      decision_maker: 'Decision maker',
+      budgetOwner: 'Budget owner',
+      budget_owner: 'Budget owner',
+      timeline: 'Timeline',
+      successCriteria: 'Success criteria',
+      success_criteria: 'Success criteria',
+      preferredChannel: 'Preferred channel',
+      preferred_channel: 'Preferred channel',
+      implementationOwner: 'Implementation owner',
+      implementation_owner: 'Implementation owner'
+    };
+    return map[s] || s;
+  }
+
+  function requiredFieldsFromSignals(analysis) {
+    const req = [];
+    const categories = unique([
+      analysis && analysis.primarySignalCategory,
+      ...(analysis && analysis.signalCategories || []),
+      ...(analysis && analysis.detectedCategories || []),
+      ...((analysis && analysis.signals || []).map(s => s.category))
+    ]);
+
+    const requirements = I.SIGNAL_FIELD_REQUIREMENTS || {};
+    categories.forEach(cat => {
+      (requirements[cat] || []).forEach(field => req.push(field));
     });
 
-    const totalFields = required.size || 1;
-    const capturedCount = required.size ? totalFields - gaps.length : 1;
-    const score = required.size ? Math.round((capturedCount / totalFields) * 100) : 100;
-    const completeNow = gaps.filter(g => g.type === 'self_fillable');
-    const carryForward = gaps.filter(g => g.type !== 'self_fillable');
+    if (analysis && analysis.nextStep) {
+      ['Owner', 'Action', 'Date', 'Channel'].forEach(field => req.push(field));
+    }
+
+    return unique(req.map(normaliseFieldName));
+  }
+
+  function missingFieldsFromAnalysis(analysis) {
+    const missing = [];
+    (analysis && analysis.missingComponents || []).forEach(f => missing.push(normaliseFieldName(f)));
+    (analysis && analysis.missingContext || []).forEach(f => missing.push(normaliseFieldName(f)));
+    (analysis && analysis.completenessData && analysis.completenessData.gaps || []).forEach(g => missing.push(normaliseFieldName(g.field || g.gap || g)));
+    return unique(missing);
+  }
+
+  function capturedFieldsFromAnalysis(analysis) {
+    const captured = new Set();
+    const task = analysis && analysis.task;
+    if (task) {
+      if (task.owner || task.closureOwner) captured.add('Owner');
+      if (task.action || analysis.nextStep) captured.add('Action');
+      if (task.date) captured.add('Date');
+      if (task.channel) captured.add('Channel');
+    }
+    if (analysis && analysis.nextStep) captured.add('Action');
+
+    const explicit = analysis && (analysis.capturedFields || analysis.presentContext || analysis.contextCaptured);
+    if (Array.isArray(explicit)) {
+      explicit.forEach(f => captured.add(normaliseFieldName(f)));
+    } else if (explicit && typeof explicit === 'object') {
+      Object.entries(explicit).forEach(([k, v]) => {
+        if (v) captured.add(normaliseFieldName(k));
+      });
+    }
+
+    return Array.from(captured).filter(Boolean);
+  }
+
+  function recoveryQuestionFor(field, template) {
+    const normal = normaliseFieldName(field);
+    const templateQuestions = I.TEMPLATE_QUESTIONS && I.TEMPLATE_QUESTIONS[template] || [];
+    const bridge = {
+      'Success criteria': 'success',
+      Timeline: 'timeline',
+      'Preferred channel': 'stay',
+      'Decision maker': 'involved',
+      'Budget owner': 'fund',
+      'Implementation owner': 'run'
+    }[normal];
+
+    if (bridge && templateQuestions.length) {
+      const preferred = templateQuestions.find(item =>
+        item.tag === 'discriminating' && item.q && item.q.toLowerCase().includes(bridge)
+      ) || templateQuestions.find(item => item.q && item.q.toLowerCase().includes(bridge));
+      if (preferred) return preferred.q;
+    }
+
+    return (I.RECOVERY_QUESTIONS && I.RECOVERY_QUESTIONS[normal]) || DEFAULT_FIELD_RECOVERY[normal] || `Can you clarify ${String(normal).toLowerCase()}?`;
+  }
+
+  function fillabilityFor(field) {
+    const normal = normaliseFieldName(field);
+    const fill = I.FIELD_FILLABILITY || {};
+    return fill[normal] || 'contact_required';
+  }
+
+  function splitFocus(gaps) {
+    const completeNow = [];
+    const askNextTime = [];
+    gaps.forEach(gap => {
+      if (gap.fillability === 'self_fillable' || gap.fillability === 'either') completeNow.push(gap);
+      else askNextTime.push(gap);
+    });
+    return { completeNow, askNextTime };
+  }
+
+  function computeCompleteness(analysis, options) {
+    const opts = options || {};
+    const template = opts.template || (analysis && analysis.primaryTemplate) || null;
+    const tier = opts.tier || (analysis && analysis.tier) || (I.TIER && I.TIER.PRO) || 'pro';
+
+    const required = requiredFieldsFromSignals(analysis);
+    const missing = missingFieldsFromAnalysis(analysis);
+    const captured = capturedFieldsFromAnalysis(analysis);
+
+    // If a field is explicitly missing, it is not captured even if heuristics guessed it.
+    const capturedSet = new Set(captured.filter(f => !missing.includes(f)));
+    const requiredSet = new Set(required);
+    missing.forEach(f => requiredSet.add(f));
+
+    const allRequired = Array.from(requiredSet);
+    const gaps = allRequired
+      .filter(field => !capturedSet.has(field) || missing.includes(field))
+      .map(field => ({
+        field,
+        gap: field,
+        fillability: fillabilityFor(field),
+        recoveryQuestion: recoveryQuestionFor(field, template),
+        advisory: true
+      }));
+
+    const total = allRequired.length;
+    const capturedCount = total === 0 ? 0 : Math.max(0, total - gaps.length);
+    const score = total === 0 ? 100 : Math.round((capturedCount / total) * 100);
+    const focus = splitFocus(gaps);
 
     return {
+      version: COMPLETENESS_VERSION,
       score,
       capturedCount,
-      totalFields,
+      totalFields: total,
+      requiredFields: allRequired,
+      capturedFields: Array.from(capturedSet),
       gaps,
-      focus: { completeNow, carryForward },
-      eligibleForCapture: tier === (TIER.PRO || 'pro') && completeNow.length > 0
+      focus,
+      eligibleForCompleteCapture: tier === 'pro' && focus.completeNow.length > 0,
+      principle: 'Completeness may improve relationship memory; it never inflates signal score, confidence, authority, urgency, resource, or opportunity strength.'
     };
   }
 
-  function extractCapturedFields(analysis){
-    analysis = analysis || {};
-    const captured = {};
-    const allComponents = Object.values(NEXT_STEP_COMPONENT || {});
-    const missingComponents = new Set(analysis.missingComponents || []);
-    if (analysis.nextStep) {
-      allComponents.forEach(comp => { if (!missingComponents.has(comp)) captured[comp] = true; });
-    }
-    const allContext = Object.values(MISSING_CONTEXT || {});
-    const missingContext = new Set((analysis.missingContext || []).map(x => typeof x === 'string' ? x : x.field));
-    allContext.forEach(field => { if (!missingContext.has(field)) captured[field] = true; });
-    return captured;
-  }
+  function applyUserSuppliedCompletion(analysis, userFields) {
+    const fields = userFields || {};
+    const completed = Object.entries(fields).map(([key, value]) => ({
+      field: normaliseFieldName(key),
+      value,
+      provenance: PROVENANCE.USER_SUPPLIED,
+      scoreImpact: 0,
+      confidenceImpact: 0
+    }));
 
-  function questionForField(field, template, askedIdx){
-    const qs = TEMPLATE_QUESTIONS[template] || TEMPLATE_QUESTIONS[F.TEMPLATE && F.TEMPLATE.OPPORTUNITY] || [];
-    const bridge = {
-      [NEXT_STEP_COMPONENT.DATE]:'timeline',
-      [NEXT_STEP_COMPONENT.CHANNEL]:'best way',
-      [NEXT_STEP_COMPONENT.OWNER]:'next step',
-      [MISSING_CONTEXT.TIMELINE]:'timeline',
-      [MISSING_CONTEXT.SUCCESS_CRITERIA]:'success',
-      [MISSING_CONTEXT.PREFERRED_CHANNEL]:'stay connected',
-      [MISSING_CONTEXT.DECISION_MAKER]:'involved',
-      [MISSING_CONTEXT.BUDGET_OWNER]:'budget',
-      [MISSING_CONTEXT.IMPLEMENTATION_OWNER]:'run this'
-    }[field];
-    if (bridge) {
-      const i = qs.findIndex(q => String(q).toLowerCase().includes(bridge));
-      if (i >= 0 && !askedIdx.includes(i)) return qs[i];
-    }
-    return signalPhrasingForField(field);
-  }
-
-  function signalPhrasingForField(field){
-    const map = {
-      [NEXT_STEP_COMPONENT.OWNER]:'No owner was captured for the agreed action — who is doing it?',
-      [NEXT_STEP_COMPONENT.DATE]:'A next step was discussed but no date was captured — by when?',
-      [NEXT_STEP_COMPONENT.CHANNEL]:'How will the follow-up happen — email, WhatsApp, call, or intro?',
-      [NEXT_STEP_COMPONENT.ACTION]:'A next step was implied, but the action itself is not clear.',
-      [MISSING_CONTEXT.TIMELINE]:'Urgency came through, but no concrete timeline was captured.',
-      [MISSING_CONTEXT.BUDGET_OWNER]:'Budget or resources were mentioned, but no budget owner was identified.',
-      [MISSING_CONTEXT.DECISION_MAKER]:'Authority surfaced, but the decision maker was not named.',
-      [MISSING_CONTEXT.SUCCESS_CRITERIA]:'A problem was discussed, but what “success” looks like was not captured.',
-      [MISSING_CONTEXT.PREFERRED_CHANNEL]:'No preferred way to stay in touch was captured.',
-      [MISSING_CONTEXT.IMPLEMENTATION_OWNER]:'No one was identified to actually run this.'
+    return {
+      ...(analysis || {}),
+      userSuppliedCompletion: completed,
+      completenessData: computeCompleteness({ ...(analysis || {}), capturedFields: [
+        ...capturedFieldsFromAnalysis(analysis || {}),
+        ...completed.map(item => item.field)
+      ] }, { template: analysis && analysis.primaryTemplate, tier: analysis && analysis.tier })
     };
-    return map[field] || `${field} was not captured in this conversation.`;
   }
 
-  window.TAPD_COMPLETENESS = {
+  window.TAPD_COMPLETENESS = Object.freeze({
+    VERSION: COMPLETENESS_VERSION,
     computeCompleteness,
-    extractCapturedFields,
-    questionForField,
-    signalPhrasingForField
-  };
+    applyUserSuppliedCompletion,
+    requiredFieldsFromSignals,
+    capturedFieldsFromAnalysis,
+    missingFieldsFromAnalysis,
+    recoveryQuestionFor,
+    fillabilityFor
+  });
 })();
