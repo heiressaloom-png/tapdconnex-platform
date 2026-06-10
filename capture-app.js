@@ -18,3 +18,72 @@ function save(){try{pullForm();let t=tpl(),e=S.ev,p=S.p,evText=e&&e.name?[e.name
 function pickTemplate(){let sh=document.getElementById('tplSheet');sh.innerHTML='<div class="grip"></div><h2>Choose a template</h2><div class="sheet-sub">Select the template for this capture.</div>'+T.map(t=>`<button class="tpl-option ${t.id===S.tpl?'selected':''}" data-id="${t.id}"><div><div class="tpl-name">${esc(t.name)}</div><div class="tpl-sum">${esc(t.tier)}</div></div><span class="badge ${t.tier==='pro'?'pro':''}">${t.tier==='pro'?'Pro':'Starter'}</span></button>`).join('');sh.querySelectorAll('.tpl-option').forEach(b=>b.onclick=()=>{S.tpl=b.dataset.id;localStorage.setItem(K.TPL,S.tpl);close('tplOverlay');render();msg('Template selected')});open('tplOverlay')}
 function eventBox(){let e=S.ev||{};let sh=document.getElementById('eventSheet');sh.innerHTML=`<div class="grip"></div><h2>Event context</h2><div class="sheet-sub">Set this once. Everyone you capture here is grouped together.</div><div class="form"><div class="field"><label>Event name</label><input class="input" id="en" value="${esc(e.name||'')}" placeholder="e.g. AI Expo"></div><div class="row"><div class="field"><label>Location / area</label><input class="input" id="el" value="${esc(e.location||'')}"></div><div class="field"><label>Session</label><input class="input" id="es" value="${esc(e.session||'')}"></div></div><div class="field"><label>Date / time</label><input class="input" id="ed" value="${esc(e.date||dateNow())}"></div><button class="btn btn-primary" id="evSave">Save event context</button></div>`;sh.querySelector('#evSave').onclick=()=>{let n=document.getElementById('en').value.trim();if(!n){msg('Give the event a name');return}S.ev={name:n,location:document.getElementById('el').value.trim(),session:document.getElementById('es').value.trim(),date:document.getElementById('ed').value.trim(),key:slug(n)+'-'+Date.now()};localStorage.setItem(K.EV,JSON.stringify(S.ev));close('eventOverlay');render();msg('Event context saved')};open('eventOverlay')}
 function open(x){document.getElementById(x).classList.add('show')}function close(x){document.getElementById(x).classList.remove('show')}['tplOverlay','eventOverlay'].forEach(x=>document.getElementById(x).onclick=e=>{if(e.target.id===x)close(x)});render();
+/* ============================================================
+
+   ROUND 8 — Gold-Star Calibration feedback capture.
+
+   Stores a learning SIGNAL. Does NOT touch the intelligence score.
+   Exposed as window.tapdSaveFeedback for the Relationship Hub UI to call.
+
+   ============================================================ */
+
+(function () {
+  // User-facing feedback option → internal learning signal.
+  // This is documented and stored only. It does not rewrite any intelligence score.
+  const FEEDBACK_LEARNING_MAP = {
+    wrong_priority: 'score_may_be_too_aggressive',
+    missing_context: 'completeness_probe_needs_improvement',
+    not_opportunity: 'opportunity_classification_too_aggressive',
+    already_handled: 'closure_happened_off_platform',
+    wrong_next_step: 'layer9_next_step_needs_correction',
+    other: 'open_ended_for_review',
+  };
+
+  window.tapdSaveFeedback = async function tapdSaveFeedback({ engagementId, option, note }) {
+    const record = {
+      engagement_id: engagementId,
+      type: 'interpretation',
+      feedback_option: option,
+      learning_signal: FEEDBACK_LEARNING_MAP[option] || FEEDBACK_LEARNING_MAP.other,
+      note: note || null,
+      created_at: new Date().toISOString(),
+    };
+
+    // Preferred path: save to Supabase if the client is available.
+    try {
+      const client = window.supabase || window.supabaseClient || null;
+
+      if (client && client.auth && typeof client.auth.getUser === 'function') {
+        const {
+          data: { user },
+        } = await client.auth.getUser();
+
+        const { error } = await client
+          .from('feedback')
+          .insert({ ...record, user_id: user?.id || null });
+
+        if (error) throw error;
+
+        return { saved: true, via: 'supabase' };
+      }
+    } catch (e) {
+      console.error('supabase feedback insert failed, falling back to local', e);
+    }
+
+    // Fallback path: queue locally so the product works before DB/auth is ready.
+    try {
+      const key = 'tapd_feedback_queue';
+      const queue = JSON.parse(localStorage.getItem(key) || '[]');
+      queue.push(record);
+      localStorage.setItem(key, JSON.stringify(queue));
+
+      return { saved: true, via: 'local' };
+    } catch (e) {
+      console.error('local feedback save failed (non-blocking)', e);
+      return { saved: false };
+    }
+  };
+
+  // Optional: expose the map for future debugging / migration scripts.
+  window.tapdFeedbackLearningMap = FEEDBACK_LEARNING_MAP;
+})();
