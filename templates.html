@@ -18,6 +18,8 @@ a{color:inherit}.top{position:sticky;top:0;z-index:50;background:rgba(246,242,23
 .cheat-title{font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:900;margin-bottom:8px}
 .offer-chip{font-size:12px;font-weight:800;color:#6B4A00;background:var(--gold-bg);border-radius:999px;padding:5px 9px}
 .locked .offer-chip{color:var(--muted);background:var(--surface-warm)}
+.warn-chip{font-size:12px;font-weight:800;color:#7C2D3F;background:#F5E8EC;border-radius:999px;padding:5px 9px}
+.locked .warn-chip{color:var(--muted);background:var(--surface-warm)}
 .locked .chip{color:var(--muted);background:var(--surface-warm)}.questions{display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}.card.expanded .questions{display:block}.questions ol{padding-left:20px;color:var(--muted);font-size:14px;line-height:1.55}.questions li{margin:7px 0}.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}.btn{border:0;border-radius:12px;padding:11px 14px;font-family:var(--font-body);font-weight:900;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px}.btn.primary{background:var(--accent);color:white}.btn.primary:hover{background:var(--accent-hover)}.btn.secondary{background:var(--surface-warm);border:1px solid var(--border-mid);color:var(--text)}.btn.pro{background:var(--pro);color:white}.edit-box{display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}.card.editing .edit-box{display:block}.edit-box label{display:block;font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:7px}.edit-box textarea,.edit-box input{width:100%;border:1px solid var(--border-mid);border-radius:12px;background:#fff;padding:12px;font:inherit;margin-bottom:10px}.edit-box textarea{min-height:110px;resize:vertical}.saved-note{display:none;font-size:13px;color:var(--success);font-weight:800;margin-top:8px}.modal-backdrop{position:fixed;inset:0;background:rgba(24,20,16,.34);display:none;align-items:center;justify-content:center;padding:20px;z-index:100}.modal-backdrop.show{display:flex}.modal{max-width:620px;width:100%;background:var(--surface);border-radius:24px;box-shadow:var(--shadow);border:1px solid var(--border);overflow:hidden}.modal-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:24px;border-bottom:1px solid var(--border)}.modal-head h2{font-family:var(--font-display);font-size:28px}.modal-close{border:1px solid var(--border-mid);background:var(--surface-warm);width:38px;height:38px;border-radius:50%;font-size:20px;cursor:pointer}.modal-body{padding:22px 24px}.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}.mini{border:1px solid var(--border);border-radius:16px;padding:14px;background:var(--surface-warm)}.mini strong{display:block;margin-bottom:4px}.mini span{font-size:13px;color:var(--muted);line-height:1.45}.modal-actions{display:flex;gap:10px;justify-content:flex-end;padding:0 24px 24px}.footer-note{font-size:12px;color:var(--faint);line-height:1.5;margin-top:20px}
 .view.hidden{display:none!important}
 .pricing-bottom{margin:18px 24px 24px;padding:20px;border:1px solid var(--border-mid);border-radius:18px;background:var(--surface-warm);display:grid;grid-template-columns:1fr 1fr;gap:18px}.pricing-bottom .label{font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--pro);font-weight:900}.pricing-bottom .amount{font-family:var(--font-display);font-size:44px;line-height:1;color:var(--pro);letter-spacing:-.04em;margin-top:14px}.pricing-bottom p{font-size:14px;color:var(--muted);line-height:1.45;margin-top:6px}@media(max-width:860px){.pricing-bottom{grid-template-columns:1fr}.pricing-plan-card{min-height:auto}.pricing-plan-card .amount{margin-top:18px}}
@@ -185,6 +187,13 @@ a{color:inherit}.top{position:sticky;top:0;z-index:50;background:rgba(246,242,23
             "What would success look like for you?",
             "What’s your timeline around this?",
             "What’s the best next step from here?"
+        ],
+        "signsNotReady": [
+            "Not a priority right now",
+            "No budget",
+            "Not their decision",
+            "Already sorted",
+            "Just being polite"
         ]
     },
     {
@@ -221,6 +230,12 @@ a{color:inherit}.top{position:sticky;top:0;z-index:50;background:rgba(246,242,23
             "What’s the best way to approach them?",
             "Would you be comfortable introducing us?",
             "What would make that introduction easier?"
+        ],
+        "signsNotReady": [
+            "Doesn't know them well",
+            "Needs to check first",
+            "Not the right person",
+            "Keeping you posted only"
         ]
     },
     {
@@ -255,7 +270,8 @@ a{color:inherit}.top{position:sticky;top:0;z-index:50;background:rgba(246,242,23
             "How can I support you?",
             "What’s the best way to stay connected?",
             "When should we reconnect?"
-        ]
+        ],
+        "signsNotReady": []
     },
     {
         "id": "strategic_partnership",
@@ -291,6 +307,12 @@ a{color:inherit}.top{position:sticky;top:0;z-index:50;background:rgba(246,242,23
             "What would success look like together?",
             "Who else should be involved?",
             "What should we explore next?"
+        ],
+        "signsNotReady": [
+            "Needs leadership sign-off",
+            "One-sided benefit",
+            "Stretched on resources",
+            "Loose interest only"
         ]
     },
     {
@@ -327,6 +349,12 @@ a{color:inherit}.top{position:sticky;top:0;z-index:50;background:rgba(246,242,23
             "What events are coming up?",
             "How do you select speakers?",
             "What should happen next?"
+        ],
+        "signsNotReady": [
+            "Lineup already set",
+            "Someone else books speakers",
+            "Maybe a future event",
+            "Not right for their audience"
         ]
     },
     {
@@ -363,6 +391,12 @@ a{color:inherit}.top{position:sticky;top:0;z-index:50;background:rgba(246,242,23
             "What experience would be most valuable?",
             "What would success look like?",
             "What’s the next step?"
+        ],
+        "signsNotReady": [
+            "Not hiring now",
+            "Headcount freeze",
+            "HR handles it",
+            "Details kept on file only"
         ]
     },
     {
@@ -399,6 +433,12 @@ a{color:inherit}.top{position:sticky;top:0;z-index:50;background:rgba(246,242,23
             "What would an ideal solution look like?",
             "How would you know it worked?",
             "Would you be open to testing something new?"
+        ],
+        "signsNotReady": [
+            "Minor annoyance",
+            "Already have a fix",
+            "Rarely happens",
+            "Interesting but not for them"
         ]
     },
     {
@@ -435,6 +475,12 @@ a{color:inherit}.top{position:sticky;top:0;z-index:50;background:rgba(246,242,23
             "What support would you need?",
             "How long would you want to test it?",
             "What would happen if it worked?"
+        ],
+        "signsNotReady": [
+            "Can't allocate anyone",
+            "Sees it as risky",
+            "Maybe next quarter",
+            "Needs procurement sign-off"
         ]
     },
     {
@@ -471,6 +517,12 @@ a{color:inherit}.top{position:sticky;top:0;z-index:50;background:rgba(246,242,23
             "What would you focus on if you were in my position?",
             "How can I learn more about this area?",
             "Would you be open to continuing the conversation?"
+        ],
+        "signsNotReady": [
+            "Short on time",
+            "Not their area",
+            "Vague 'reach out sometime'",
+            "Only via paid program"
         ]
     },
     {
@@ -507,6 +559,12 @@ a{color:inherit}.top{position:sticky;top:0;z-index:50;background:rgba(246,242,23
             "What do members contribute?",
             "Do you think I’d be a good fit?",
             "What would be the best way to get involved?"
+        ],
+        "signsNotReady": [
+            "Invite-only / closed",
+            "No longer involved",
+            "Unsure on fit",
+            "Not taking new members"
         ]
     },
     {
@@ -543,6 +601,13 @@ a{color:inherit}.top{position:sticky;top:0;z-index:50;background:rgba(246,242,23
             "Who else would need to be involved?",
             "What information would you want to see next?",
             "What’s the best next step from here?"
+        ],
+        "signsNotReady": [
+            "'Keep me posted' (soft no)",
+            "Too early for them",
+            "Not their thesis",
+            "Needs partner approval",
+            "'Send the deck' brush-off"
         ]
     }
 ];
@@ -602,6 +667,10 @@ a{color:inherit}.top{position:sticky;top:0;z-index:50;background:rgba(246,242,23
         <div class="cheat-title">What to offer</div>
         <div class="detects">${(t.whatToOffer||[]).map(d=>`<span class="offer-chip">${esc(d)}</span>`).join('')}</div>
       </div>
+      ${(t.signsNotReady && t.signsNotReady.length) ? `<div class="cheat-section">
+        <div class="cheat-title">Signs it may not be ready</div>
+        <div class="detects">${t.signsNotReady.map(d=>`<span class="warn-chip">${esc(d)}</span>`).join('')}</div>
+      </div>` : ''}
       <div class="actions">
         <button class="btn secondary" data-action="view" data-id="${t.id}" type="button">View questions</button>
         <button class="btn ${locked?'pro':'primary'}" data-action="select" data-id="${t.id}" type="button">${locked?'Unlock Pro':'Use template'}</button>
@@ -613,6 +682,7 @@ a{color:inherit}.top{position:sticky;top:0;z-index:50;background:rgba(246,242,23
         <label>Questions, one per line</label><textarea data-edit-questions="${t.id}">${esc((t.questions||[]).join('\n'))}</textarea>
         <label>Signals to listen for, one per line</label><textarea data-edit-signals="${t.id}">${esc((t.signalsToListenFor||t.detects||[]).join('\n'))}</textarea>
         <label>What to offer, one per line</label><textarea data-edit-offers="${t.id}">${esc((t.whatToOffer||[]).join('\n'))}</textarea>
+        <label>Signs it may not be ready, one per line</label><textarea data-edit-signs="${t.id}">${esc((t.signsNotReady||[]).join('\n'))}</textarea>
         <button class="btn primary" data-action="save" data-id="${t.id}" type="button">Save template</button>
         <div class="saved-note" id="saved-${t.id}">Saved. This version will be used for future captures.</div>
       </div>
@@ -633,7 +703,8 @@ a{color:inherit}.top{position:sticky;top:0;z-index:50;background:rgba(246,242,23
     const signalsToListenFor=card.querySelector(`[data-edit-signals="${id}"]`).value.split('\n').map(x=>x.trim()).filter(Boolean);
     const detects=signalsToListenFor;
     const whatToOffer=card.querySelector(`[data-edit-offers="${id}"]`).value.split('\n').map(x=>x.trim()).filter(Boolean);
-    state.custom[id]=Object.assign({},state.custom[id]||{},{name,questions,signalsToListenFor,detects,whatToOffer}); writeJSON(STORAGE.CUSTOM,state.custom);
+    const signsNotReady=card.querySelector(`[data-edit-signs="${id}"]`)?.value.split('\n').map(x=>x.trim()).filter(Boolean)||[];
+    state.custom[id]=Object.assign({},state.custom[id]||{},{name,questions,signalsToListenFor,detects,whatToOffer,signsNotReady}); writeJSON(STORAGE.CUSTOM,state.custom);
     if(state.plan!=='pro') localStorage.setItem(STORAGE.EDITED,id);
     const saved=card.querySelector(`#saved-${CSS.escape(id)}`); if(saved){saved.style.display='block'; setTimeout(()=>saved.style.display='none',1800);}
     render();
