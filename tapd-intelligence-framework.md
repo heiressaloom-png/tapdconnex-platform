@@ -1,247 +1,109 @@
-TAPDconnex Relationship Intelligence Framework
-Version: v1.4 architecture / v1.3 runtime-compatible package  
-Product principle: TAPDconnex observes and informs. It does not force outcomes.
+Relationship Intelligence Framework — `intelligence-framework.html`
+Version: 1.4 (reference engine `1.4.0-ref`)
+What it is: a single, self-contained HTML page that runs the TAPDconnex relationship intelligence engine in your browser — so you can see the anti-inflation guarantees fire, run any conversation through the full pipeline, and verify your committed engine against a known-good reference.
+This is not a slideshow of the framework. It is the framework, executable.
 ---
-1. Product Positioning
-TAPDconnex is not a CRM, digital business card, task manager, or generic meeting assistant.
-TAPDconnex is a Real-Time Relationship Memory Layer that captures what was actually said, structures the relationship context, and helps the user decide what deserves attention next.
-The product evolves in three stages:
-```text
-MVP1: Relationship Memory + Intelligence + Completeness
-MVP2: Closure Agent + Digest Agent + Prep Agent
-MVP3: Learning Agent + automatic closure detection + performance layer
-```
+1. What this page is for
+It does three jobs, in this order:
+Self-test — every guarantee in the framework asserted live (31 checks). Green means the secret sauce holds; red names exactly which rule broke. This is the console-test kit from the cluster build, made into a panel you re-run after any change instead of typing one-liners.
+Playground — pick a template, paste a conversation, toggle Starter/Pro, and watch the whole chain: signals with verbatim quotes → three independent scores → momentum → completeness gaps (fill-now vs ask-next-time) → the owner-voiced draft as it would land in the Hub.
+Reference — the three axes, the anti-inflation rules, the card-state 2×2, the ten templates, and the non-negotiables, rendered as a clean source-of-truth doc beneath the working tools.
+The hero is deliberately the Gate firing in real time: a warm-but-empty chat held under 49 next to the same warmth plus a real next step lifting above it. It is the single most persuasive thing in the framework, so it leads.
 ---
-2. Core Trust Rules
-```text
-No quote = no signal.
-Missing information is not negative evidence.
-Questions sharpen intelligence but do not inflate score.
-Profile awareness re-ranks; it does not re-score.
-Done off-platform does not equal Opportunity.
-One swipe creates a learning signal; it does not rewrite intelligence.
-TAPDconnex observes and informs; the human still acts.
-```
-These rules protect the framework from overconfident automation.
+2. The honest boundary — read this
+The page carries its own faithful reference engine. It does not load your repo's `tapd-intelligence-framework.js`.
+This is a deliberate choice, not a shortcut:
+The reference engine is built on the committed data contract — the real enum strings (`'Pilot / Beta Opportunity'`, `'Advisory / Mentor'`, etc.), `bandFor`, `resolveCardState`, `CARD_THRESHOLDS`, `SIGNAL_FIELD_REQUIREMENTS`, `FIELD_FILLABILITY` — copied verbatim from the base file.
+Its scoring is built on the exact constants from the cluster kit — the 49 gate, the 70 floor, `CATEGORY_BASE_SCORE`, the provenance guard, the keyword cues.
+It runs standalone, so the page works today, before the clusters are fully assembled and wired into your repo file.
+Use it as your verification oracle. Once your `tapd-intelligence-framework.js` has the scoring/detection/completeness clusters assembled, run the same inputs through both. Where they disagree, that disagreement is the bug — surfaced, not hidden.
+The page states this boundary in its own copy so no one mistakes it for the live wiring.
 ---
-3. Framework Layers
-Layer 1 — Universal Signal Detection
-Detects universal relationship signals across the whole transcript:
-Pain
-Urgency
-Authority
-Resource
-Action Intent
-Relationship Warmth
-Every signal must carry verbatim evidence.
-Layer 2 — Template-Specific Detection
-Detects signals aligned to the selected template.
-Template questions are optional. They improve attribution and confidence but are never required.
-Layer 2.5 — Template Blend Detection
-Detects when a conversation starts moving into another template.
-The primary template is never auto-switched. A secondary template is advisory only.
-Layer 3 — Negative Signals
-Detects explicit negatives only:
-No Priority
-No Budget
-No Authority
-No Need
-Timing Not Now
-Polite Interest Only
-Absence of a positive signal is not a negative signal.
-Layer 4 — Contradiction Detection
-Contradictions surface tension between positive and negative evidence.
-Contradictions lower confidence. They do not cancel signals and do not automatically lower signal strength.
-Layer 5 — Signal Status
-Statuses:
-Detected
-Weak
-Blocked
-Contradicted
-No Signal
-Refinement: a soft contradiction should usually create PROBE rather than BLOCKED. Hard blockers create BLOCKED.
-Layer 6 — Signal Strength
-Signal strength answers:
-```text
-How strong is the evidence for this signal?
+3. What's proven (and how)
+The engine was verified in Node before any UI was wrapped around it, then the page's inline copy was verified to match the Node engine exactly. Both suites pass clean:
 ```
-The Gating Rule prevents inflation. Without a qualifying signal, score is capped at 49.
-Layer 7 — Confidence
-Confidence answers:
-```text
-How sure are we that the interpretation is correct?
-```
-Strength and confidence are independent. They are never averaged.
-Layer 8 — Missing Context
-Detects what is missing but needed to act:
-Decision maker
-Budget owner
-Timeline
-Success criteria
-Preferred channel
-Implementation owner
-Layer 8 suggests recovery questions. It never forces the user to ask them.
-Layer 9 — Missing Next Steps
-Validates the four components of an actionable next step:
-Owner
-Action
-Date
-Channel
-Missing components remain missing. TAPDconnex asks; it does not assume.
-Layer 10 — Momentum Detection
-Momentum answers:
-```text
-Is this relationship moving?
-```
-Momentum uses signal score, action intent, next-step completeness, task lifecycle, hard blockers, and positive response evidence.
-Layer 11 — Signal Attribution
-Attribution is best-fit, never proof of origin.
-Signals may appear anywhere in a transcript and should not be forced into a template home.
-Layer 12 — Profile Awareness
-Profile awareness can add priority and framing.
-It must never alter:
-Signal Score
-Confidence
-Momentum
-Evidence
-Contradictions
-Task State
-Layer 13 — Human Feedback Loop
-Captures optional user feedback and outcomes over time.
-Feedback is a learning signal, not a score override.
-Layer 14 — Score Decay / Staleness
-Future scheduled pass.
-Decay should pause while a relationship has an open task within its date window. A relationship awaiting a committed action is not stale.
-Layer 15 — Relationship Progress / Task Lifecycle
-Future architecture for tracking whether agreed follow-ups were handled.
-States:
-Open
-Done
-Slipped / At Risk
-Abandoned
-Done does not mean Opportunity. Opportunity needs positive response evidence or later progress.
----
-4. Strength × Confidence Matrix
-```text
-Signal Strength = How strong is the evidence?       (the what)
-Confidence      = How sure is the interpretation?   (the how sure)
-```
-	Low Confidence	High Confidence
-High Strength	PROBE	ACT
-Low Strength	LOW PRIORITY	LOG
-User-facing card states:
-ACT
-PROBE
-LOG
-LOW PRIORITY
-BLOCKED
-AT RISK
-Internal word `DEPRIORITISE` should not be used in the UI. Use LOW PRIORITY.
----
-5. Hub Decisions
-Confirmed Hub behaviour:
-```text
-Swipe left = Move to Low Priority
-Archive / Let go = secondary option
-Keep on radar default = 14 days
-Done off-platform = remove from main priority view
-Low Priority = hidden behind filter
-Feedback hook = matte-gold star + “Did we get this right for you?”
-```
-Done off-platform means the user removed it from their plate. It does not mean the relationship became an Opportunity.
-If a high-signal item slips, show:
-```text
-Is this still a priority for you?
+The Gate
+  ✓ warmth-only stays at 10            (below the 49 cap)
+  ✓ gate lifts with Action Intent + Resource → 70
+  ✓ pain-only capped at 49             (lots of pain still can't read "hot")
 
-[Keep on radar]
-[Snooze]
-[Mark done off-platform]
-[Move to Low Priority]
-[Let go]
-```
----
-6. Gold-Star Feedback Calibration
-Feedback is optional.
-```text
-Gold star = intelligence calibration
-Question = “Did we get this right for you?”
-Purpose = help TAPDconnex learn what matters to this user
-Never block the user
-Never make it feel like a rating survey
-```
-If the user taps Not quite, show:
-```text
-What felt off?
+The Floor
+  ✓ single indirect quote ≤ 70
+  ✓ two contradictions subtract 40
 
-[Wrong priority]
-[Missing context]
-[Not an opportunity]
-[Already handled]
-[Wrong next step]
-[Other]
+Provenance
+  ✓ user-supplied claim about the contact adds zero
+
+Hallucination guard
+  ✓ every signal carries a verbatim quote present in transcript
+  ✓ draft never leaks the internal score
+
+Pipeline (analyze())
+  ✓ returns strength, momentum, completeness %, card state, draft
+
+Enum-drift
+  ✓ computeCompleteness runs clean on all 10 templates
+    (catches the 'Pilot / Beta Opportunity' string-match risk mechanically)
+
+Card states
+  ✓ Starter high strength → ACT
+  ✓ Pro high strength / low confidence → PROBE
+  ✓ Pro low strength / high confidence → LOG
+  ✓ hard blocker → BLOCKED (end to end)
 ```
-Learning rules:
-```text
-One swipe should not rewrite the intelligence.
-One swipe creates a learning signal.
-Repeated patterns shape future recommendations.
-Transcript evidence remains untouched.
-```
+The self-test panel re-runs all of these in the browser every time you load or click Run again.
 ---
-7. Loading Intelligence Messages
-Use these while analysis is running:
-```text
-Finding what was actually said...
-Checking what needs your attention...
-Separating strong signals from polite interest...
-Looking for missing next-step details...
-Preparing your relationship memory...
+4. The value chain it demonstrates
+This is the spine you asked to see working end to end:
 ```
-These make wait time feel intentional and reinforce trust.
+template selected  →  recording  →  (Pro: +5-min window)  →  engine  →  draft in the Hub  →  human reviews & sends
+```
+Stage	On the page	Layers
+Template selected	the Template dropdown	config
+Recording → transcript	the transcript box (stands in for record→transcribe)	Gaps 1–2
+Engine detects	signals + "signs it's not ready", each with a verbatim quote	L1–L5
+Engine scores	three independent axes: strength · confidence · completeness	L6–L7 + completeness
+Pro +5-min window	gaps split into FILL NOW vs ASK NEXT TIME, key field ★ first	completeness on L8–L9
+Pro +5-min window	a live, eligibility-gated capture flow that re-scores	resurface + capture machine
+Momentum	Dormant → … → Opportunity / Blocked	L10
+Draft to Hub	owner-voiced draft, score never leaks, human-in-the-loop	draft + L15
+The +5-minute window is now fully working on the page, not just described. It runs the real resurface builder and the real capture state machine (`offered → capturing → complete`), with these behaviours verified (16/16 in Node):
+Eligible only if you can fill something now. If every remaining gap is contact-side, no window is offered — those carry forward instead.
+Key-first ordering. The ★ clock-setting field leads both lists.
+The score jump is real. Ticking prompts merges honest answers into the transcript and re-runs the actual engine — completeness climbs because the engine genuinely now detects that context, not because a number was faked.
+Fail-safes. Empty capture skips without wasting a re-analysis; a pipeline error preserves the prior score; the 300s timer is a hard cap that merges what was captured rather than discarding it.
+Starter is locked out with honest copy explaining gaps carry forward silently.
 ---
-8. Guided vs Unguided Mode
-The cheat sheet is an accelerant, not a prerequisite.
-Guided conversations may improve:
-Template attribution
-Confidence interpretation
-Recovery wording
-They must never directly increase:
-Raw signal score
-Momentum
-Opportunity status
-Unguided conversations must not be punished.
+5. What it deliberately does not do
+No persistence. It analyses one conversation in memory. L13-summarise, L14 (decay), and L15 (task lifecycle) are storage-dependent and correctly absent — they build with the database, not before it.
+No real recording or transcription. You supply the transcript so the engine can be felt on any conversation. The keyword detector is the swappable stub; the real LLM detector slots in behind the same output contract.
+No network calls. Fully offline, single file. Safe to open from disk or serve anywhere.
 ---
-9. Template Question Metadata
-Each question is tagged as:
-`discriminating` — strong signal for this template
-`shared` — useful context but weak for routing
-`blendHinge` — shared question that intentionally bridges templates
-Shared questions help completeness and context. They should not strongly route a template.
-Blend-hinge example:
-```text
-Would you be open to testing something new?
-Product Discovery → Pilot/Beta
+6. How to use it
+Open `intelligence-framework.html` in any modern browser (or serve it from the repo / Vercel).
+The self-test runs on load — confirm it reads all assertions pass.
+In the playground, click a preset (Hot opportunity, Warm but empty, Blocked, Contradiction, Partnership) or paste your own transcript.
+Toggle Starter ↔ Pro to watch the intelligence widen and narrow.
+Read the draft at the bottom — that's what lands in the Relationship Hub for review.
+Verifying your committed engine against it
+When the clusters are assembled in `tapd-intelligence-framework.js`, run the canonical call in both and compare:
+```js
+TAPD_INTELLIGENCE.analyze(
+  "We keep losing leads, follow-up is manual. We have budget. Send pricing this week.",
+  TAPD_INTELLIGENCE.TEMPLATE.OPPORTUNITY,
+  { tier: 'pro' }
+);
+// reference engine returns: score 80 · momentum Opportunity · completeness 57% · card PROBE
 ```
+If your wired engine disagrees, that's the first bug to chase.
 ---
-10. Current Implementation Files
-Current root-compatible files:
-```text
-tapd-intelligence-framework.js
-completeness.js
-capture-window.js
-summarise-prompt-structure-v14.js
-mvp2-agent-layer.md
-```
-Future HTML updates:
-```text
-relationship-hub.html
-capture.html
-templates.html
-```
+7. Why the canonical call returns PROBE, not ACT
+It's worth understanding, because it's the framework being honest. Strength is 80 (high), but the keyword stub marks the evidence direct-but-not-uniformly-specific, so Pro confidence lands below the 70 line — high interest, not yet high certainty → PROBE (clarify), not ACT (do it). That's the gate-and-floor doing their job: the engine won't tell you to charge in on evidence it isn't sure of. The real LLM detector (Gap 3) sharpens specificity detection and will push genuinely strong, well-evidenced conversations to ACT.
 ---
-11. Public-Facing Guidance
-Do not expose scoring weights, thresholds, contradiction penalties, detector prompts, or full internal agent mechanics.
-Use benefit-led language:
-```text
-TAPDconnex helps you remember who matters, what was discussed, what is missing, and what to do next.
-```
+8. Design notes
+Matches the repo system: Fraunces (display), Manrope (body), JetBrains Mono (data/labels) on the teal-petrol `#1E4F5C` palette with a restrained gold accent.
+Responsive to mobile, keyboard-focus visible, reduced-motion respected.
+One signature moment — the live gate in the hero — everything else kept quiet around it.
+---
+9. Where it fits next
+The engine is verified. The natural next moves are the body (the eight product gaps), highest-leverage first: recording → transcription (so the engine gets real input), then storage (which unlocks L14/L15 and the Hub). This page is the proof you can build that body on a brain that works.
