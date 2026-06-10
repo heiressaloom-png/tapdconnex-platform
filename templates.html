@@ -31,6 +31,66 @@ a{color:inherit}.top{position:sticky;top:0;z-index:50;background:rgba(246,242,23
 .price-card p{font-size:14px;color:var(--muted);line-height:1.45}
 @media(max-width:860px){.pricing-summary{grid-template-columns:1fr}}
 @media(max-width:860px){.top-inner{align-items:flex-start}.nav{overflow-x:auto;max-width:100%}.hero{grid-template-columns:1fr}.cards{grid-template-columns:1fr}.comparison-head{display:block}.modal-grid{grid-template-columns:1fr}.wrap{padding:22px 16px 90px}.top{padding:14px 16px}.brand-name{font-size:20px}}
+
+  .sticky-template-tools{
+    position:sticky;
+    top:76px;
+    z-index:20;
+    background:rgba(246,242,234,.94);
+    backdrop-filter:blur(14px);
+    border:1px solid var(--border);
+    border-radius:22px;
+    padding:16px;
+    margin-bottom:18px;
+    display:flex;
+    justify-content:space-between;
+    gap:16px;
+    align-items:center;
+  }
+  .quick-template-picker{
+    min-width:min(420px,100%);
+    display:grid;
+    grid-template-columns:1fr auto;
+    gap:10px;
+    align-items:end;
+  }
+  .quick-template-picker label{
+    grid-column:1/-1;
+    font-family:var(--font-mono);
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.12em;
+    font-weight:800;
+    color:var(--faint);
+  }
+  .quick-select{
+    height:44px;
+    border:1px solid var(--border-mid);
+    border-radius:999px;
+    padding:0 14px;
+    background:var(--surface);
+    color:var(--text);
+    font:inherit;
+    font-weight:800;
+    min-width:0;
+  }
+  .locked-note{
+    display:inline-flex;
+    align-items:center;
+    border:1px solid var(--border);
+    border-radius:999px;
+    padding:9px 12px;
+    font-size:12px;
+    font-weight:900;
+    color:var(--muted);
+    background:var(--surface-warm);
+  }
+  @media(max-width:760px){
+    .sticky-template-tools{top:68px;display:block}
+    .quick-template-picker{grid-template-columns:1fr;margin-top:14px}
+    .quick-template-picker .btn{width:100%}
+  }
+
 </style>
 </head>
 <body>
@@ -66,8 +126,16 @@ a{color:inherit}.top{position:sticky;top:0;z-index:50;background:rgba(246,242,23
   </section>
 
 
-  <section class="template-toolbar">
-    <div><h2>Template library</h2><p id="templateLibraryNote">View and select templates based on the networking situation. MVP1 templates are locked so the system can learn from a consistent baseline.</p></div>
+  <section class="template-toolbar sticky-template-tools">
+    <div>
+      <h2>Template library</h2>
+      <p id="templateLibraryNote">View and select templates based on the networking situation. MVP1 templates are locked so the system can learn from a consistent baseline.</p>
+    </div>
+    <div class="quick-template-picker" aria-label="Quick template selector">
+      <label for="quickTemplateSelect">Quick select</label>
+      <select id="quickTemplateSelect" class="quick-select"></select>
+      <button class="btn primary" id="quickUseBtn" type="button">Use selected template</button>
+    </div>
   </section>
   <section class="cards" id="cards"></section>
   <p class="footer-note">Note: This page intentionally uses benefit-level language for Pro capabilities. The detailed intelligence framework should not be exposed as product copy.</p>
@@ -97,7 +165,7 @@ a{color:inherit}.top{position:sticky;top:0;z-index:50;background:rgba(246,242,23
           <tr><td>Core conversation capture</td><td class="yes">Included</td><td class="yes">Included</td></tr>
           <tr><td>Starter templates</td><td class="yes">3 flows</td><td class="yes">All included</td></tr>
           <tr><td>Advanced templates</td><td class="no">Locked</td><td class="yes">Unlocked</td></tr>
-          <tr><td>Template editing</td><td class="yes">Edit 1 template</td><td class="yes">Edit all templates</td></tr>
+          <tr><td>Template customisation</td><td class="yes">Locked MVP1 baseline</td><td class="yes">Locked MVP1 baseline</td></tr>
           <tr><td>Recording length</td><td>5 minutes</td><td class="pro-word">10 minutes + completion window</td></tr>
           <tr><td>Relationship signal readout</td><td class="yes">Basic</td><td class="yes">Advanced</td></tr>
           <tr><td>Momentum readout</td><td class="yes">Basic</td><td class="yes">Advanced</td></tr>
@@ -576,6 +644,8 @@ a{color:inherit}.top{position:sticky;top:0;z-index:50;background:rgba(246,242,23
   const planNote=document.getElementById('planNote');
   const modal=document.getElementById('upgradeModal');
   const templateLibraryNote=document.getElementById('templateLibraryNote');
+  const quickTemplateSelect=document.getElementById('quickTemplateSelect');
+  const quickUseBtn=document.getElementById('quickUseBtn');
   const templatesView=document.getElementById('templatesView');
   const pricingView=document.getElementById('pricingView');
   const templatesTabLink=document.getElementById('templatesTabLink');
@@ -597,8 +667,8 @@ a{color:inherit}.top{position:sticky;top:0;z-index:50;background:rgba(246,242,23
     // Use local complete template list so this page stays stable even if the intelligence framework is trimmed.
     return FALLBACK_TEMPLATES.map(t=>Object.assign({},t,state.custom[t.id]||{}));
   }
-  function canEdit(t){ if(state.plan==='pro') return true; if(t.tier==='pro') return false; const edited=localStorage.getItem(STORAGE.EDITED); return !edited || edited===t.id; }
-  function setPlan(plan){ state.plan=plan; localStorage.setItem(STORAGE.PLAN,plan); render(); }
+  function canEdit(t){return false;}
+function setPlan(plan){ state.plan=plan; localStorage.setItem(STORAGE.PLAN,plan); render(); }
   starterBtn.onclick=()=>setPlan('starter'); proBtn.onclick=()=>setPlan('pro');
   document.getElementById('closeModal').onclick=closeModal; document.getElementById('maybeLater').onclick=closeModal; document.getElementById('upgradeBtn').onclick=()=>{closeModal();showView('pricing');}; modal.addEventListener('click',e=>{if(e.target===modal)closeModal();});
   function openModal(){modal.classList.add('show');modal.setAttribute('aria-hidden','false');}
@@ -609,6 +679,13 @@ a{color:inherit}.top{position:sticky;top:0;z-index:50;background:rgba(246,242,23
     const all=frameworkTemplates();
     const visible=all.filter(t=>state.plan==='pro'?t.tier==='pro':t.tier==='starter');
     if(templateLibraryNote){templateLibraryNote.textContent=state.plan==='pro'?'Showing Pro templates. Switch to Starter to view the three core starter flows.':'Showing Starter templates. Switch to Pro to view advanced Pro templates.';}
+    if(quickTemplateSelect){
+      if(!visible.find(t=>t.id===state.selected) && visible.length){
+        state.selected=visible[0].id;
+        localStorage.setItem(STORAGE.SELECTED,state.selected);
+      }
+      quickTemplateSelect.innerHTML=visible.map(t=>`<option value="${t.id}" ${t.id===state.selected?'selected':''}>${esc(t.name)} ${t.tier==='pro'?'· Pro':'· Starter'}</option>`).join('');
+    }
     cards.innerHTML=visible.map(t=>cardHTML(t)).join('');
     cards.querySelectorAll('[data-action]').forEach(btn=>btn.addEventListener('click',handleAction));
   }
@@ -631,43 +708,19 @@ a{color:inherit}.top{position:sticky;top:0;z-index:50;background:rgba(246,242,23
       </div>` : ''}
       <div class="actions">
         <button class="btn secondary" data-action="view" data-id="${t.id}" type="button">View questions</button>
-        <button class="btn ${locked?'pro':'primary'}" data-action="select" data-id="${t.id}" type="button">${locked?'Unlock Pro':'Use template'}</button>
-        <button class="btn secondary" data-action="edit" data-id="${t.id}" type="button" ${!editable?'disabled style="opacity:.45;cursor:not-allowed"':''}>Edit</button>
+        <button class="btn ${locked?'pro':'primary'}" data-action="select" data-id="${t.id}" type="button">${locked?'Unlock Pro':'Use template'}</button><span class="locked-note">MVP1 locked baseline</span>
       </div>
-      <div class="questions"><ol>${(t.questions||[]).map(q=>`<li>${esc(q)}</li>`).join('')}</ol></div>
-      <div class="edit-box">
-        <label>Template name</label><input value="${escAttr(t.name)}" data-edit-name="${t.id}">
-        <label>Questions, one per line</label><textarea data-edit-questions="${t.id}">${esc((t.questions||[]).join('\n'))}</textarea>
-        <label>Signals to listen for, one per line</label><textarea data-edit-signals="${t.id}">${esc((t.signalsToListenFor||t.detects||[]).join('\n'))}</textarea>
-        <label>What to offer, one per line</label><textarea data-edit-offers="${t.id}">${esc((t.whatToOffer||[]).join('\n'))}</textarea>
-        <label>Signs it may not be ready, one per line</label><textarea data-edit-signs="${t.id}">${esc((t.signsNotReady||[]).join('\n'))}</textarea>
-        <button class="btn primary" data-action="save" data-id="${t.id}" type="button">Template locked</button>
-        <div class="saved-note" id="saved-${t.id}">Saved. This version will be used for future captures.</div>
-      </div>
-    </article>`;
+      <div class="questions"><ol>${(t.questions||[]).map(q=>`<li>${esc(q)}</li>`).join('')}</ol></div></article>`;
   }
   function handleAction(e){
     const action=e.currentTarget.dataset.action; const id=e.currentTarget.dataset.id; const t=frameworkTemplates().find(x=>x.id===id); if(!t)return;
     const card=e.currentTarget.closest('.card'); const locked=t.tier==='pro'&&state.plan!=='pro';
     if(action==='view'){card.classList.toggle('expanded');return;}
     if(action==='select'){if(locked){openModal();return;} state.selected=id; localStorage.setItem(STORAGE.SELECTED,id); render(); setTimeout(()=>{location.href='capture.html'},180); return;}
-    if(action==='edit'){if(locked||!canEdit(t)){openModal();return;} card.classList.toggle('editing'); card.classList.add('expanded'); return;}
-    if(action==='save'){saveTemplate(id,card);return;}
-  }
-  function saveTemplate(id,card){
-    const t=frameworkTemplates().find(x=>x.id===id); if(!t)return;
-    const name=card.querySelector(`[data-edit-name="${id}"]`).value.trim()||t.name;
-    const questions=card.querySelector(`[data-edit-questions="${id}"]`).value.split('\n').map(x=>x.trim()).filter(Boolean);
-    const signalsToListenFor=card.querySelector(`[data-edit-signals="${id}"]`).value.split('\n').map(x=>x.trim()).filter(Boolean);
-    const detects=signalsToListenFor;
-    const whatToOffer=card.querySelector(`[data-edit-offers="${id}"]`).value.split('\n').map(x=>x.trim()).filter(Boolean);
-    const signsNotReady=card.querySelector(`[data-edit-signs="${id}"]`)?.value.split('\n').map(x=>x.trim()).filter(Boolean)||[];
-    state.custom[id]=Object.assign({},state.custom[id]||{},{name,questions,signalsToListenFor,detects,whatToOffer,signsNotReady}); writeJSON(STORAGE.CUSTOM,state.custom);
-    if(state.plan!=='pro') localStorage.setItem(STORAGE.EDITED,id);
-    const saved=card.querySelector(`#saved-${CSS.escape(id)}`); if(saved){saved.style.display='block'; setTimeout(()=>saved.style.display='none',1800);}
-    render();
-  }
-  function esc(s){return String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));}
+    card.classList.toggle('editing'); card.classList.add('expanded'); return;}
+    }
+  function saveTemplate(id,card){}
+function esc(s){return String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));}
   function escAttr(s){return esc(s).replace(/'/g,'&#39;');}
   render();
   if(location.hash==='#pricing') showView('pricing');
