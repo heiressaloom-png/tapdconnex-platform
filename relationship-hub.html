@@ -549,6 +549,74 @@
   .btn-forward:hover { color: var(--moved-forward); border-color: var(--moved-forward); }
   .btn-letgo:hover { color: var(--let-go); border-color: var(--let-go); }
 
+
+  /* ============ GOLD-STAR CALIBRATION FEEDBACK ============ */
+  .feedback-block {
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border-soft);
+  }
+  .feedback-q {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 700;
+    margin-bottom: var(--space-3);
+  }
+  .feedback-opts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  .fb-chip {
+    border: 1px solid var(--border-medium);
+    background: var(--surface-warm);
+    color: var(--text-secondary);
+    border-radius: var(--radius-pill);
+    padding: 8px 12px;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .fb-chip:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--surface);
+  }
+  .fb-chip.selected {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+  .fb-note {
+    width: 100%;
+    margin-top: var(--space-3);
+    border: 1px solid var(--border-medium);
+    border-radius: var(--radius-md);
+    padding: var(--space-3);
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--text-primary);
+    background: var(--surface-warm);
+    min-height: 72px;
+    resize: vertical;
+  }
+  .fb-note:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: var(--surface);
+  }
+  .fb-ack {
+    margin-top: var(--space-3);
+    font-size: 13px;
+    color: var(--moved-forward);
+    font-weight: 700;
+  }
+
   /* ============ EMPTY STATE ============ */
   .empty {
     padding: var(--space-9) var(--space-5);
@@ -1514,7 +1582,8 @@ const STORAGE = {
   CAPTURES: 'tapd_captures',
   SUCCESS_LOG: 'tapd_success_log',
   HAS_VISITED: 'tapd_hub_visited',
-  HAS_SHOWN_SUCCESS: 'tapd_success_modal_shown'
+  HAS_SHOWN_SUCCESS: 'tapd_success_modal_shown',
+  FEEDBACK: 'tapd_feedback_log'
 };
 
 // ----- INTENT LABELS -----
@@ -1711,10 +1780,8 @@ function init() {
   loadIntent();
   loadCaptures();
 
-  if (!state.intent) {
-    showIntentModal();
-  }
-
+  // Intent / networking goal is now captured upstream.
+  // Do not interrupt first entry to Relationship Hub with the intent modal.
   bindEvents();
   render();
   hydrateFromServer();
@@ -1757,10 +1824,12 @@ function saveCaptures() {
 // INTENT MODAL
 // ============================================================
 function showIntentModal() {
-  document.getElementById('intentModal').classList.add('active');
+  const modal = document.getElementById('intentModal');
+  if (modal) modal.classList.add('active');
 }
 function hideIntentModal() {
-  document.getElementById('intentModal').classList.remove('active');
+  const modal = document.getElementById('intentModal');
+  if (modal) modal.classList.remove('active');
 }
 function saveIntent(intent) {
   state.intent = intent;
@@ -1981,7 +2050,27 @@ function renderCard(c) {
           }
         </div>
       </div>
+      ${renderFeedbackBlock(c)}
     </article>
+  `;
+}
+
+function renderFeedbackBlock(c) {
+  const id = escapeHtml(c.id);
+  return `
+    <div class="feedback-block" data-feedback-for="${id}">
+      <div class="feedback-q">Did we get this right for you?</div>
+      <div class="feedback-opts">
+        <button class="fb-chip" data-fb="wrong_priority" type="button">Wrong priority</button>
+        <button class="fb-chip" data-fb="missing_context" type="button">Missing context</button>
+        <button class="fb-chip" data-fb="not_opportunity" type="button">Not an opportunity</button>
+        <button class="fb-chip" data-fb="already_handled" type="button">Already handled</button>
+        <button class="fb-chip" data-fb="wrong_next_step" type="button">Wrong next step</button>
+        <button class="fb-chip" data-fb="other" type="button">Other</button>
+      </div>
+      <textarea class="fb-note" placeholder="Tell us more (optional)…" hidden></textarea>
+      <div class="fb-ack" hidden>Thanks — noted. This helps us improve over time.</div>
+    </div>
   `;
 }
 
@@ -1990,7 +2079,7 @@ function renderProfilePanel() {
   if (state.intent && INTENT_LABELS[state.intent]) {
     display.textContent = INTENT_LABELS[state.intent];
   } else {
-    display.textContent = 'Not set';
+    display.textContent = 'Captured during setup';
   }
 
   const movedForward = state.captures.filter(c => c.outcome === 'moved_forward').length;
@@ -2026,6 +2115,79 @@ function bindCardEvents() {
     btn.addEventListener('click', e => {
       e.stopPropagation();
       openPicker(btn.dataset.id);
+    });
+  });
+
+  bindFeedbackEvents();
+}
+
+
+// ============================================================
+// GOLD-STAR CALIBRATION FEEDBACK
+// Optional, non-blocking, and does not rewrite intelligence scores.
+// ============================================================
+window.tapdSaveFeedback = window.tapdSaveFeedback || async function(payload) {
+  try {
+    const entry = {
+      id: 'fb_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8),
+      engagementId: payload.engagementId,
+      option: payload.option,
+      note: payload.note || null,
+      createdAt: new Date().toISOString()
+    };
+
+    const existing = JSON.parse(localStorage.getItem(STORAGE.FEEDBACK) || '[]');
+    existing.push(entry);
+    localStorage.setItem(STORAGE.FEEDBACK, JSON.stringify(existing));
+
+    // Future hook: replace or extend this with Supabase / TapdSync persistence.
+    if (window.TapdSync && typeof TapdSync.saveFeedback === 'function') {
+      try { await TapdSync.saveFeedback(entry); } catch (e) { /* local save already succeeded */ }
+    }
+
+    return entry;
+  } catch (e) {
+    console.error('feedback save failed (non-blocking)', e);
+    return null;
+  }
+};
+
+function bindFeedbackEvents() {
+  document.querySelectorAll('.feedback-block').forEach(block => {
+    if (block.dataset.bound === 'true') return;
+    block.dataset.bound = 'true';
+
+    const engagementId = block.dataset.feedbackFor;
+    const note = block.querySelector('.fb-note');
+    const ack = block.querySelector('.fb-ack');
+
+    block.querySelectorAll('.fb-chip').forEach(chip => {
+      chip.addEventListener('click', async e => {
+        e.stopPropagation();
+
+        const option = chip.dataset.fb;
+        block.querySelectorAll('.fb-chip').forEach(c => c.classList.remove('selected'));
+        chip.classList.add('selected');
+
+        if (option === 'other') {
+          note.hidden = false;
+          note.focus();
+          return;
+        }
+
+        await window.tapdSaveFeedback({ engagementId, option, note: null });
+        ack.hidden = false;
+      });
+    });
+
+    note?.addEventListener('click', e => e.stopPropagation());
+
+    note?.addEventListener('blur', async () => {
+      const noteText = note.value.trim();
+      if (!noteText) return;
+
+      await window.tapdSaveFeedback({ engagementId, option: 'other', note: noteText });
+      ack.hidden = false;
     });
   });
 }
