@@ -17,6 +17,7 @@ a{color:inherit}.top{position:sticky;top:0;z-index:50;background:rgba(246,242,23
 .cheat-section{margin-top:14px;padding-top:12px;border-top:1px solid rgba(234,226,210,.72)}
 .cheat-title{font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:900;margin-bottom:8px}
 .offer-chip{font-size:12px;font-weight:800;color:#6B4A00;background:var(--gold-bg);border-radius:999px;padding:5px 9px}
+.locked-note{display:inline-flex;align-items:center;border:1px solid var(--border);border-radius:999px;padding:9px 12px;font-size:12px;font-weight:900;color:var(--muted);background:var(--surface-warm)}
 .locked .offer-chip{color:var(--muted);background:var(--surface-warm)}
 .warn-chip{font-size:12px;font-weight:800;color:#7C2D3F;background:#F5E8EC;border-radius:999px;padding:5px 9px}
 .locked .warn-chip{color:var(--muted);background:var(--surface-warm)}
@@ -66,7 +67,7 @@ a{color:inherit}.top{position:sticky;top:0;z-index:50;background:rgba(246,242,23
 
 
   <section class="template-toolbar">
-    <div><h2>Template library</h2><p id="templateLibraryNote">View, select, and edit templates based on the networking situation.</p></div>
+    <div><h2>Template library</h2><p id="templateLibraryNote">View and select templates based on the networking situation. MVP1 templates are locked so the system can learn from a consistent baseline.</p></div>
   </section>
   <section class="cards" id="cards"></section>
   <p class="footer-note">Note: This page intentionally uses benefit-level language for Pro capabilities. The detailed intelligence framework should not be exposed as product copy.</p>
@@ -155,9 +156,9 @@ a{color:inherit}.top{position:sticky;top:0;z-index:50;background:rgba(246,242,23
   const FALLBACK_TEMPLATES=[
     {
         "id": "opportunity",
-        "name": "Opportunity",
+        "name": "Explore working together",
         "tier": "starter",
-        "purpose": "Spot a real business opportunity without forcing the conversation.",
+        "purpose": "When someone has a problem you might be able to solve.",
         "detects": [
             "Active pain",
             "Time pressure",
@@ -198,9 +199,9 @@ a{color:inherit}.top{position:sticky;top:0;z-index:50;background:rgba(246,242,23
     },
     {
         "id": "connector",
-        "name": "Connector",
+        "name": "Grow my network / get introductions",
         "tier": "starter",
-        "purpose": "Find referral paths, introductions, and useful network access.",
+        "purpose": "When someone could open doors to the right people.",
         "detects": [
             "Referrals offered",
             "Warm intros volunteered",
@@ -240,9 +241,9 @@ a{color:inherit}.top{position:sticky;top:0;z-index:50;background:rgba(246,242,23
     },
     {
         "id": "stay_in_touch",
-        "name": "Stay in Touch",
+        "name": "Keep the relationship warm",
         "tier": "starter",
-        "purpose": "Keep warm relationships alive without pretending every chat is an opportunity.",
+        "purpose": "When there's no agenda yet — just worth staying close.",
         "detects": [
             "Shared interests",
             "Future goals",
@@ -275,9 +276,9 @@ a{color:inherit}.top{position:sticky;top:0;z-index:50;background:rgba(246,242,23
     },
     {
         "id": "strategic_partnership",
-        "name": "Strategic Partnership",
+        "name": "Partner or collaborate",
         "tier": "pro",
-        "purpose": "Explore audience overlap, shared value, and collaboration potential.",
+        "purpose": "When there's a chance to build something together.",
         "detects": [
             "Shared audience",
             "Complementary strengths",
@@ -317,9 +318,9 @@ a{color:inherit}.top{position:sticky;top:0;z-index:50;background:rgba(246,242,23
     },
     {
         "id": "speaking",
-        "name": "Speaking Opportunity",
+        "name": "Get booked to speak",
         "tier": "pro",
-        "purpose": "Capture stage, event, topic, and audience opportunities.",
+        "purpose": "When you want to land a stage, panel, or podcast.",
         "detects": [
             "Upcoming events",
             "Audience fit",
@@ -359,9 +360,9 @@ a{color:inherit}.top{position:sticky;top:0;z-index:50;background:rgba(246,242,23
     },
     {
         "id": "career",
-        "name": "Career Opportunity",
+        "name": "Get hired or find work",
         "tier": "pro",
-        "purpose": "Surface role, consulting, advisory, and project opportunities.",
+        "purpose": "When there might be a role, contract, or project for you.",
         "detects": [
             "Hiring need",
             "Skill gaps",
@@ -401,9 +402,9 @@ a{color:inherit}.top{position:sticky;top:0;z-index:50;background:rgba(246,242,23
     },
     {
         "id": "product_discovery",
-        "name": "Product Discovery",
+        "name": "Understand a problem",
         "tier": "pro",
-        "purpose": "Validate pain, workarounds, frequency, and desired outcomes.",
+        "purpose": "When you're validating whether a problem is real and worth solving.",
         "detects": [
             "Current workaround",
             "Repeated frustration",
@@ -443,9 +444,9 @@ a{color:inherit}.top{position:sticky;top:0;z-index:50;background:rgba(246,242,23
     },
     {
         "id": "pilot_beta",
-        "name": "Pilot / Beta",
+        "name": "Get something tested or piloted",
         "tier": "pro",
-        "purpose": "Qualify willingness to test and what would make a trial useful.",
+        "purpose": "When you want someone to trial what you've built.",
         "detects": [
             "Willingness to test",
             "Implementation readiness",
@@ -485,9 +486,9 @@ a{color:inherit}.top{position:sticky;top:0;z-index:50;background:rgba(246,242,23
     },
     {
         "id": "advisory",
-        "name": "Advisory / Mentor",
+        "name": "Find an expert / get advice",
         "tier": "pro",
-        "purpose": "Capture expert insight, guidance, and advisory relationship potential.",
+        "purpose": "When you want to learn from someone who's been there.",
         "detects": [
             "Deep expertise shown",
             "Willingness to share",
@@ -527,9 +528,9 @@ a{color:inherit}.top{position:sticky;top:0;z-index:50;background:rgba(246,242,23
     },
     {
         "id": "community_access",
-        "name": "Community Access",
+        "name": "Get into a community",
         "tier": "pro",
-        "purpose": "Understand community fit, access paths, and warm entry points.",
+        "purpose": "When you want into a group, network, or circle.",
         "detects": [
             "Active community involvement",
             "Gatekeeper / organiser role",
@@ -565,49 +566,6 @@ a{color:inherit}.top{position:sticky;top:0;z-index:50;background:rgba(246,242,23
             "No longer involved",
             "Unsure on fit",
             "Not taking new members"
-        ]
-    },
-    {
-        "id": "investor_funding",
-        "name": "Investor / Funding",
-        "tier": "pro",
-        "purpose": "Identify capital, sponsorship, or backing conversations without over-reading interest.",
-        "detects": [
-            "Thesis fit",
-            "Check-size match",
-            "Active deployment",
-            "Conviction signals",
-            "Warm lead-in"
-        ],
-        "signalsToListenFor": [
-            "Thesis fit",
-            "Check-size match",
-            "Active deployment",
-            "Conviction signals",
-            "Warm lead-in"
-        ],
-        "whatToOffer": [
-            "Pitch deck",
-            "Data room access",
-            "Founder follow-up call",
-            "Traction / customer references"
-        ],
-        "questions": [
-            "What kinds of opportunities are you focused on right now?",
-            "What sectors or themes are most relevant to you?",
-            "What stage or cheque size do you usually look at?",
-            "What traction or proof matters most before a follow-up?",
-            "What would make this worth a deeper conversation?",
-            "Who else would need to be involved?",
-            "What information would you want to see next?",
-            "What’s the best next step from here?"
-        ],
-        "signsNotReady": [
-            "'Keep me posted' (soft no)",
-            "Too early for them",
-            "Not their thesis",
-            "Needs partner approval",
-            "'Send the deck' brush-off"
         ]
     }
 ];
@@ -647,7 +605,7 @@ a{color:inherit}.top{position:sticky;top:0;z-index:50;background:rgba(246,242,23
   function closeModal(){modal.classList.remove('show');modal.setAttribute('aria-hidden','true');}
   function render(){
     starterBtn.classList.toggle('active',state.plan==='starter'); proBtn.classList.toggle('active',state.plan==='pro');
-    planNote.textContent=state.plan==='pro'?'Pro templates: advanced flows for partnerships, pilots, speaking, discovery, advisory, career, community access, and investor/funding conversations.':'Starter templates: the three core flows for opportunity, connector, and stay-in-touch conversations.';
+    planNote.textContent=state.plan==='pro'?'Pro templates: advanced flows for partnerships, pilots, speaking, discovery, advisory, career, and community access.':'Starter templates: the three core flows for opportunity, connector, and stay-in-touch conversations.';
     const all=frameworkTemplates();
     const visible=all.filter(t=>state.plan==='pro'?t.tier==='pro':t.tier==='starter');
     if(templateLibraryNote){templateLibraryNote.textContent=state.plan==='pro'?'Showing Pro templates. Switch to Starter to view the three core starter flows.':'Showing Starter templates. Switch to Pro to view advanced Pro templates.';}
@@ -683,7 +641,7 @@ a{color:inherit}.top{position:sticky;top:0;z-index:50;background:rgba(246,242,23
         <label>Signals to listen for, one per line</label><textarea data-edit-signals="${t.id}">${esc((t.signalsToListenFor||t.detects||[]).join('\n'))}</textarea>
         <label>What to offer, one per line</label><textarea data-edit-offers="${t.id}">${esc((t.whatToOffer||[]).join('\n'))}</textarea>
         <label>Signs it may not be ready, one per line</label><textarea data-edit-signs="${t.id}">${esc((t.signsNotReady||[]).join('\n'))}</textarea>
-        <button class="btn primary" data-action="save" data-id="${t.id}" type="button">Save template</button>
+        <button class="btn primary" data-action="save" data-id="${t.id}" type="button">Template locked</button>
         <div class="saved-note" id="saved-${t.id}">Saved. This version will be used for future captures.</div>
       </div>
     </article>`;
