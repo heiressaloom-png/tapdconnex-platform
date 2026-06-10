@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -670,6 +669,8 @@ a{color:inherit}.top{position:sticky;top:0;z-index:50;background:rgba(246,242,23
   function canEdit(t){return false;}
 function setPlan(plan){ state.plan=plan; localStorage.setItem(STORAGE.PLAN,plan); render(); }
   starterBtn.onclick=()=>setPlan('starter'); proBtn.onclick=()=>setPlan('pro');
+  if(quickTemplateSelect){quickTemplateSelect.onchange=()=>{state.selected=quickTemplateSelect.value;localStorage.setItem(STORAGE.SELECTED,state.selected);render();};}
+  if(quickUseBtn){quickUseBtn.onclick=()=>{if(quickTemplateSelect)state.selected=quickTemplateSelect.value;localStorage.setItem(STORAGE.SELECTED,state.selected);location.href='capture.html';};}
   document.getElementById('closeModal').onclick=closeModal; document.getElementById('maybeLater').onclick=closeModal; document.getElementById('upgradeBtn').onclick=()=>{closeModal();showView('pricing');}; modal.addEventListener('click',e=>{if(e.target===modal)closeModal();});
   function openModal(){modal.classList.add('show');modal.setAttribute('aria-hidden','false');}
   function closeModal(){modal.classList.remove('show');modal.setAttribute('aria-hidden','true');}
@@ -690,7 +691,8 @@ function setPlan(plan){ state.plan=plan; localStorage.setItem(STORAGE.PLAN,plan)
     cards.querySelectorAll('[data-action]').forEach(btn=>btn.addEventListener('click',handleAction));
   }
   function cardHTML(t){
-    const locked=t.tier==='pro'&&state.plan!=='pro'; const selected=state.selected===t.id; const editable=canEdit(t);
+    const locked=t.tier==='pro'&&state.plan!=='pro';
+    const selected=state.selected===t.id;
     return `<article class="card ${locked?'locked':''} ${selected?'selected':''}" data-id="${t.id}">
       <div class="card-head"><div><h3>${esc(t.name)}</h3><span class="tag ${t.tier==='pro'?'pro':''}">${t.tier}</span></div>${locked?'<span class="tag pro">Locked</span>':selected?'<span class="tag">Selected</span>':''}</div>
       <p class="purpose">${esc(t.purpose)}</p>
@@ -708,19 +710,30 @@ function setPlan(plan){ state.plan=plan; localStorage.setItem(STORAGE.PLAN,plan)
       </div>` : ''}
       <div class="actions">
         <button class="btn secondary" data-action="view" data-id="${t.id}" type="button">View questions</button>
-        <button class="btn ${locked?'pro':'primary'}" data-action="select" data-id="${t.id}" type="button">${locked?'Unlock Pro':'Use template'}</button><span class="locked-note">MVP1 locked baseline</span>
+        <button class="btn ${locked?'pro':'primary'}" data-action="select" data-id="${t.id}" type="button">${locked?'Unlock Pro':'Use template'}</button>
+        <span class="locked-note">MVP1 locked baseline</span>
       </div>
-      <div class="questions"><ol>${(t.questions||[]).map(q=>`<li>${esc(q)}</li>`).join('')}</ol></div></article>`;
+      <div class="questions"><ol>${(t.questions||[]).map(q=>`<li>${esc(q)}</li>`).join('')}</ol></div>
+    </article>`;
   }
   function handleAction(e){
-    const action=e.currentTarget.dataset.action; const id=e.currentTarget.dataset.id; const t=frameworkTemplates().find(x=>x.id===id); if(!t)return;
-    const card=e.currentTarget.closest('.card'); const locked=t.tier==='pro'&&state.plan!=='pro';
+    const action=e.currentTarget.dataset.action;
+    const id=e.currentTarget.dataset.id;
+    const t=frameworkTemplates().find(x=>x.id===id);
+    if(!t)return;
+    const card=e.currentTarget.closest('.card');
+    const locked=t.tier==='pro'&&state.plan!=='pro';
     if(action==='view'){card.classList.toggle('expanded');return;}
-    if(action==='select'){if(locked){openModal();return;} state.selected=id; localStorage.setItem(STORAGE.SELECTED,id); render(); setTimeout(()=>{location.href='capture.html'},180); return;}
-    card.classList.toggle('editing'); card.classList.add('expanded'); return;}
+    if(action==='select'){
+      if(locked){openModal();return;}
+      state.selected=id;
+      localStorage.setItem(STORAGE.SELECTED,id);
+      render();
+      setTimeout(()=>{location.href='capture.html'},180);
+      return;
     }
-  function saveTemplate(id,card){}
-function esc(s){return String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));}
+  }
+  function esc(s){return String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));}
   function escAttr(s){return esc(s).replace(/'/g,'&#39;');}
   render();
   if(location.hash==='#pricing') showView('pricing');
