@@ -1,12 +1,12 @@
-/* TAPDconnex Capture Bar v2 — premium relationship capture control
-   Visual source of truth: long black capsule + raised champagne-gold relationship medallion.
-   Meaning: capture a relationship moment, not an audio/media control. */
+/* TAPDconnex Capture Bar v3 — "CAPTURE THIS MOMENT" hero
+   Matte/brushed-gold letter-spaced caps centered across a long black capsule.
+   Thin gold underline accent beneath the label (no people medallion).
+   The entire bar is the tap target for recording. */
 
 .capture-btn,
 .capture-cta{
   --tapd-bar-w: min(520px, 88vw);
-  --tapd-bar-h: 70px;
-  --tapd-medallion: 108px;
+  --tapd-bar-h: 78px;
   position:relative!important;
   width:var(--tapd-bar-w)!important;
   height:var(--tapd-bar-h)!important;
@@ -25,7 +25,10 @@
     0 16px 34px rgba(24,20,16,.18),
     0 12px 42px rgba(119,79,17,.16),
     0 0 0 1px rgba(91,62,18,.28)!important;
-  display:block!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:0!important;
   overflow:visible!important;
   cursor:pointer!important;
   isolation:isolate!important;
@@ -45,111 +48,69 @@
   z-index:1!important;
 }
 
-/* Relationship signal pulse — not an audio waveform */
-.capture-btn:before,
-.capture-cta:before{
+/* The visible hero label: CAPTURE THIS MOMENT in brushed matte gold */
+.capture-btn span:not(.people),
+.capture-cta .capture-copy{
+  position:relative!important;
+  z-index:3!important;
+  display:block!important;
+  width:auto!important;
+  height:auto!important;
+  overflow:visible!important;
+  clip:auto!important;
+  white-space:nowrap!important;
+  text-align:center!important;
+  text-transform:uppercase!important;
+  font-family:var(--font-body,'Manrope',sans-serif)!important;
+  font-weight:800!important;
+  font-size:clamp(15px,3.2vw,21px)!important;
+  letter-spacing:.22em!important;
+  /* brushed/matte gold: muted gradient, no high-gloss white spec */
+  color:#D9B45C!important;
+  background:linear-gradient(180deg,#F0D894 0%,#D2A445 46%,#B5852E 100%)!important;
+  -webkit-background-clip:text!important;
+  background-clip:text!important;
+  -webkit-text-fill-color:transparent!important;
+  text-shadow:0 1px 0 rgba(0,0,0,.35)!important;
+  padding-bottom:10px!important;   /* room for the underline accent */
+  line-height:1!important;
+}
+
+/* Thin gold underline accent beneath the label (replaces the people icon) */
+.capture-btn span:not(.people):after,
+.capture-cta .capture-copy:after{
   content:''!important;
   position:absolute!important;
-  left:18%!important;
-  right:18%!important;
-  top:50%!important;
-  height:3px!important;
-  transform:translateY(-50%)!important;
+  left:50%!important;
+  bottom:0!important;
+  transform:translateX(-50%)!important;
+  width:54%!important;
+  height:2px!important;
   border-radius:999px!important;
   background:
     linear-gradient(90deg,
       transparent 0%,
-      rgba(214,169,72,.08) 14%,
-      rgba(244,211,128,.42) 32%,
-      rgba(255,229,153,.86) 50%,
-      rgba(244,211,128,.42) 68%,
-      rgba(214,169,72,.08) 86%,
+      rgba(214,169,72,.10) 12%,
+      rgba(244,211,128,.55) 34%,
+      rgba(255,229,153,.95) 50%,
+      rgba(244,211,128,.55) 66%,
+      rgba(214,169,72,.10) 88%,
       transparent 100%)!important;
-  filter:blur(.1px)!important;
-  box-shadow:
-    0 0 9px rgba(255,217,132,.48),
-    0 0 22px rgba(201,151,46,.22)!important;
-  opacity:.68!important;
+  box-shadow:0 0 8px rgba(255,217,132,.45),0 0 18px rgba(201,151,46,.20)!important;
+  opacity:.82!important;
   pointer-events:none!important;
-  z-index:2!important;
   animation:tapdSignalPulse 4.6s ease-in-out infinite!important;
 }
 
+/* Hard-retire the old medallion node if any markup still renders it */
 .capture-btn .people,
 .capture-cta .people-chip{
-  position:absolute!important;
-  left:50%!important;
-  top:50%!important;
-  width:var(--tapd-medallion)!important;
-  height:var(--tapd-medallion)!important;
-  transform:translate(-50%,-50%)!important;
-  border-radius:50%!important;
-  display:block!important;
-  font-size:0!important;
-  line-height:0!important;
-  color:transparent!important;
-  background:
-    repeating-linear-gradient(90deg,rgba(255,255,255,.08) 0 2px,rgba(255,255,255,0) 2px 7px),
-    radial-gradient(circle at 32% 24%,#FFF1B8 0%,#E6C066 32%,#C29338 62%,#8A5B18 100%)!important;
-  border:2px solid #E6C56C!important;
-  box-shadow:
-    inset 0 2px 7px rgba(255,255,255,.42),
-    inset 0 -14px 22px rgba(85,52,8,.34),
-    0 0 0 5px rgba(64,42,12,.58),
-    0 0 0 7px rgba(231,191,89,.30),
-    0 10px 24px rgba(0,0,0,.34),
-    0 0 42px rgba(221,166,55,.32)!important;
-  z-index:5!important;
-  animation:tapdMedallionGlow 5.2s ease-in-out infinite!important;
+  display:none!important;
 }
 
-/* Embossed two-person relationship icon */
-.capture-btn .people:before,
-.capture-cta .people-chip:before{
-  content:''!important;
-  position:absolute!important;
-  width:18px!important;
-  height:18px!important;
-  left:32px!important;
-  top:32px!important;
-  border-radius:50%!important;
-  background:linear-gradient(180deg,#F9E29A 0%,#7A4F14 100%)!important;
-  box-shadow:
-    26px 0 0 #B9822A,
-    inset 0 2px 3px rgba(255,255,255,.45),
-    26px 1px 2px rgba(63,39,8,.18)!important;
-  opacity:.98!important;
-}
-
-.capture-btn .people:after,
-.capture-cta .people-chip:after{
-  content:''!important;
-  position:absolute!important;
-  left:30px!important;
-  top:59px!important;
-  width:50px!important;
-  height:19px!important;
-  border-radius:18px 18px 5px 5px!important;
-  background:
-    radial-gradient(ellipse at 28% 100%,#7A4F14 0 48%,transparent 50%),
-    radial-gradient(ellipse at 72% 100%,#8E5D18 0 48%,transparent 50%)!important;
-  filter:drop-shadow(0 1px 1px rgba(255,255,255,.18))!important;
-  opacity:.96!important;
-}
-
-.capture-btn span:not(.people),
-.capture-cta .capture-copy{
-  position:absolute!important;
-  width:1px!important;
-  height:1px!important;
-  overflow:hidden!important;
-  clip:rect(0 0 0 0)!important;
-  white-space:nowrap!important;
-}
-
-.capture-btn:active .people,
-.capture-cta:active .people-chip{
-  transform:translate(-50%,-50%) scale(.97)!important;
+.capture-btn:active span:not(.people),
+.capture-cta:active .capture-copy{
+  transform:translateY(.5px)!important;
 }
 
 .capture-btn.is-recording,
@@ -157,74 +118,48 @@
   border-color:#D9A642!important;
 }
 
-/* Capture page placement: keep the control visible higher in the card */
+/* Needs-context state: keep label legible on the muted bar */
+.capture-btn.needs-context span:not(.people){
+  background:none!important;
+  -webkit-text-fill-color:initial!important;
+  color:var(--muted,#5C5247)!important;
+  text-shadow:none!important;
+}
+.capture-btn.needs-context span:not(.people):after{opacity:.35!important;}
+
+/* Capture page placement */
 .capture-stage{
   min-height:340px!important;
   padding:104px 24px 64px!important;
   justify-content:flex-start!important;
   overflow:visible!important;
 }
-.capture-stage .soundwave{
-  display:none!important;
-}
-.capture-stage .capture-hint{
-  margin-top:76px!important;
-}
-.capture-stage .trust-row{
-  margin-top:24px!important;
-}
+.capture-stage .soundwave{display:none!important;}
+.capture-stage .capture-hint{margin-top:34px!important;}
+.capture-stage .trust-row{margin-top:24px!important;}
 
 /* Landing page hero placement */
-.visual .capture-cta{
-  margin-top:18px!important;
-}
-.visual .wave{
-  display:none!important;
-}
+.visual .capture-cta{margin-top:18px!important;}
+.visual .wave{display:none!important;}
 
 @keyframes tapdBarBreathe{
   0%,100%{box-shadow:inset 0 1px 0 rgba(255,255,255,.08),inset 0 -14px 26px rgba(0,0,0,.48),0 16px 34px rgba(24,20,16,.18),0 12px 42px rgba(119,79,17,.16),0 0 0 1px rgba(91,62,18,.28)}
   50%{box-shadow:inset 0 1px 0 rgba(255,255,255,.10),inset 0 -14px 26px rgba(0,0,0,.44),0 18px 38px rgba(24,20,16,.20),0 14px 50px rgba(201,151,46,.22),0 0 0 1px rgba(136,92,25,.34)}
 }
 @keyframes tapdSignalPulse{
-  0%,100%{opacity:.48;transform:translateY(-50%) scaleX(.84)}
-  50%{opacity:.88;transform:translateY(-50%) scaleX(1.04)}
-}
-@keyframes tapdMedallionGlow{
-  0%,100%{filter:saturate(.96) brightness(.98)}
-  50%{filter:saturate(1.03) brightness(1.04)}
+  0%,100%{opacity:.62;transform:translateX(-50%) scaleX(.86)}
+  50%{opacity:.92;transform:translateX(-50%) scaleX(1.02)}
 }
 
 @media(max-width:700px){
   .capture-btn,
-  .capture-cta{
-    --tapd-bar-w:min(430px,90vw);
-    --tapd-bar-h:64px;
-    --tapd-medallion:96px;
-  }
-  .capture-stage{
-    min-height:315px!important;
-    padding-top:96px!important;
-  }
-  .capture-stage .capture-hint{margin-top:68px!important;}
-  .capture-btn .people:before,
-  .capture-cta .people-chip:before{left:28px!important;top:28px!important;width:16px!important;height:16px!important;box-shadow:23px 0 0 #B9822A,inset 0 2px 3px rgba(255,255,255,.45),23px 1px 2px rgba(63,39,8,.18)!important;}
-  .capture-btn .people:after,
-  .capture-cta .people-chip:after{left:26px!important;top:52px!important;width:45px!important;height:18px!important;}
+  .capture-cta{--tapd-bar-w:min(430px,90vw);--tapd-bar-h:70px;}
+  .capture-stage{min-height:315px!important;padding-top:96px!important;}
 }
 
 @media(max-width:420px){
   .capture-btn,
-  .capture-cta{
-    --tapd-bar-w:min(340px,88vw);
-    --tapd-bar-h:58px;
-    --tapd-medallion:86px;
-  }
+  .capture-cta{--tapd-bar-w:min(340px,88vw);--tapd-bar-h:64px;}
   .capture-stage{min-height:292px!important;padding-top:88px!important;}
-  .capture-stage .capture-hint{margin-top:62px!important;}
   .capture-stage .trust-row{font-size:13px!important;gap:12px!important;}
-  .capture-btn .people:before,
-  .capture-cta .people-chip:before{left:25px!important;top:25px!important;width:14px!important;height:14px!important;box-shadow:20px 0 0 #B9822A,inset 0 2px 3px rgba(255,255,255,.45),20px 1px 2px rgba(63,39,8,.18)!important;}
-  .capture-btn .people:after,
-  .capture-cta .people-chip:after{left:23px!important;top:47px!important;width:40px!important;height:16px!important;}
 }
