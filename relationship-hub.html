@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -472,6 +471,136 @@
     color: var(--accent);
     font-weight: 700;
   }
+
+  .card-next-steps {
+    list-style: none;
+    counter-reset: step;
+    margin: 0 0 var(--space-5);
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .card-next-steps li {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--text-primary);
+    letter-spacing: -0.005em;
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+  }
+  .card-next-steps li:first-child { font-weight: 600; }
+  .card-next-steps li::before {
+    content: counter(step);
+    counter-increment: step;
+    flex: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent-bg, #E8EFEF);
+    color: var(--accent);
+    font-family: var(--font-mono, monospace);
+    font-size: 11px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateY(2px);
+  }
+
+  /* Coaching surface: headline -> next steps -> why-expander */
+  .signal-template {
+    margin-left: auto;
+    font-family: var(--font-mono, monospace);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted, #95887A);
+    font-weight: 700;
+  }
+  .card-headline {
+    font-family: var(--font-display);
+    font-size: 19px;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+    margin: 6px 0 2px;
+  }
+  .card-steps-label {
+    font-family: var(--font-mono, monospace);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted, #95887A);
+    font-weight: 700;
+    margin: var(--space-4, 16px) 0 10px;
+  }
+  .card-why {
+    margin: 4px 0 var(--space-4, 16px);
+    border-top: 1px solid var(--border, #EAE2D2);
+    padding-top: 10px;
+  }
+  .card-why summary {
+    cursor: pointer;
+    list-style: none;
+    font-family: var(--font-mono, monospace);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted, #95887A);
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    user-select: none;
+  }
+  .card-why summary::-webkit-details-marker { display: none; }
+  .why-chevron { transition: transform 0.15s ease; display: inline-block; }
+  .card-why[open] .why-chevron { transform: rotate(90deg); }
+  .why-body { margin-top: 10px; }
+  .why-context {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text-secondary);
+    margin: 0 0 8px;
+  }
+  .why-secondary {
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--text-muted, #95887A);
+    margin: 0;
+  }
+  .why-tag {
+    font-family: var(--font-mono, monospace);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  /* Queue progress: per-card processing + failed states */
+  .card-processing { opacity: 0.96; }
+  .proc-row { display: flex; align-items: center; gap: 9px; margin: var(--space-4, 16px) 0 8px; }
+  .proc-dot {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: var(--accent, #1E4F5C);
+    animation: procPulse 1.4s ease-in-out infinite;
+    flex: none;
+  }
+  @keyframes procPulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.35; transform: scale(0.8); } }
+  .proc-label {
+    font-family: var(--font-mono, monospace);
+    font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase;
+    font-weight: 700; color: var(--accent, #1E4F5C);
+  }
+  .proc-label.proc-failed { color: var(--pro, #7C2D3F); }
+  .proc-note { font-size: 14px; line-height: 1.45; color: var(--text-secondary); margin-bottom: var(--space-4, 16px); }
+  .card-failed .card-priority-strip { background: var(--pro, #7C2D3F); }
 
   .card-footer {
     display: flex;
@@ -1787,19 +1916,44 @@ function init() {
   hydrateFromServer();
 }
 
-// Additively merge any server-persisted captures that aren't already local.
-// Never overwrites local rows, so there is no data-loss risk.
+// Captures still being processed by the worker. While any exist, the Hub
+// polls the server and reconciles them in place until they resolve.
+const AI_PROCESSING = ['queued', 'transcribing', 'structuring'];
+function isProcessing(c) { return !!c && AI_PROCESSING.indexOf(c.aiStatus) >= 0; }
+
+let _queuePollTimer = null;
+let _queuePolls = 0;
+
+// Pull from the server and reconcile by id:
+//  - new server rows are added
+//  - local rows that are still PROCESSING are replaced by the server's newer
+//    version (the worker owns them), so a queued card fills in automatically
+//  - finished / user-edited local rows are never clobbered
 async function hydrateFromServer() {
   if (!window.TapdSync) return;
   let rows = null;
-  try { rows = await TapdSync.pullCaptures(); } catch (e) { return; }
-  if (!rows || !rows.length) return;
-  const localIds = new Set(state.captures.map(c => c.id));
-  const additions = rows.filter(r => !localIds.has(r.id));
-  if (!additions.length) return;
-  state.captures = state.captures.concat(additions);
-  saveCaptures();
-  render();
+  try { rows = await TapdSync.pullCaptures(); } catch (e) { rows = null; }
+  if (rows && rows.length) {
+    const byId = new Map(state.captures.map(c => [c.id, c]));
+    let changed = false;
+    rows.forEach(r => {
+      const local = byId.get(r.id);
+      if (!local) { state.captures.push(r); changed = true; }
+      else if (isProcessing(local)) { Object.assign(local, r); changed = true; }
+    });
+    if (changed) { saveCaptures(); render(); }
+  }
+  scheduleQueuePoll();
+}
+
+// Poll every few seconds while anything is processing; stop when all resolve
+// (or after a safety cap, so a stuck job can never poll forever).
+function scheduleQueuePoll() {
+  if (_queuePollTimer) { clearTimeout(_queuePollTimer); _queuePollTimer = null; }
+  if (!state.captures.some(isProcessing)) { _queuePolls = 0; return; }
+  if (_queuePolls >= 45) return; // ~3 min, then stop; a reload resumes it
+  _queuePolls++;
+  _queuePollTimer = setTimeout(hydrateFromServer, 4000);
 }
 
 function loadIntent() {
@@ -1999,6 +2153,8 @@ function renderCards() {
 }
 
 function renderCard(c) {
+  if (isProcessing(c)) return renderProcessingCard(c);
+  if (c.aiStatus === 'failed') return renderFailedCard(c);
   const priorityLabels = {
     'act-soon': 'Act Soon',
     'worth-exploring': 'Worth Exploring',
@@ -2030,12 +2186,15 @@ function renderCard(c) {
       <div class="card-signal">
         <span class="signal-dot"></span>
         <span class="signal-type">${escapeHtml(c.signalLabel)}</span>
-        <span class="signal-separator">\u00B7</span>
-        <span class="signal-evidence">${escapeHtml(c.evidence)}</span>
+        ${c.templateName ? `<span class="signal-template">${escapeHtml(c.templateName)}</span>` : ''}
       </div>
-      ${c.secondaryThread ? `<div class="card-secondary" style="font-size:13px;color:var(--text-muted);margin-top:6px;font-style:italic;">${escapeHtml(c.secondaryThread)}</div>` : ''}
+      ${(c.evidence && String(c.evidence).trim()) ? `<div class="card-headline">${escapeHtml(c.evidence)}</div>` : ''}
       <div class="card-priority" data-priority="${c.priority}">${priorityLabels[c.priority]}</div>
-      <div class="card-action">${escapeHtml(c.action)}</div>
+      <div class="card-steps-label">Suggested next steps</div>
+      ${(Array.isArray(c.nextSteps) && c.nextSteps.length)
+        ? `<ol class="card-next-steps">${c.nextSteps.slice(0, 3).map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ol>`
+        : `<div class="card-action">${escapeHtml(c.action)}</div>`}
+      ${renderWhy(c)}
       <div class="card-footer">
         <div class="card-meta">
           <div class="card-meta-time">${daysText}</div>
@@ -2053,6 +2212,54 @@ function renderCard(c) {
       ${renderFeedbackBlock(c)}
     </article>
   `;
+}
+
+function renderProcessingCard(c) {
+  const labels = { queued: 'Queued', transcribing: 'Transcribing the conversation…', structuring: 'Writing up your follow-up…' };
+  const label = labels[c.aiStatus] || 'Working…';
+  return `
+    <article class="card card-processing" data-id="${c.id}">
+      <div class="card-priority-strip"></div>
+      <div class="card-head"><div>
+        <div class="card-name">${c.name ? escapeHtml(c.name) : 'New capture'}</div>
+        <div class="card-company">${escapeHtml(c.event || '')}</div>
+      </div></div>
+      <div class="proc-row"><span class="proc-dot"></span><span class="proc-label">${escapeHtml(label)}</span></div>
+      <div class="proc-note">We're structuring this capture — it'll update here automatically.</div>
+    </article>`;
+}
+
+function renderFailedCard(c) {
+  return `
+    <article class="card card-failed" data-id="${c.id}">
+      <div class="card-priority-strip"></div>
+      <div class="card-head"><div>
+        <div class="card-name">${c.name ? escapeHtml(c.name) : 'Capture'}</div>
+        <div class="card-company">${escapeHtml(c.event || '')}</div>
+      </div></div>
+      <div class="proc-row"><span class="proc-label proc-failed">⚠ Couldn't finish processing</span></div>
+      <div class="proc-note">The recording is saved. We'll retry automatically, or you can open it to fill in the details.</div>
+      <div class="card-footer">
+        <div class="card-meta"><div class="card-meta-event">${escapeHtml(c.event || '')}</div></div>
+        <div class="card-actions"><button class="btn btn-draft" data-action="open-draft" data-id="${c.id}">Open</button></div>
+      </div>
+    </article>`;
+}
+
+function renderWhy(c) {
+  const bits = [];
+  if (c.context && String(c.context).trim()) {
+    bits.push(`<p class="why-context">${escapeHtml(c.context)}</p>`);
+  }
+  if (c.secondaryThread && String(c.secondaryThread).trim()) {
+    bits.push(`<p class="why-secondary"><span class="why-tag">Also worth noting</span> ${escapeHtml(c.secondaryThread)}</p>`);
+  }
+  if (!bits.length) return '';
+  return `
+    <details class="card-why">
+      <summary><span class="why-chevron">›</span> What was discussed</summary>
+      <div class="why-body">${bits.join('')}</div>
+    </details>`;
 }
 
 function renderFeedbackBlock(c) {
