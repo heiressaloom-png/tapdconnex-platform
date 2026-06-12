@@ -44,6 +44,8 @@ function toRow(c, userId) {
     completeness: c.completeness ?? null,
     channel_preference: c.channelPreference ?? null,
     transcript_confidence: c.transcriptConfidence ?? null,
+    next_steps: c.nextSteps ?? null,
+    gut_feel: c.gutFeel ?? null,
     updated_at: new Date().toISOString()
   };
 }
@@ -59,6 +61,8 @@ function toCapture(r) {
     needsNameConfirmation: r.needs_name_confirmation, nameConfidence: r.name_confidence,
     completeness: r.completeness, channelPreference: r.channel_preference,
     transcriptConfidence: r.transcript_confidence,
+    nextSteps: r.next_steps ?? null, gutFeel: r.gut_feel ?? null,
+    aiStatus: r.ai_status ?? null, audioIncomplete: r.audio_incomplete ?? false,
     capturedDaysAgo: r.captured_at
       ? Math.floor((Date.now() - new Date(r.captured_at).getTime()) / 86400000)
       : 0
