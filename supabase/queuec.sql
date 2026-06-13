@@ -7,7 +7,7 @@
 -- them back via /api/captures (not just from localStorage).
 -- ============================================================
 
--- The full structuring context, captured at enqueue time (Step D writes it):
+-- The full structuring context, captured at enqueue time (Step D writes it): 
 -- { template:{id,name,signals,canonical}, ownerStyle, userIntent,
 --   eventContext, gutFeel }. The worker reads this to build the prompt,
 -- exactly mirroring what the synchronous pipeline sends to /api/process-capture.
