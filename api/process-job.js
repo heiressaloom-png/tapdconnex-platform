@@ -181,6 +181,34 @@ function mapStructure(ai, transcript, confidence, payload) {
     needs_name_confirmation: ai.verification ? !!ai.verification.needsNameConfirmation : !((ai.person && ai.person.name)),
     name_confidence: (ai.person && ai.person.nameConfidence) || null,
     completeness: (ai.completeness && typeof ai.completeness.score === 'number') ? ai.completeness.score : (ai.completeness || null),
+    ai_momentum: ai.ai_momentum || ai.momentum || ai.relationshipMomentum || null,
+    ai_confidence: (
+      typeof ai.ai_confidence === 'number'
+        ? ai.ai_confidence
+        : typeof ai.confidence === 'number'
+          ? ai.confidence
+          : ai.confidence && typeof ai.confidence.score === 'number'
+            ? ai.confidence.score
+            : null
+    ),
+    ai_primary_signals: (
+      ai.ai_primary_signals
+        || ai.primarySignals
+        || (ai.signal && ai.signal.primary
+          ? [ai.signal.primary].concat(ai.signal.primarySubtype ? [ai.signal.primarySubtype] : [])
+          : null)
+    ),
+    relationship_read: ai.relationshipRead && ai.relationshipRead.level ? ai.relationshipRead.level : null,
+    commitment_level: ai.relationshipRead && ai.relationshipRead.commitmentLevel ? ai.relationshipRead.commitmentLevel : null,
+    reciprocity_read: ai.relationshipRead && ai.relationshipRead.reciprocity ? ai.relationshipRead.reciprocity : null,
+    moving_toward_signals: ai.relationshipRead && ai.relationshipRead.movingTowardSignals ? ai.relationshipRead.movingTowardSignals : null,
+    moving_away_signals: ai.relationshipRead && ai.relationshipRead.movingAwaySignals ? ai.relationshipRead.movingAwaySignals : null,
+    relationship_read_summary: ai.relationshipRead && ai.relationshipRead.summary ? ai.relationshipRead.summary : null,
+    safe_to_send: ai.safeToSend && ai.safeToSend.status === 'yes',
+    safe_to_send_reason: ai.safeToSend && ai.safeToSend.reason ? ai.safeToSend.reason : null,
+    needs_you_reasons: ai.needsYouReasons || null,
+    memory_anchors: ai.memoryAnchors || null,
+    why_follow_up: ai.whyFollowUp || null,
     transcript,
     transcript_confidence: confidence,
     ai_status: 'ready',
@@ -208,10 +236,14 @@ function aiPriority(ai, fallback) {
   return fallback;
 }
 function gutPriority(g, fb) {
-  if (!g || typeof g !== 'object') return fb;
-  if (g.momentum === 'building') return 'act-soon';
-  if (g.momentum === 'fading') return 'keep-warm';
-  if (g.momentum === 'steady') return 'worth-exploring';
+  const value = typeof g === 'string'
+    ? g
+    : (g && typeof g === 'object' ? g.value : null);
+  if (!value) return fb;
+  if (value === 'something_here') return 'act-soon';
+  if (value === 'good_connection') return 'worth-exploring';
+  if (value === 'no_spark') return 'keep-warm';
+  if (value === 'hard_to_read') return fb;
   return fb;
 }
 
