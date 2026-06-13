@@ -29,6 +29,51 @@
 <div class="action-bar" id="actionBar"><div class="action-inner" id="actionInner"></div></div>
 <div class="sheet-wrap" id="tplOverlay"><div class="sheet" id="tplSheet"></div></div>
 <div class="sheet-wrap" id="eventOverlay"><div class="sheet" id="eventSheet"></div></div>
+
+<!-- Gut Feel sheet — fires after recording stops, before the AI runs.
+     Two taps: momentum (Room read) + receptivity (Their openness).
+     Sends gutFeel: { momentum, receptivity } in the POST body. -->
+<div id="gut-feel-screen" class="gut-screen" style="display:none">
+  <div class="gut-inner">
+    <div class="gut-header">
+      <h2 class="gut-title">How did it go?</h2>
+      <p class="gut-sub">Your read helps us get it right.</p>
+    </div>
+    <div class="gut-question">
+      <div class="gut-label">Room read</div>
+      <div class="gut-options" id="momentum-options">
+        <button class="gut-btn" data-group="momentum" data-value="building" type="button">
+          <span class="gut-icon">↑</span><span class="gut-text">Building</span><span class="gut-hint">energy was growing</span>
+        </button>
+        <button class="gut-btn" data-group="momentum" data-value="steady" type="button">
+          <span class="gut-icon">→</span><span class="gut-text">Steady</span><span class="gut-hint">solid, even</span>
+        </button>
+        <button class="gut-btn" data-group="momentum" data-value="fading" type="button">
+          <span class="gut-icon">↓</span><span class="gut-text">Fading</span><span class="gut-hint">energy dropped off</span>
+        </button>
+      </div>
+    </div>
+    <div class="gut-question">
+      <div class="gut-label">Their openness</div>
+      <div class="gut-options" id="receptivity-options">
+        <button class="gut-btn" data-group="receptivity" data-value="open" type="button">
+          <span class="gut-icon">🟢</span><span class="gut-text">Open</span><span class="gut-hint">receptive, engaged</span>
+        </button>
+        <button class="gut-btn" data-group="receptivity" data-value="mixed" type="button">
+          <span class="gut-icon">🟡</span><span class="gut-text">Mixed</span><span class="gut-hint">polite but guarded</span>
+        </button>
+        <button class="gut-btn" data-group="receptivity" data-value="closed" type="button">
+          <span class="gut-icon">🔴</span><span class="gut-text">Closed</span><span class="gut-hint">not really there</span>
+        </button>
+      </div>
+    </div>
+    <div class="gut-actions">
+      <button class="gut-done" id="gut-done-btn" type="button" disabled>Done — analyse capture</button>
+      <button class="gut-skip" id="gut-skip-btn" type="button">Skip</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 <script src="tapd-intelligence-framework.js"></script>
 <script src="tapd-sync.js"></script>
