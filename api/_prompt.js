@@ -18,13 +18,12 @@ export function buildCapturePrompt(ctx) {
     transcript = ''
   } = ctx || {};
 
-  const gutFeelLine = gutFeel === 'strong'
-    ? 'The user felt this was a real opportunity worth acting on soon.'
-    : gutFeel === 'warm'
-      ? 'The user felt this was a good connection worth keeping warm.'
-      : gutFeel === 'light'
-        ? 'The user felt this was just a polite hello with no strong signal yet.'
-        : 'Not provided.';
+  const _gf = (gutFeel && typeof gutFeel === 'object') ? gutFeel : null;
+  const _mom = _gf ? ({ building: 'building (energy was growing)', steady: 'steady (solid, even)', fading: 'fading (energy dropped off)' }[_gf.momentum] || _gf.momentum) : null;
+  const _rec = _gf ? ({ open: 'open (receptive, engaged)', mixed: 'mixed (polite but guarded)', closed: 'closed (not really there)' }[_gf.receptivity] || _gf.receptivity) : null;
+  const gutFeelLine = _gf
+    ? `In the room, the user read the momentum as ${_mom}, and the contact's openness as ${_rec}.`
+    : 'Not provided.';
 
   const listenFor = (template.aiListening && template.aiListening.length)
     ? template.aiListening.join(', ')
