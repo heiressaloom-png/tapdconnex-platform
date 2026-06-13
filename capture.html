@@ -36,40 +36,28 @@
 <div id="gut-feel-screen" class="gut-screen" style="display:none">
   <div class="gut-inner">
     <div class="gut-header">
-      <h2 class="gut-title">How did it go?</h2>
-      <p class="gut-sub">Your read helps us get it right.</p>
+      <h2 class="gut-title">What's your gut feel on this one?</h2>
+      <p class="gut-sub">Takes 2 seconds — it makes your follow-up sharper.</p>
     </div>
     <div class="gut-question">
-      <div class="gut-label">Room read</div>
-      <div class="gut-options" id="momentum-options">
-        <button class="gut-btn" data-group="momentum" data-value="building" type="button">
-          <span class="gut-icon">↑</span><span class="gut-text">Building</span><span class="gut-hint">energy was growing</span>
+      <div class="gut-options gut-options-single" id="gut-options">
+        <button class="gut-btn" data-value="something_here" type="button">
+          <span class="gut-icon">🔥</span><span class="gut-text">There's something here</span><span class="gut-hint">real energy, worth noticing</span>
         </button>
-        <button class="gut-btn" data-group="momentum" data-value="steady" type="button">
-          <span class="gut-icon">→</span><span class="gut-text">Steady</span><span class="gut-hint">solid, even</span>
+        <button class="gut-btn" data-value="good_connection" type="button">
+          <span class="gut-icon">🤝</span><span class="gut-text">Good connection</span><span class="gut-hint">warm, useful, worth keeping open</span>
         </button>
-        <button class="gut-btn" data-group="momentum" data-value="fading" type="button">
-          <span class="gut-icon">↓</span><span class="gut-text">Fading</span><span class="gut-hint">energy dropped off</span>
+        <button class="gut-btn" data-value="no_spark" type="button">
+          <span class="gut-icon">👋</span><span class="gut-text">Good to meet, no spark</span><span class="gut-hint">pleasant, but no real pull</span>
         </button>
-      </div>
-    </div>
-    <div class="gut-question">
-      <div class="gut-label">Their openness</div>
-      <div class="gut-options" id="receptivity-options">
-        <button class="gut-btn" data-group="receptivity" data-value="open" type="button">
-          <span class="gut-icon">🟢</span><span class="gut-text">Open</span><span class="gut-hint">receptive, engaged</span>
-        </button>
-        <button class="gut-btn" data-group="receptivity" data-value="mixed" type="button">
-          <span class="gut-icon">🟡</span><span class="gut-text">Mixed</span><span class="gut-hint">polite but guarded</span>
-        </button>
-        <button class="gut-btn" data-group="receptivity" data-value="closed" type="button">
-          <span class="gut-icon">🔴</span><span class="gut-text">Closed</span><span class="gut-hint">not really there</span>
+        <button class="gut-btn" data-value="hard_to_read" type="button">
+          <span class="gut-icon">🤔</span><span class="gut-text">Hard to read</span><span class="gut-hint">not enough signal yet</span>
         </button>
       </div>
     </div>
     <div class="gut-actions">
-      <button class="gut-done" id="gut-done-btn" type="button" disabled>Done — analyse capture</button>
-      <button class="gut-skip" id="gut-skip-btn" type="button">Skip</button>
+      <button class="gut-done" id="gut-done-btn" type="button" disabled>Done — prepare capture</button>
+      <button class="gut-skip" id="gut-skip-btn" type="button">Skip for now</button>
     </div>
   </div>
 </div>
