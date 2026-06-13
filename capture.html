@@ -8,8 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="capture-style.css">
-<link rel="stylesheet" href="capture-premium-button.css">
+<link rel="stylesheet" href="capture-style.css?v=20260613c">
+<link rel="stylesheet" href="capture-premium-button.css?v=20260613c">
 </head>
 <body>
 <div class="app">
@@ -31,8 +31,8 @@
 <div class="sheet-wrap" id="eventOverlay"><div class="sheet" id="eventSheet"></div></div>
 
 <!-- Gut Feel sheet — fires after recording stops, before the AI runs.
-     Two taps: momentum (Room read) + receptivity (Their openness).
-     Sends gutFeel: { momentum, receptivity } in the POST body. -->
+     One tap: the user's quick relationship read.
+     Sends gutFeel: something_here | good_connection | no_spark | hard_to_read | null. -->
 <div id="gut-feel-screen" class="gut-screen" style="display:none">
   <div class="gut-inner">
     <div class="gut-header">
@@ -63,8 +63,8 @@
 </div>
 
 <div class="toast" id="toast"></div>
-<script src="tapd-intelligence-framework.js"></script>
-<script src="tapd-sync.js"></script>
-<script src="capture-app.js"></script>
+<script src="tapd-intelligence-framework.js?v=20260613c"></script>
+<script src="tapd-sync.js?v=20260613c"></script>
+<script src="capture-app.js?v=20260613c"></script>
 </body>
 </html>
