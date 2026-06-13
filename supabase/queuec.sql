@@ -17,5 +17,9 @@ alter table public.captures add column if not exists job_payload jsonb;
 -- sync carries all three, not just the first (which still lives in `action`).
 alter table public.captures add column if not exists next_steps jsonb;
 
--- The user's one-tap read (Gut Feel #3): 'strong' | 'warm' | 'light' | null.
-alter table public.captures add column if not exists gut_feel text;
+-- The user's two-tap in-room read: { momentum: building|steady|fading,
+-- receptivity: open|mixed|closed } | null. Stored as jsonb.
+alter table public.captures add column if not exists gut_feel jsonb;
+-- If gut_feel already exists as text from an earlier run, convert it:
+--   alter table public.captures alter column gut_feel type jsonb using
+--     (case when gut_feel is null then null else to_jsonb(gut_feel) end);
