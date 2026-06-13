@@ -23,13 +23,11 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Missing transcript.' });
   }
 
-  // Cost gate: the user's own gut feel is a cheap human signal captured
-  // before this (expensive) structuring call. If they felt it was "just a
-  // hello", skip the model entirely — the capture is still saved client-side
-  // with the transcript preserved; it just doesn't get deep AI structuring.
-  if (ctx.gutFeel === 'light') {
-    return res.status(200).json({ status: 'gated', reason: 'gut_feel_light' });
-  }
+  // gutFeel is now the two-tap in-room read { momentum, receptivity }. It is a
+  // PRIOR passed through to the prompt context (see buildCapturePrompt) — never a
+  // gate. The corrected design requires the draft to VISIBLY change based on the
+  // tap, so structuring always runs. gutFeel must not touch signalScore/
+  // confidence; it only shapes momentum/tone.
 
   const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
   const model = process.env.OPENAI_MODEL || 'gpt-4o';
