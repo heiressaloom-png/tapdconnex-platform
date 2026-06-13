@@ -126,7 +126,8 @@ async function processOne(db, base, row) {
   const confidence = tx.confidence || row.transcript_confidence || 'medium';
   await db.from('captures').update({ transcript, transcript_confidence: confidence, ai_status: 'structuring' }).eq('id', row.id);
 
-  // 2) Structure via the existing endpoint (its cost gate handles gutFeel='light').
+  // 2) Structure via the existing endpoint (gutFeel { momentum, receptivity }
+  //    flows through as a prompt prior; structuring always runs).
   const ai = await postJSON(`${base}/api/process-capture`, {
     transcript,
     template: payload.template || {},
@@ -138,7 +139,7 @@ async function processOne(db, base, row) {
   });
 
   if (!ai || !ai.person) {
-    // Gated (gut feel light) or unusable -> ready, transcript preserved, no deep AI.
+    // Unusable / placeholder result -> ready, transcript preserved, no deep AI.
     await finishUnstructured(db, row.id, transcript, confidence, payload);
     return;
   }
@@ -207,9 +208,10 @@ function aiPriority(ai, fallback) {
   return fallback;
 }
 function gutPriority(g, fb) {
-  if (g === 'strong') return 'act-soon';
-  if (g === 'warm') return 'worth-exploring';
-  if (g === 'light') return 'keep-warm';
+  if (!g || typeof g !== 'object') return fb;
+  if (g.momentum === 'building') return 'act-soon';
+  if (g.momentum === 'fading') return 'keep-warm';
+  if (g.momentum === 'steady') return 'worth-exploring';
   return fb;
 }
 
