@@ -74,6 +74,11 @@ function toRow(c, userId) {
     needs_you_reasons: c.needsYouReasons ?? null,
     memory_anchors: c.memoryAnchors ?? null,
     why_follow_up: c.whyFollowUp ?? null,
+    human_reads: c.humanReads ?? null,
+    anchor_read: c.anchorRead ?? null,
+    imprint_read: c.imprintRead ?? null,
+    opening_read: c.openingRead ?? null,
+    intelligence_read: c.intelligenceRead ?? null,
     updated_at: new Date().toISOString()
   };
 }
@@ -115,6 +120,11 @@ function toCapture(r) {
     needsYouReasons: r.needs_you_reasons ?? null,
     memoryAnchors: r.memory_anchors ?? null,
     whyFollowUp: r.why_follow_up ?? null,
+    humanReads: r.human_reads ?? null,
+    anchorRead: r.anchor_read ?? null,
+    imprintRead: r.imprint_read ?? null,
+    openingRead: r.opening_read ?? null,
+    intelligenceRead: r.intelligence_read ?? null,
     aiStatus: r.ai_status ?? null, audioIncomplete: r.audio_incomplete ?? false,
     capturedDaysAgo: r.captured_at
       ? Math.floor((Date.now() - new Date(r.captured_at).getTime()) / 86400000)
