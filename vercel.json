@@ -8,12 +8,15 @@
     },
     "api/process-job.js": {
       "maxDuration": 60
+    },
+    "api/enqueue-job.js": {
+      "maxDuration": 60
+    },
+    "api/captures.js": {
+      "maxDuration": 30
+    },
+    "api/retry-capture.js": {
+      "maxDuration": 30
     }
-  },
-  "crons": [
-    {
-      "path": "/api/process-job",
-      "schedule": "* * * * *"
-    }
-  ]
+  }
 }
