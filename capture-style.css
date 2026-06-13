@@ -35,3 +35,8 @@
 .ai-read-list{margin:0;padding-left:18px}
 .ai-read-list li{margin:2px 0;font-size:14px;line-height:1.45}
 .ai-read-muted{color:var(--muted);font-size:13px}
+.ai-read-line{font-size:14px;line-height:1.5;margin:3px 0}
+.ai-read-k{font-family:var(--font-mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--faint);font-weight:700}
+.ai-read-quote{font-style:italic;color:var(--text);border-left:2px solid var(--accent);padding-left:10px;margin:6px 0}
+.ai-read-chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.ai-read-chip{background:var(--accent-bg);color:var(--accent);border-radius:999px;padding:4px 10px;font-size:12px;font-weight:700}
