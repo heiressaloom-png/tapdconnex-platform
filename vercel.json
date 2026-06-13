@@ -1,10 +1,13 @@
 {
-  "functions": {
-    "api/transcribe.js": { "maxDuration": 60 },
-    "api/process-capture.js": { "maxDuration": 30 },
-    "api/process-job.js": { "maxDuration": 60 }
-  },
-  "crons": [
-    { "path": "/api/process-job", "schedule": "* * * * *" }
-  ]
+"functions": {
+"api/transcribe.js": {
+"maxDuration": 60
+},
+"api/process-capture.js": {
+"maxDuration": 30
+},
+"api/process-job.js": {
+"maxDuration": 60
+}
+}
 }
