@@ -20,3 +20,18 @@
 .gut-done:disabled{opacity:.38;cursor:not-allowed}
 .gut-done:not(:disabled):hover{background:var(--accent-hover,#14404C)}
 .gut-skip{width:100%;padding:10px;background:transparent;border:0;font-size:13px;font-weight:700;color:var(--muted,#5C5247);cursor:pointer}
+.gut-options-single{grid-template-columns:1fr}
+.gut-options-single .gut-btn{flex-direction:row;align-items:center;gap:14px;text-align:left;padding:14px 16px}
+.gut-options-single .gut-icon{font-size:24px}
+.gut-options-single .gut-text{font-size:15px}
+.gut-options-single .gut-hint{text-align:left}
+.ai-read-card{border:1px solid var(--soft);background:var(--surface-warm);border-radius:16px;padding:18px;margin-top:16px}
+.ai-read-card>.label{margin-bottom:6px}
+.ai-read-sec{padding:12px 0;border-top:1px solid var(--soft)}
+.ai-read-sec:first-of-type{border-top:0;padding-top:8px}
+.ai-read-title{font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);font-weight:700;margin-bottom:6px}
+.ai-read-body{font-size:14px;line-height:1.5;color:var(--text)}
+.ai-read-body strong{color:var(--accent)}
+.ai-read-list{margin:0;padding-left:18px}
+.ai-read-list li{margin:2px 0;font-size:14px;line-height:1.45}
+.ai-read-muted{color:var(--muted);font-size:13px}
