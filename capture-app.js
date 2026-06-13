@@ -48,17 +48,38 @@ function processing(){return `<div class="proc-view"><div class="proc-spinner"><
 function draftStatusLabel(ai,p){if(ai&&ai.safeToSend&&ai.safeToSend.status==='needs_you')return'Needs You';if(ai&&Array.isArray(ai.needsYouReasons)&&ai.needsYouReasons.length)return'Needs You';if(!(p&&p.name))return'Draft prepared — needs details';if(ai&&ai.safeToSend&&ai.safeToSend.status==='not_yet')return'Draft prepared — needs details';return'Draft Ready'}
 /* What TAPDconnex understood — read-only AI relationship read, shown after
    transcription when data exists. Never asked from the user. */
-function aiReadBlock(ai){if(!ai)return'';var rr=ai.relationshipRead||{},sts=ai.safeToSend||{},sec=[];
+function aiReadBlock(ai){if(!ai)return'';
+  var hr=ai.humanReads||{},an=hr.anchorRead||{},im=hr.imprintRead||{},op=hr.openingRead||{},intel=hr.intelligenceRead||{},rr=ai.relationshipRead||{},sts=ai.safeToSend||{},sec=[];
   function box(t,inner){return inner?'<div class="ai-read-sec"><div class="ai-read-title">'+t+'</div><div class="ai-read-body">'+inner+'</div></div>':''}
-  if(rr.label||rr.summary)sec.push(box('Relationship read',(rr.label?'<strong>'+esc(rr.label)+'</strong>'+(rr.summary?'<br>':''):'')+(rr.summary?esc(rr.summary):'')));
-  if(rr.commitmentLevel)sec.push(box('Interest vs commitment',esc(({curiosity:'Curiosity — interest shown, not committed yet',investment:'Investment — real context or effort shared',commitment:'Commitment — a clear next step or access was created',unclear:'Unclear — needs more signal'})[rr.commitmentLevel]||rr.commitmentLevel)));
-  var needs=Array.isArray(ai.needsYouReasons)?ai.needsYouReasons.filter(Boolean):[];
+  function line(k,v){return v?'<div class="ai-read-line">'+(k?'<span class="ai-read-k">'+k+'</span> ':'')+esc(v)+'</div>':''}
+  function arr(a){return Array.isArray(a)?a.filter(Boolean):[]}
+  function quotes(a){a=arr(a);return a.length?a.map(function(q){return'<div class="ai-read-quote">“'+esc(q)+'”</div>'}).join(''):''}
+  function chips(a){a=arr(a);return a.length?'<div class="ai-read-chips">'+a.map(function(x){return'<span class="ai-read-chip">'+esc(x)+'</span>'}).join('')+'</div>':''}
+  function joinLine(k,a){a=arr(a);return a.length?line(k,a.join('; ')):''}
+  var ENERGY={warm:'Warm',curious:'Curious',thoughtful:'Thoughtful',analytical:'Analytical',connector:'Connector','fast-moving':'Fast-moving',practical:'Practical',reflective:'Reflective'};
+  var OPEN={closed:'Kept it closed',curious:'Curious, but guarded',engaged:'Genuinely engaged',world_entry:'Let you into their world',trusted:'Spoke with real trust',collaborative:'Already collaborative'};
+  var CVC={curiosity_only:'Curiosity, not commitment yet',investment:'Real investment — shared context or effort',commitment_forming:'Commitment forming — a concrete step emerged'};
+  var PROTECT={chase:'Worth chasing',thoughtful_follow_up:'Worth a thoughtful follow-up',monitor:'Monitor — don\'t chase yet',do_not_chase:'Don\'t chase — not enough signal yet'};
+  // 1. What mattered
+  sec.push(box('What mattered',line('',an.whatTheyCaredAbout)+quotes(an.theirWords)+chips(an.specificsNamed)+joinLine('You offered:',an.whatIOffered)+line('Open thread:',an.openThread)));
+  // 2. What stayed with me
+  var m2=line('',im.whatStuckWithMe)+line('Distinctive:',im.distinctiveDetail)+(ENERGY[im.energyTheyBrought]?line('Energy:',ENERGY[im.energyTheyBrought]):'')+line('Seemed to value:',im.whatSeemedImportantToThem)+line('Worth remembering:',im.whyRememberThem);
+  if(!m2)m2=chips(ai.memoryAnchors);
+  sec.push(box('What stayed with me',m2));
+  // 3. How open they were
+  sec.push(box('How open they were',(OPEN[op.level]?'<strong>'+esc(OPEN[op.level])+'</strong>'+(op.summary?'<br>':''):'')+(op.summary?esc(op.summary):'')+joinLine('World-entry:',op.worldEntrySignals)+joinLine('Access offered:',op.permissionSignals)+joinLine('Opened up about:',op.vulnerabilitySignals)));
+  // 4. What you might miss
+  var m4=(CVC[intel.curiosityVsCommitment]?line('',CVC[intel.curiosityVsCommitment]):'')+line('',intel.whatUserMightMiss)+(PROTECT[intel.protectEnergy]?line('',PROTECT[intel.protectEnergy]):'')+line('',intel.why);
+  if(!m4&&(rr.label||rr.summary))m4=(rr.label?'<strong>'+esc(rr.label)+'</strong>'+(rr.summary?'<br>':''):'')+(rr.summary?esc(rr.summary):'');
+  sec.push(box('What you might miss',m4));
+  // Needs you
+  var needs=arr(ai.needsYouReasons);
   if(needs.length)sec.push(box('Needs you','<ul class="ai-read-list">'+needs.map(function(x){return'<li>'+esc(x)+'</li>'}).join('')+'</ul>'));
-  var anchors=Array.isArray(ai.memoryAnchors)?ai.memoryAnchors.filter(Boolean):[];
-  if(anchors.length)sec.push(box('Memory anchors','<ul class="ai-read-list">'+anchors.map(function(x){return'<li>'+esc(x)+'</li>'}).join('')+'</ul>'));
-  if(ai.whyFollowUp)sec.push(box('Why follow up',esc(ai.whyFollowUp)));
-  if(rr.bestMove)sec.push(box('Next best move',esc(rr.bestMove)));
+  // 5. Best next move
+  sec.push(box('Best next move',rr.bestMove?esc(rr.bestMove):''));
+  sec.push(box('Why follow up',ai.whyFollowUp?esc(ai.whyFollowUp):''));
   if(sts.status){var map={yes:'✓ Safe to send',not_yet:'Not yet — refine first',needs_you:'Needs you — add details before sending'};sec.push(box('Safe to send?',esc(map[sts.status]||sts.status)+(sts.reason?'<br><span class="ai-read-muted">'+esc(sts.reason)+'</span>':'')))}
+  sec=sec.filter(Boolean);
   if(!sec.length)return'';
   return'<div class="ai-read-card"><div class="label">What TAPDconnex understood</div>'+sec.join('')+'</div>'}
 function review(){let t=tpl(),p=S.p||{};let aiNote=S.aiStatus==='structured'?'<div class="notice" style="background:var(--accent-bg,#E8EFEF);border-color:var(--accent,#1E4F5C)">AI structured this capture from the recording. Review and edit anything before saving.</div>':S.aiStatus==='transcribed'?'<div class="notice">Recording transcribed. AI structuring was unavailable, so fill the key details below.</div>':'<div class="notice">Recording captured. AI summary will populate this once transcription is connected. For now, save the key details while fresh.</div>';let _st=(p.nextSteps&&p.nextSteps.length?p.nextSteps:[p.nextStep||'']).slice(0,3);while(_st.length<3)_st.push('');let stepsHtml='<div class="field"><label>Next steps</label><div style="font-size:12px;color:var(--faint,#95887A);margin:-2px 0 8px">Three moves a senior colleague would suggest. Edit freely.</div>'+_st.map((s,i)=>'<input class="input" id="nx'+i+'" style="margin-bottom:8px" placeholder="'+(i===0?'Most important move':i===1?'Then…':'And…')+'" value="'+esc(s)+'"></input>').join('')+'</div>';return`<div class="wrap"><section class="main-card"><div class="review-view"><div class="label">Review & save</div><h1 class="template-name" style="margin:12px 0 20px">Lock in the relationship</h1>${aiNote}<div class="form"><div class="row"><div class="field"><label>Who did you meet?</label><input class="input" id="nm" placeholder="Name" value="${esc(p.name)}"></div><div class="field"><label>Company</label><input class="input" id="co" placeholder="Company" value="${esc(p.company)}"></div></div><div class="field"><label>Role / title</label><input class="input" id="ro" placeholder="e.g. Head of Partnerships" value="${esc(p.role)}"></div><div class="field"><label>What was discussed</label><textarea class="textarea" id="su" placeholder="What mattered, why it is worth following up…">${esc(p.summary)}</textarea></div>${stepsHtml}${aiReadBlock(S.ai)}<div class="intelligence-card"><div class="label">Relationship intelligence</div><div class="intelligence-grid"><div class="intel-chip"><strong>Draft status</strong>${draftStatusLabel(S.ai,p)}</div><div class="intel-chip"><strong>AI status</strong>${S.aiStatus==='structured'?'AI structured':S.aiStatus==='transcribed'?'Transcribed only':'Manual'}</div><div class="intel-chip"><strong>Completeness</strong>${complete(p)}%</div></div></div></div></div></section><aside class="side-card"><div class="side-title"><div class="side-icon">▤</div><h2>${esc(t.name)}</h2></div><p class="side-copy">This capture will be saved with the current template and event context.</p>${side()}</aside></div>`}
