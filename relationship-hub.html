@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -601,6 +602,14 @@
   .proc-label.proc-failed { color: var(--pro, #7C2D3F); }
   .proc-note { font-size: 14px; line-height: 1.45; color: var(--text-secondary); margin-bottom: var(--space-4, 16px); }
   .card-failed .card-priority-strip { background: var(--pro, #7C2D3F); }
+  .proc-steps { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 6px; }
+  .proc-step { font-family: var(--font-mono, monospace); font-size: 11px; letter-spacing: 0.04em; display: flex; align-items: center; gap: 8px; color: var(--text-muted, #95887A); }
+  .proc-step::before { content: '\25CB'; font-size: 11px; }
+  .proc-step.proc-done { color: var(--accent, #1E4F5C); }
+  .proc-step.proc-done::before { content: '\2713'; }
+  .proc-step.proc-active { color: var(--text-primary); font-weight: 700; }
+  .proc-step.proc-active::before { content: '\25C9'; }
+  .proc-step.proc-pending { opacity: 0.55; }
 
   .card-footer {
     display: flex;
@@ -2214,9 +2223,19 @@ function renderCard(c) {
   `;
 }
 
+function procChecklist(status) {
+  const steps = [
+    { label: 'Saved', state: 'done' },
+    { label: 'Transcribing', state: status === 'queued' ? 'pending' : (status === 'transcribing' ? 'active' : 'done') },
+    { label: 'Structuring follow-up', state: status === 'structuring' ? 'active' : 'pending' },
+    { label: 'Draft Ready', state: 'pending' }
+  ];
+  return '<ul class="proc-steps">' +
+    steps.map(s => `<li class="proc-step proc-${s.state}">${s.label}</li>`).join('') +
+    '</ul>';
+}
+
 function renderProcessingCard(c) {
-  const labels = { queued: 'Queued', transcribing: 'Transcribing the conversation…', structuring: 'Writing up your follow-up…' };
-  const label = labels[c.aiStatus] || 'Working…';
   return `
     <article class="card card-processing" data-id="${c.id}">
       <div class="card-priority-strip"></div>
@@ -2224,8 +2243,9 @@ function renderProcessingCard(c) {
         <div class="card-name">${c.name ? escapeHtml(c.name) : 'New capture'}</div>
         <div class="card-company">${escapeHtml(c.event || '')}</div>
       </div></div>
-      <div class="proc-row"><span class="proc-dot"></span><span class="proc-label">${escapeHtml(label)}</span></div>
-      <div class="proc-note">We're structuring this capture — it'll update here automatically.</div>
+      <div class="proc-row"><span class="proc-dot"></span><span class="proc-label">Preparing draft</span></div>
+      <div class="proc-note">Audio saved safely. TAPDconnex is transcribing and structuring this in the background.</div>
+      ${procChecklist(c.aiStatus)}
     </article>`;
 }
 
@@ -2237,11 +2257,11 @@ function renderFailedCard(c) {
         <div class="card-name">${c.name ? escapeHtml(c.name) : 'Capture'}</div>
         <div class="card-company">${escapeHtml(c.event || '')}</div>
       </div></div>
-      <div class="proc-row"><span class="proc-label proc-failed">⚠ Couldn't finish processing</span></div>
-      <div class="proc-note">The recording is saved. We'll retry automatically, or you can open it to fill in the details.</div>
+      <div class="proc-row"><span class="proc-label proc-failed">Needs attention</span></div>
+      <div class="proc-note">Audio saved safely. TAPDconnex couldn't finish preparing the draft — tap retry to try again. Nothing is lost.</div>
       <div class="card-footer">
         <div class="card-meta"><div class="card-meta-event">${escapeHtml(c.event || '')}</div></div>
-        <div class="card-actions"><button class="btn btn-draft" data-action="open-draft" data-id="${c.id}">Open</button></div>
+        <div class="card-actions"><button class="btn btn-draft" data-action="retry-capture" data-id="${c.id}">Retry</button></div>
       </div>
     </article>`;
 }
@@ -2324,8 +2344,31 @@ function bindCardEvents() {
       openPicker(btn.dataset.id);
     });
   });
+  document.querySelectorAll('[data-action="retry-capture"]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      retryCapture(btn.dataset.id);
+    });
+  });
 
   bindFeedbackEvents();
+}
+
+// One-tap retry for a failed capture. Optimistically flips the card back to
+// 'queued' (so it immediately reads "Preparing draft"), then asks the server
+// to reset and re-run the SAME capture id — never a duplicate row or card.
+async function retryCapture(id) {
+  const c = state.captures.find(x => x.id === id);
+  if (c) { c.aiStatus = 'queued'; c.last_error = null; saveCaptures(); render(); }
+  try {
+    const userId = window.TapdSync ? TapdSync.userId() : null;
+    await fetch('/api/retry-capture', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, userId })
+    });
+  } catch (e) { /* best-effort — the cron sweep will also pick it up */ }
+  _queuePolls = 0;
+  scheduleQueuePoll();
 }
 
 
