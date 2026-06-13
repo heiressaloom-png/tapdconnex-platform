@@ -68,7 +68,14 @@ export default async function handler(req, res) {
       template_name: capture.templateName ?? null,
       captured_at: capture.capturedAt || now,
       priority: capture.priority ?? null,
-      gut_feel: capture.gutFeel ?? null,
+      gut_feel: capture.gutFeel ? {
+        value: capture.gutFeel,
+        label: capture.gutFeelLabel ?? null,
+        momentumHint: capture.gutMomentumHint ?? null
+      } : null,
+      initial_gut_feel: capture.initialGutFeel ?? capture.gutFeel ?? null,
+      gut_feel_label: capture.gutFeelLabel ?? null,
+      gut_momentum_hint: capture.gutMomentumHint ?? null,
       outcome: 'active',
       completeness: capture.completeness ?? 0,
       ai_status: 'queued',
@@ -102,4 +109,3 @@ function kick() {
   // fire-and-forget; swallow everything — the cron safety net guarantees the sweep
   try { fetch(`${base}/api/process-job`, { method: 'POST', headers }).catch(() => {}); } catch (e) {}
 }
-enqueuejob.js
