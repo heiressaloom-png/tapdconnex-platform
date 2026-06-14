@@ -81,6 +81,13 @@ function toRow(c, userId) {
     intelligence_read: c.intelligenceRead ?? null,
     intelligence_json: c.intelligence ?? c.intelligenceJson ?? null,
     momentum_level: c.momentumLevel ?? null,
+    behavioral_read: c.behavioralRead ?? null,
+    opportunity_readiness: c.opportunityReadiness ?? null,
+    relationship_priority: c.relationshipPriority ?? null,
+    attention_labels: c.attentionLabels ?? null,
+    human_read_summary: c.humanReadSummary ?? null,
+    commitment_ledger: c.commitmentLedger ?? null,
+    outcome_ledger: c.outcomeLedger ?? null,
     updated_at: new Date().toISOString()
   };
 }
@@ -129,6 +136,13 @@ function toCapture(r) {
     intelligenceRead: r.intelligence_read ?? null,
     intelligence: r.intelligence_json ?? null,
     momentumLevel: r.momentum_level ?? null,
+    behavioralRead: r.behavioral_read ?? null,
+    opportunityReadiness: r.opportunity_readiness ?? null,
+    relationshipPriority: r.relationship_priority ?? null,
+    attentionLabels: r.attention_labels ?? null,
+    humanReadSummary: r.human_read_summary ?? null,
+    commitmentLedger: r.commitment_ledger ?? null,
+    outcomeLedger: r.outcome_ledger ?? null,
     aiStatus: r.ai_status ?? null, audioIncomplete: r.audio_incomplete ?? false,
     capturedDaysAgo: r.captured_at
       ? Math.floor((Date.now() - new Date(r.captured_at).getTime()) / 86400000)
