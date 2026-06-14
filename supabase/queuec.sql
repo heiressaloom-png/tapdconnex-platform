@@ -60,3 +60,20 @@ alter table public.captures add column if not exists safe_to_send_reason text;
 alter table public.captures add column if not exists needs_you_reasons jsonb;
 alter table public.captures add column if not exists memory_anchors jsonb;
 alter table public.captures add column if not exists why_follow_up text;
+
+-- ============================================================
+-- HUMAN READS v2.0 — extraction + display only (never scoring).
+-- ============================================================
+alter table public.captures add column if not exists human_reads jsonb;
+alter table public.captures add column if not exists anchor_read jsonb;
+alter table public.captures add column if not exists imprint_read jsonb;
+alter table public.captures add column if not exists opening_read jsonb;
+alter table public.captures add column if not exists intelligence_read jsonb;
+
+-- ============================================================
+-- INTELLIGENCE ARCHITECTURE v1 — parent-child taxonomy.
+-- Full structured intelligence lives in one JSONB column; only a couple
+-- of fields are promoted to columns for Hub filtering (spec section 17).
+-- ============================================================
+alter table public.captures add column if not exists intelligence_json jsonb;
+alter table public.captures add column if not exists momentum_level text;
