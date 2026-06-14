@@ -9,8 +9,12 @@ function tplOptions(cur){let pro=tier()==='pro';let mk=x=>'<option value="'+x.id
 function setTemplate(v){let t=T.find(x=>x.id===v);if(!t)return;if(t.tier==='pro'&&tier()!=='pro'){location.href='templates.html';return}S.tpl=v;localStorage.setItem(K.TPL,v);render()}
 
 /* ---- Owner Style + intent, read from onboarding profile (best-effort) ---- */
-function ownerStyle(){let pr=read(K.PROFILE,{})||{};return {name:pr.fullName||pr.name||'',greeting:pr.voiceGreeting||pr.greeting||'',opening:pr.voiceOpening||pr.opening||'',conversationRef:pr.voiceConversationRef||'',nextStepStyle:pr.voiceNextStep||'',signOff:pr.voiceSignoff||pr.signOff||'',voiceEmphasise:pr.voiceEmphasise||'',voiceAvoid:pr.voiceAvoid||''}}
-function userIntent(){let pr=read(K.PROFILE,{})||{};let primary=pr.intentPrimary||pr.networkingPrimary||localStorage.getItem('tapd_user_intent')||null;let secondary=pr.intentSecondary||[];return primary?{primary:primary,secondary:Array.isArray(secondary)?secondary:[]}:null}
+/* Onboarding saves { currentStep, data:{...} }; older/imported saves may be flat.
+   Return the flat profile object either way so voice, intent, and focus actually reach the AI. */
+function profileData(){var pr=read(K.PROFILE,{})||{};return (pr&&typeof pr==='object'&&pr.data&&typeof pr.data==='object')?pr.data:pr}
+function ownerStyle(){let pr=profileData();return {name:pr.fullName||pr.name||'',greeting:pr.voiceGreeting||pr.greeting||'',opening:pr.voiceOpening||pr.opening||'',conversationRef:pr.voiceConversationRef||pr.conversationRef||'',nextStepStyle:pr.voiceNextStep||pr.nextStepStyle||'',signOff:pr.voiceSignoff||pr.signOff||'',voiceEmphasise:pr.voiceEmphasise||'',voiceAvoid:pr.voiceAvoid||''}}
+function userIntent(){let pr=profileData();let primary=pr.intentPrimary||pr.networkingPrimary||localStorage.getItem('tapd_user_intent')||null;let secondary=pr.intentSecondary||[];return primary?{primary:primary,secondary:Array.isArray(secondary)?secondary:[]}:null}
+function profileFocus(){var pr=profileData();var ways=Array.isArray(pr.waysToWork)?pr.waysToWork.filter(Boolean):(pr.waysToWork?[pr.waysToWork]:[]);var f={topFocus:pr.topFocus||'',waysToWork:ways,networkingPrimary:pr.networkingPrimary||pr.intentPrimary||'',networkingSecondary:pr.networkingSecondary||'',whatYouDo:pr.whatYouDo||'',role:pr.role||'',company:pr.company||''};return (f.topFocus||f.waysToWork.length||f.networkingPrimary||f.whatYouDo)?f:null}
 
 function injectRecGuidanceCss(){if(document.getElementById('tapdRecGuidanceCss'))return;let s=document.createElement('style');s.id='tapdRecGuidanceCss';s.textContent=`
 .rec-view{position:fixed;inset:0;z-index:80;display:flex;flex-direction:column;background:var(--bg,#F6F2EA);text-align:left}
@@ -153,7 +157,7 @@ async function enqueueOrProcess(){
       gutFeel:S.gutFeel,initialGutFeel:S.gutFeel,gutFeelLabel:gutFeelLabel(S.gutFeel),gutMomentumHint:gutMomentumHint(S.gutFeel),completeness:0,audioIncomplete:!!S.audioIncomplete};
     const jobPayload={template:{id:t.id,name:t.name,signals:t.signals,canonical:canonicalOf(t)},
       ownerStyle:ownerStyle(),userIntent:userIntent(),
-      eventContext:S.ev?{name:S.ev.name,date:S.ev.date}:null,gutFeel:S.gutFeel,gutFeelLabel:gutFeelLabel(S.gutFeel),gutMomentumHint:gutMomentumHint(S.gutFeel)};
+      eventContext:S.ev?{name:S.ev.name,date:S.ev.date}:null,gutFeel:S.gutFeel,gutFeelLabel:gutFeelLabel(S.gutFeel),gutMomentumHint:gutMomentumHint(S.gutFeel),profileFocus:profileFocus()};
     const r=await postJSON('/api/enqueue-job',{userId:cap.userId,capture:cap,audioBase64:audioBase64,mime:S.blob.type||'audio/webm',jobPayload:jobPayload});
     if(!r||!r.ok){runPipeline();return}
     saveQueuedLocal(cap);
@@ -203,7 +207,8 @@ async function runPipeline(){
       userIntent:userIntent(),
       eventContext:S.ev?{name:S.ev.name,date:S.ev.date}:null,
       transcriptConfidence:S.transcriptConfidence,
-      gutFeel:S.gutFeel
+      gutFeel:S.gutFeel,
+      profileFocus:profileFocus()
     });
   }catch(e){ai=null}
   if(ai&&ai.person){
