@@ -20,12 +20,11 @@
 <body>
 <script>
 const waitlistIdentity=(()=>{try{return JSON.parse(localStorage.getItem('tapd_waitlist_identity')||'null')}catch(e){return null}})();
-const ob=(()=>{try{return JSON.parse(localStorage.getItem('tapd_onboarding_data')||'null')}catch(e){return null}})();
-const onboarded=!!(ob&&ob.data&&(ob.data.name||ob.data.firstName));
+const onboardingComplete=localStorage.getItem('tapd_onboarding_complete')==='true';
 
 if(!waitlistIdentity){
   location.replace('landing.html');
-}else if(!onboarded){
+}else if(!onboardingComplete){
   location.replace('onboarding.html');
 }else{
   location.replace('capture.html');
