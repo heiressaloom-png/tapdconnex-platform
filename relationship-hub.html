@@ -605,6 +605,14 @@
   .card-completeness { margin: 0 0 var(--space-4, 16px); display: flex; flex-direction: column; gap: 3px; }
   .card-completeness .cc-line { font-family: var(--font-mono, monospace); font-size: 12px; font-weight: 700; letter-spacing: 0.03em; color: var(--text-secondary); }
   .card-completeness .cc-why { font-size: 13px; line-height: 1.4; color: var(--text-muted, #95887A); }
+  .card-linkage { margin: 0 0 var(--space-4, 16px); display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .linkage-chip { font-family: var(--font-mono, monospace); font-size: 11px; font-weight: 800; letter-spacing: 0.04em; border-radius: 999px; padding: 4px 10px; }
+  .linkage-chip.linkage-direct { background: var(--accent, #1E4F5C); color: #fff; }
+  .linkage-chip.linkage-indirect { background: var(--accent-bg, #E8EFEF); color: var(--accent, #1E4F5C); }
+  .linkage-chip.linkage-weak { background: var(--surface-warm, #FBF8F2); color: var(--text-muted, #95887A); border: 1px solid var(--soft, #EAE2D2); }
+  .linkage-chip.linkage-none { background: var(--surface-warm, #FBF8F2); color: var(--text-muted, #95887A); }
+  .linkage-to { font-size: 13px; font-weight: 700; color: var(--text-secondary); }
+  .linkage-reason { flex-basis: 100%; font-size: 13px; line-height: 1.4; color: var(--text-muted, #95887A); }
   .proc-steps { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 6px; }
   .proc-step { font-family: var(--font-mono, monospace); font-size: 11px; letter-spacing: 0.04em; display: flex; align-items: center; gap: 8px; color: var(--text-muted, #95887A); }
   .proc-step::before { content: '\25CB'; font-size: 11px; }
@@ -2212,6 +2220,7 @@ function renderCard(c) {
         ? `<ol class="card-next-steps">${c.nextSteps.slice(0, 3).map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ol>`
         : `<div class="card-action">${escapeHtml(c.action)}</div>`}
       ${renderWhy(c)}
+      ${renderLinkage(c)}
       ${renderCompleteness(c)}
       <div class="card-footer">
         <div class="card-meta">
@@ -2273,6 +2282,17 @@ function renderFailedCard(c) {
         <div class="card-actions"><button class="btn btn-draft" data-action="retry-capture" data-id="${c.id}">Retry</button></div>
       </div>
     </article>`;
+}
+
+function renderLinkage(c) {
+  const pl = c.intelligence && c.intelligence.profile_linkage_intelligence;
+  if (!pl) return '';
+  const chip = pl.recommended_hub_label || pl.linkage_label || '';
+  const linkedTo = pl.linked_focus_area ? ('Linked to: ' + pl.linked_focus_area) : '';
+  const reason = pl.linkage_reason || '';
+  const type = (pl.linkage_type || 'none').toLowerCase();
+  if (!chip && !linkedTo && !reason) return '';
+  return `<div class="card-linkage">${chip ? `<span class="linkage-chip linkage-${type}">${escapeHtml(chip)}</span>` : ''}${linkedTo ? `<span class="linkage-to">${escapeHtml(linkedTo)}</span>` : ''}${reason ? `<div class="linkage-reason">${escapeHtml(reason)}</div>` : ''}</div>`;
 }
 
 function renderCompleteness(c) {
