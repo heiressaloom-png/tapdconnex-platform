@@ -180,7 +180,9 @@ function mapStructure(ai, transcript, confidence, payload) {
     context: (ai.draft && ai.draft.context) || (transcript ? transcript.slice(0, 600) : null),
     needs_name_confirmation: ai.verification ? !!ai.verification.needsNameConfirmation : !((ai.person && ai.person.name)),
     name_confidence: (ai.person && ai.person.nameConfidence) || null,
-    completeness: (ai.completeness && typeof ai.completeness.score === 'number') ? ai.completeness.score : (ai.completeness || null),
+    completeness: (ai.intelligence && ai.intelligence.completeness_intelligence && typeof ai.intelligence.completeness_intelligence.overall_score === 'number')
+      ? ai.intelligence.completeness_intelligence.overall_score
+      : ((ai.completeness && typeof ai.completeness.score === 'number') ? ai.completeness.score : (ai.completeness || null)),
     ai_momentum: ai.ai_momentum || ai.momentum || ai.relationshipMomentum || null,
     ai_confidence: (
       typeof ai.ai_confidence === 'number'
