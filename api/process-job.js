@@ -214,6 +214,10 @@ function mapStructure(ai, transcript, confidence, payload) {
     imprint_read: (ai.humanReads && ai.humanReads.imprintRead) || null,
     opening_read: (ai.humanReads && ai.humanReads.openingRead) || null,
     intelligence_read: (ai.humanReads && ai.humanReads.intelligenceRead) || null,
+    intelligence_json: ai.intelligence || null,
+    momentum_level: (ai.intelligence && ai.intelligence.relationship_hub_record && ai.intelligence.relationship_hub_record.momentumLevel)
+      || (ai.intelligence && ai.intelligence.behavioral_intelligence && ai.intelligence.behavioral_intelligence.momentum)
+      || null,
     transcript,
     transcript_confidence: confidence,
     ai_status: 'ready',
