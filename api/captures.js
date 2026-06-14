@@ -79,6 +79,8 @@ function toRow(c, userId) {
     imprint_read: c.imprintRead ?? null,
     opening_read: c.openingRead ?? null,
     intelligence_read: c.intelligenceRead ?? null,
+    intelligence_json: c.intelligence ?? c.intelligenceJson ?? null,
+    momentum_level: c.momentumLevel ?? null,
     updated_at: new Date().toISOString()
   };
 }
@@ -125,6 +127,8 @@ function toCapture(r) {
     imprintRead: r.imprint_read ?? null,
     openingRead: r.opening_read ?? null,
     intelligenceRead: r.intelligence_read ?? null,
+    intelligence: r.intelligence_json ?? null,
+    momentumLevel: r.momentum_level ?? null,
     aiStatus: r.ai_status ?? null, audioIncomplete: r.audio_incomplete ?? false,
     capturedDaysAgo: r.captured_at
       ? Math.floor((Date.now() - new Date(r.captured_at).getTime()) / 86400000)
