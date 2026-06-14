@@ -135,7 +135,8 @@ async function processOne(db, base, row) {
     userIntent: payload.userIntent || null,
     eventContext: payload.eventContext || null,
     transcriptConfidence: confidence,
-    gutFeel: payload.gutFeel || null
+    gutFeel: payload.gutFeel || null,
+    profileFocus: payload.profileFocus || null
   });
 
   if (!ai || !ai.person) {
