@@ -1034,12 +1034,26 @@ const TEMPLATES = [
 
 // ============ RENDER ============
 
-// Deep-link: ?step=N jumps to that step.
-(function applyStepParam() {
-  try {
-    const n = parseInt(new URLSearchParams(location.search).get('step'), 10);
-    if (Number.isFinite(n) && n >= 0 && n <= TOTAL_STEPS - 1) state.currentStep = n;
-  } catch (e) {}
+// Deep-link + entry routing.
+//   ?step=N    -> jump to that step
+//   ?mode=edit -> open the existing profile to edit (no reset; starts at identity)
+//   already complete + no params -> a finished user should not be forced back
+//   through onboarding, so route them to the app.
+const _obParams = new URLSearchParams(location.search);
+const EDIT_MODE = _obParams.get('mode') === 'edit';
+(function applyEntryRouting() {
+  const stepN = parseInt(_obParams.get('step'), 10);
+  const hasStep = Number.isFinite(stepN) && stepN >= 0 && stepN <= TOTAL_STEPS - 1;
+  const isComplete = localStorage.getItem('tapd_onboarding_complete') === 'true';
+  if (isComplete && !EDIT_MODE && !hasStep) {
+    location.replace('capture.html');
+    return;
+  }
+  if (hasStep) {
+    state.currentStep = stepN;
+  } else if (EDIT_MODE) {
+    state.currentStep = 1; // identity — review/update from the top of the profile
+  }
 })();
 
 function calculateCompletionPercent() {
@@ -1815,6 +1829,7 @@ function markOnboardingComplete() {
   save();
   // Broad compatibility flags so the Hub/landing page does not show the one-time focus prompt again.
   localStorage.setItem('tapd_onboarding_complete', 'true');
+  localStorage.setItem('tapd_onboarding_completed_at', new Date().toISOString());
   localStorage.setItem('tapd_profile_complete', 'true');
   localStorage.setItem('tapd_owner_profile_complete', 'true');
   localStorage.setItem('tapd_show_focus_prompt', 'false');
