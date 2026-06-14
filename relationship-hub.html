@@ -602,6 +602,9 @@
   .proc-label.proc-failed { color: var(--pro, #7C2D3F); }
   .proc-note { font-size: 14px; line-height: 1.45; color: var(--text-secondary); margin-bottom: var(--space-4, 16px); }
   .card-failed .card-priority-strip { background: var(--pro, #7C2D3F); }
+  .card-completeness { margin: 0 0 var(--space-4, 16px); display: flex; flex-direction: column; gap: 3px; }
+  .card-completeness .cc-line { font-family: var(--font-mono, monospace); font-size: 12px; font-weight: 700; letter-spacing: 0.03em; color: var(--text-secondary); }
+  .card-completeness .cc-why { font-size: 13px; line-height: 1.4; color: var(--text-muted, #95887A); }
   .proc-steps { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 6px; }
   .proc-step { font-family: var(--font-mono, monospace); font-size: 11px; letter-spacing: 0.04em; display: flex; align-items: center; gap: 8px; color: var(--text-muted, #95887A); }
   .proc-step::before { content: '\25CB'; font-size: 11px; }
@@ -2209,6 +2212,7 @@ function renderCard(c) {
         ? `<ol class="card-next-steps">${c.nextSteps.slice(0, 3).map(s => `<li>${escapeHtml(s)}</li>`).join('')}</ol>`
         : `<div class="card-action">${escapeHtml(c.action)}</div>`}
       ${renderWhy(c)}
+      ${renderCompleteness(c)}
       <div class="card-footer">
         <div class="card-meta">
           <div class="card-meta-time">${daysText}</div>
@@ -2269,6 +2273,15 @@ function renderFailedCard(c) {
         <div class="card-actions"><button class="btn btn-draft" data-action="retry-capture" data-id="${c.id}">Retry</button></div>
       </div>
     </article>`;
+}
+
+function renderCompleteness(c) {
+  if (typeof c.completeness !== 'number') return '';
+  const pct = Math.max(0, Math.min(100, Math.round(c.completeness)));
+  const status = pct >= 85 ? 'Strong' : pct >= 65 ? 'Usable' : pct >= 40 ? 'Partial' : 'Low';
+  const ci = c.intelligence && c.intelligence.completeness_intelligence;
+  const why = (ci && ci.why_score_is_not_higher) ? ci.why_score_is_not_higher : '';
+  return `<div class="card-completeness"><span class="cc-line">Completeness: ${pct}% — ${status}</span>${why ? `<span class="cc-why">${escapeHtml(why)}</span>` : ''}</div>`;
 }
 
 function renderWhy(c) {
