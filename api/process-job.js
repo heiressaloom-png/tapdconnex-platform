@@ -174,16 +174,18 @@ function mapStructure(ai, transcript, confidence, payload) {
     signal_label: (ai.signal && ai.signal.primaryLabel) || (templateName ? `${templateName} capture` : null),
     evidence: (ai.signal && ai.signal.evidence) || null,
     secondary_thread: (ai.signal && ai.signal.secondary) || null,
-    priority: aiPriority(ai, gutPriority(payload.gutFeel, 'worth-exploring')),
+    priority: (ai.analyzer && ai.analyzer.priority_band) || aiPriority(ai, gutPriority(payload.gutFeel, 'worth-exploring')),
     action: firstStep,
     next_steps: steps.length ? steps : [firstStep],
     draft_message: (ai.draft && ai.draft.message) || null,
     context: (ai.draft && ai.draft.context) || (transcript ? transcript.slice(0, 600) : null),
     needs_name_confirmation: ai.verification ? !!ai.verification.needsNameConfirmation : !((ai.person && ai.person.name)),
     name_confidence: (ai.person && ai.person.nameConfidence) || null,
-    completeness: (ai.intelligence && ai.intelligence.completeness_intelligence && typeof ai.intelligence.completeness_intelligence.overall_score === 'number')
-      ? ai.intelligence.completeness_intelligence.overall_score
-      : ((ai.completeness && typeof ai.completeness.score === 'number') ? ai.completeness.score : (ai.completeness || null)),
+    completeness: (ai.analyzer && ai.analyzer.completeness && typeof ai.analyzer.completeness.overall_score === 'number')
+      ? ai.analyzer.completeness.overall_score
+      : (ai.intelligence && ai.intelligence.completeness_intelligence && typeof ai.intelligence.completeness_intelligence.overall_score === 'number')
+        ? ai.intelligence.completeness_intelligence.overall_score
+        : ((ai.completeness && typeof ai.completeness.score === 'number') ? ai.completeness.score : (ai.completeness || null)),
     ai_momentum: ai.ai_momentum || ai.momentum || ai.relationshipMomentum || null,
     ai_confidence: (
       typeof ai.ai_confidence === 'number'
@@ -207,7 +209,7 @@ function mapStructure(ai, transcript, confidence, payload) {
     moving_toward_signals: ai.relationshipRead && ai.relationshipRead.movingTowardSignals ? ai.relationshipRead.movingTowardSignals : null,
     moving_away_signals: ai.relationshipRead && ai.relationshipRead.movingAwaySignals ? ai.relationshipRead.movingAwaySignals : null,
     relationship_read_summary: ai.relationshipRead && ai.relationshipRead.summary ? ai.relationshipRead.summary : null,
-    safe_to_send: ai.safeToSend && ai.safeToSend.status === 'yes',
+    safe_to_send: (ai.analyzer && typeof ai.analyzer.safe_to_send === 'boolean') ? ai.analyzer.safe_to_send : (ai.safeToSend && ai.safeToSend.status === 'yes'),
     safe_to_send_reason: ai.safeToSend && ai.safeToSend.reason ? ai.safeToSend.reason : null,
     needs_you_reasons: ai.needsYouReasons || null,
     memory_anchors: ai.memoryAnchors || null,
@@ -217,10 +219,18 @@ function mapStructure(ai, transcript, confidence, payload) {
     imprint_read: (ai.humanReads && ai.humanReads.imprintRead) || null,
     opening_read: (ai.humanReads && ai.humanReads.openingRead) || null,
     intelligence_read: (ai.humanReads && ai.humanReads.intelligenceRead) || null,
-    intelligence_json: ai.intelligence || null,
-    momentum_level: (ai.intelligence && ai.intelligence.relationship_hub_record && ai.intelligence.relationship_hub_record.momentumLevel)
+    intelligence_json: ai.intelligence ? { ...ai.intelligence, _analyzer: ai.analyzer || null } : (ai.analyzer ? { _analyzer: ai.analyzer } : null),
+    momentum_level: (ai.analyzer && ai.analyzer.momentum_level)
+      || (ai.intelligence && ai.intelligence.relationship_hub_record && ai.intelligence.relationship_hub_record.momentum_level)
       || (ai.intelligence && ai.intelligence.behavioral_intelligence && ai.intelligence.behavioral_intelligence.momentum)
       || null,
+    behavioral_read: (ai.analyzer && ai.analyzer.behavioral_read) || null,
+    opportunity_readiness: (ai.analyzer && ai.analyzer.opportunity_readiness) || null,
+    relationship_priority: (ai.analyzer && ai.analyzer.relationship_priority) || null,
+    attention_labels: (ai.analyzer && ai.analyzer.attention_labels) || null,
+    human_read_summary: (ai.analyzer && ai.analyzer.human_read_summary) || null,
+    commitment_ledger: (ai.analyzer && ai.analyzer.commitment_ledger) || (ai.intelligence && ai.intelligence.commitment_ledger) || [],
+    outcome_ledger: (ai.intelligence && ai.intelligence.outcome_ledger) || [],
     transcript,
     transcript_confidence: confidence,
     ai_status: 'ready',
