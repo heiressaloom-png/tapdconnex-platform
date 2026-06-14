@@ -7,6 +7,7 @@
 
 import OpenAI from 'openai';
 import { SYSTEM_PROMPT, buildCapturePrompt } from './_prompt.js';
+import { analyze } from './_analyzer.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -55,6 +56,14 @@ export default async function handler(req, res) {
     // Minimal schema guard so the Hub never receives something it can't read.
     if (!parsed.person) {
       return res.status(200).json({ status: 'placeholder', message: 'Model returned an unusable shape.' });
+    }
+
+    // Deterministic analyzer — Engine scores, Reads describe. Fail-open: if it
+    // throws, we return the LLM output unchanged (today's behaviour).
+    try {
+      parsed.analyzer = analyze(parsed, ctx.profileFocus);
+    } catch (e) {
+      console.error('[process-capture] analyzer failed (fail-open):', e && e.message);
     }
 
     return res.status(200).json(parsed);
