@@ -278,6 +278,7 @@ function save(){try{pullForm();let t=tpl(),e=S.ev,p=S.p,ai=S.ai,evText=e&&e.name
     hasAudio:!!S.blob,audioDurationMs:S.dur||0,
     aiStatus:S.aiStatus==='structured'?'ai_structured':(S.aiStatus==='transcribed'?'transcribed_only':(S.blob?'manual_pending_openai':'manual_entry')),
     draftStatus:'draft_ready',
+    intelligence:(ai&&ai.intelligence)||null,momentumLevel:(ai&&ai.intelligence&&ai.intelligence.relationship_hub_record&&ai.intelligence.relationship_hub_record.momentumLevel)||null,
     intelligenceFrameworkVersion:(window.TAPD_REF_ENGINE&&TAPD_REF_ENGINE.VERSION)||(window.TAPD_INTELLIGENCE&&TAPD_INTELLIGENCE.VERSION)||'1.4.0'};
   c.draftMessage=(ai&&ai.draft&&ai.draft.message)||draft(p,c);
   let list=read(K.CAP,[]).filter(x=>x.id!==c.id);list.unshift(c);localStorage.setItem(K.CAP,JSON.stringify(list));
